@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metal Forge AI - Multi-Genre Suno Prompt Builder</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Cinzel Decorative -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        metal: ['Cinzel Decorative', 'serif'],
+                    },
+                    colors: {
+                        metal: {
+                            900: '#09090b',
+                            800: '#18181b',
+                            700: '#27272a',
+                            gold: '#f59e0b',
+                            fire: '#ef4444',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ef4444;
+            border-radius: 3px;
+        }
+        /* Heavy Metal glow animations */
+        @keyframes fire-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 10px rgba(245, 158, 11, 0.5); }
+        }
+        .glow-fire {
+            animation: fire-glow 4s infinite alternate;
+        }
+        @keyframes warning-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .pulse-warning {
+            animation: warning-pulse 1s infinite alternate;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans selection:bg-red-600 selection:text-white relative overflow-x-hidden">
+
+    <!-- Background Sparks Canvas -->
+    <canvas id="sparks-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 py-8 flex flex-col min-h-screen">
+        
+        <!-- HEADER section -->
+        <header class="text-center mb-8 relative flex flex-col items-center">
+            <div class="inline-block relative">
+                <div class="absolute -inset-1 bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <h1 class="font-metal text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 tracking-wider font-extrabold uppercase py-2">
+                    Metal Forge AI
+                </h1>
+            </div>
+            <p class="text-zinc-400 mt-2 text-sm md:text-base tracking-widest uppercase">
+                Suno AI heavy metal &amp; multi-genre prompting suite
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-3 text-xs text-zinc-500 uppercase tracking-wider">
+                <span><i class="fa-solid fa-guitar text-red-500 mr-1"></i> Multi-Genre Alchemy</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-fire text-orange-500 mr-1"></i> Fire artwork</span>
+                <span>•</span>
+                <span id="cloud-status-badge" class="transition-colors duration-300"><i class="fa-solid fa-cloud animate-pulse text-yellow-500 mr-1"></i> Syncing Vault...</span>
+            </div>
+        </header>
+
+        <!-- WORKSPACE GRID -->
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-grow">
+            
+            <!-- LEFT COLUMN: INPUT FORGE (5 Cols) -->
+            <section class="lg:col-span-5 bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative glow-fire">
+                <div class="absolute top-0 right-0 bg-red-600/10 border-l border-b border-red-500/20 px-3 py-1 rounded-bl-xl text-[10px] font-bold text-red-400 uppercase tracking-widest">
+                    The Crucible
+                </div>
+                
+                <h2 class="text-lg font-bold text-zinc-200 mb-6 flex items-center uppercase tracking-wider">
+                    <span class="p-2 bg-red-600/20 text-red-500 rounded-lg mr-3">
+                        <i class="fa-solid fa-skull-crossbones"></i>
+                    </span>
+                    Forge Your Sound
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- Style input + Character Counter System -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+                                Style / Genre / Band Influence
+                            </label>
+                            <span id="style-character-counter" class="text-xs font-mono text-zinc-500">0/200</span>
+                        </div>
+
+                        <!-- 200-Character Gauge UI -->
+                        <div class="w-full h-1.5 bg-zinc-950 border border-zinc-800 rounded-full overflow-hidden mb-2 relative">
+                            <div id="character-gauge" class="h-full w-0 bg-green-500 transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                        </div>
+
+                        <input 
+                            type="text" 
+                            id="style-input" 
+                            placeholder="e.g., Heavy Metal, or Retro Synthwave with dark basslines"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                            oninput="updateCharacterCounter(this.value)"
+                        >
+
+                        <!-- Exceeded warning prompt overlay -->
+                        <div id="character-warning" class="hidden mt-2 p-2 bg-red-950/40 border border-red-900/60 rounded-lg text-[10px] text-red-400 font-bold flex items-center gap-1.5 uppercase tracking-wide pulse-warning">
+                            <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> SUNO / UDIO TRUNCATION RISK: Exceeded 200-character ceiling limit!
+                        </div>
+
+                        <!-- STYLE MODIFIERS ACCORDION (GENRE EXPANSION) -->
+                        <div class="mt-4 bg-zinc-950/40 border border-zinc-800/60 p-3 rounded-xl space-y-2">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
+                                <span><i class="fa-solid fa-square-plus text-red-500 mr-1.5"></i> Style Modifiers Matrix</span>
+                                <span class="text-[9px] text-zinc-500">Tap to toggle style chips</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <!-- Category 1: Core Metal Modifiers -->
+                                <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
+                                    <button type="button" onclick="toggleAccordion('metal-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fa-solid fa-skull text-red-500 text-[10px]"></i> Core Metal Modifiers
+                                        </span>
+                                        <i id="metal-panel-icon" class="fa-solid fa-chevron-up text-[10px] text-zinc-500 transition"></i>
+                                    </button>
+                                    <div id="metal-panel" class="p-2 border-t border-zinc-800/50 bg-zinc-950/50">
+                                        <div class="flex flex-wrap gap-1">
+                                            <button onclick="toggleMatrixChip(this, 'Blast Beats')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Blast Beats</button>
+                                            <button onclick="toggleMatrixChip(this, 'HM-2 Distortion')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">HM-2 Distortion</button>
+                                            <button onclick="toggleMatrixChip(this, 'Ripping Solos')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Ripping Solos</button>
+                                            <button onclick="toggleMatrixChip(this, 'double-bass drums')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Double Bass</button>
+                                            <button onclick="toggleMatrixChip(this, 'demonic growls')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Growls</button>
+                                            <button onclick="toggleMatrixChip(this, 'breakneck thrash')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Thrash Tempo (180bpm)</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Category 2: Rock & Alternative -->
+                                <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
+                                    <button type="button" onclick="toggleAccordion('rock-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fa-solid fa-guitar text-orange-500 text-[10px]"></i> Rock & Alternative
+                                        </span>
+                                        <i id="rock-panel-icon" class="fa-solid fa-chevron-down text-[10px] text-zinc-500 transition"></i>
+                                    </button>
+                                    <div id="rock-panel" class="hidden p-2 border-t border-zinc-800/50 bg-zinc-950/50">
+                                        <div class="flex flex-wrap gap-1">
+                                            <button onclick="toggleMatrixChip(this, 'Grunge Fuzz')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Grunge Fuzz</button>
+                                            <button onclick="toggleMatrixChip(this, 'Arena Grooves')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Arena Grooves</button>
+                                            <button onclick="toggleMatrixChip(this, 'Bluesy Bends')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Bluesy Bends</button>
+                                            <button onclick="toggleMatrixChip(this, 'Clean Crunch')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Clean Crunch</button>
+                                            <button onclick="toggleMatrixChip(this, 'Energetic Mid-Tempo')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Mid-Tempo (120bpm)</button>
+                                            <button onclick="toggleMatrixChip(this, 'melodic clean vocals')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Melodic Vocals</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Category 3: Atmospheric & Other Genres -->
+                                <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
+                                    <button type="button" onclick="toggleAccordion('atmospheric-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fa-solid fa-cloud-moon text-yellow-500 text-[10px]"></i> Atmospheric & Other Genres
+                                        </span>
+                                        <i id="atmospheric-panel-icon" class="fa-solid fa-chevron-down text-[10px] text-zinc-500 transition"></i>
+                                    </button>
+                                    <div id="atmospheric-panel" class="hidden p-2 border-t border-zinc-800/50 bg-zinc-950/50">
+                                        <div class="flex flex-wrap gap-1">
+                                            <button onclick="toggleMatrixChip(this, 'Jazzy Syncopation')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Jazzy Syncopation</button>
+                                            <button onclick="toggleMatrixChip(this, 'Synthwave Arpeggios')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Synthwave Arpeggios</button>
+                                            <button onclick="toggleMatrixChip(this, 'Dark Ambient')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Dark Ambient</button>
+                                            <button onclick="toggleMatrixChip(this, 'Ethereal Echoes')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Ethereal Echoes</button>
+                                            <button onclick="toggleMatrixChip(this, 'Cinematic Strings')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Cinematic Strings</button>
+                                            <button onclick="toggleMatrixChip(this, 'Lo-Fi Haze')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Lo-Fi Haze</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Theme/Lyrics Input -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+                                Lyrical Theme &amp; Motifs
+                            </label>
+                            <span class="text-[10px] text-zinc-500 italic">Optional</span>
+                        </div>
+                        <textarea 
+                            id="theme-input" 
+                            rows="3"
+                            placeholder="e.g., Ragnarok battle, cosmic void horror, a soul betrayed fighting inner demons"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner resize-none"
+                        ></textarea>
+                        
+                        <!-- Expanded Collapsible Theme Presets -->
+                        <div class="mt-3 space-y-2 bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/60">
+                            <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
+                                <span><i class="fa-solid fa-wand-magic-sparkles text-red-500 mr-1.5"></i> Theme Alchemy Presets</span>
+                                <span class="text-[9px] text-zinc-500">Tap to append themes</span>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <!-- Group 1: Visual & Cinematic -->
+                                <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
+                                    <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-film text-red-500 text-[9px]"></i> Visual &amp; Cinematic
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                                    </summary>
+                                    <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
+                                        <button type="button" onclick="setThemePreset('Viking mythology, sailing into battle, storms of lightning, roaring high seas')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Viking Ragnarok</button>
+                                        <button type="button" onclick="setThemePreset('Sci-Fi cyberpunk rebellion, AI cyberlords, neon fire, glitching holograms')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cyberpunk Neon</button>
+                                        <button type="button" onclick="setThemePreset('Cosmic void horror, cold black infinity, black hole swallowing stars')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cosmic Void</button>
+                                        <button type="button" onclick="setThemePreset('Ruined obsidian castles, forgotten ancient curses, blood-red moons')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Grim Dark Fantasy</button>
+                                    </div>
+                                </details>
+
+                                <!-- Group 2: Lyrical Foundations -->
+                                <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
+                                    <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-pen-fancy text-orange-500 text-[9px]"></i> Lyrical Foundations
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                                    </summary>
+                                    <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
+                                        <button type="button" onclick="setThemePreset('Inner demons, mental entrapment, breaking free from chains of despair')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Inner Demons</button>
+                                        <button type="button" onclick="setThemePreset('Smashing the system, rising from ashes, defiant fists raised in fury')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Rebellion &amp; Rage</button>
+                                        <button type="button" onclick="setThemePreset('Shattered trust, cold calculated revenge, reclaiming lost power')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Betrayal &amp; Vengeance</button>
+                                        <button type="button" onclick="setThemePreset('The slow march of time, decaying empires, facing the ultimate truth of mortality')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Existential Dread</button>
+                                    </div>
+                                </details>
+
+                                <!-- Group 3: Alternative & Ambient Moods -->
+                                <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
+                                    <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-ghost text-yellow-500 text-[9px]"></i> Alternative &amp; Ambient Moods
+                                        </span>
+                                        <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                                    </summary>
+                                    <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
+                                        <button type="button" onclick="setThemePreset('Mechanized heartbeats, rust and steam, cold factory halls, concrete dystopia')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Industrial Decay</button>
+                                        <button type="button" onclick="setThemePreset('Jazz noir streets, flickering neon signs, rain-soaked pavement, trenchcoat shadows')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Noir Rain Mood</button>
+                                        <button type="button" onclick="setThemePreset('Drifting through clouds, fading memories, surreal misty woods, ghostly voices')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Ethereal Dreamscape</button>
+                                        <button type="button" onclick="setThemePreset('Rain hitting windowpanes, low embers of fire, quiet solitude, bittersweet departure')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Melancholic Acoustic</button>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VISCERAL VISION IMAGE-TO-METAL PROMPT -->
+                    <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
+                        <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between">
+                            <span><i class="fa-solid fa-eye text-red-500 mr-2"></i> Visceral Vision (Image-to-Metal)</span>
+                            <span class="text-[9px] bg-red-600/20 text-red-400 px-1.5 py-0.5 rounded">Multimodal</span>
+                        </div>
+                        <p class="text-[10px] text-zinc-500 leading-normal">
+                            Upload visual inspiration to extract style modifiers, matching titles, and dramatic themes automatically.
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <label class="flex-grow flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 hover:text-white rounded-lg transition cursor-pointer">
+                                <i class="fa-solid fa-upload"></i> Upload Image
+                                <input type="file" id="vision-image-input" accept="image/*" class="hidden" onchange="handleVisionImageUpload(event)">
+                            </label>
+                            <button id="vision-btn" disabled onclick="analyzeVisionImage()" class="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 hover:text-white text-xs font-bold rounded-lg transition">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Analyze
+                            </button>
+                        </div>
+                        
+                        <!-- Thumbnail preview container -->
+                        <div id="vision-thumb-container" class="hidden flex items-center gap-3 p-2 bg-zinc-950/80 border border-zinc-800/60 rounded-lg">
+                            <img id="vision-thumbnail" src="" class="w-10 h-10 object-cover rounded border border-zinc-700">
+                            <span class="text-[10px] text-zinc-400 truncate flex-grow" id="vision-filename">Inspiration loaded</span>
+                            <button onclick="removeVisionImage()" class="text-zinc-500 hover:text-red-500 transition px-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div id="vision-loader" class="hidden text-center text-[10px] text-red-400 animate-pulse font-mono">
+                            <i class="fa-solid fa-yin-yang animate-spin mr-1"></i> Extracting visceral energy...
+                        </div>
+                    </div>
+
+                    <!-- Song Title Input -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+                                Song Title
+                            </label>
+                            <span class="text-[10px] text-zinc-500 italic">Optional</span>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="title-input" 
+                            placeholder="e.g., Reign of Obsidian Flame"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                        >
+                    </div>
+
+                    <!-- Band Name Input -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+                                Band Name
+                            </label>
+                            <span class="text-[10px] text-zinc-500 italic">Optional</span>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="band-input" 
+                            placeholder="e.g., Obsidian Overlord"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                        >
+                    </div>
+
+                    <!-- Suno Prompt Optimization Settings -->
+                    <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
+                        <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center">
+                            <i class="fa-solid fa-sliders text-red-500 mr-2"></i> Prompt Blueprint Config
+                        </div>
+                        
+                        <!-- Toggle for Vocal Style inside tag structure -->
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-zinc-400">Vocal Style</span>
+                            <select id="vocal-config" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-zinc-200">
+                                <option value="growling, aggressive death metal growls">Growls/Screams (Metal)</option>
+                                <option value="clean operatic powerhouse, dramatic male tenor">Clean Operatic</option>
+                                <option value="high-pitched rasp, gritty 80s heavy metal screech">High Raspy (80s Metal)</option>
+                                <option value="melodic indie vocals, smooth passionate alternative voice">Alternative/Rock Clean</option>
+                                <option value="whispered gothic ambient vocals, eerie echoed whispers">Ethereal/Dreamy Whispers</option>
+                                <option value="gravelly spoken word narration, dark cinematic storyteller">Spoken Narration</option>
+                            </select>
+                        </div>
+
+                        <!-- Toggle for Song Structure complexity -->
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-zinc-400">Structural Depth</span>
+                            <select id="structure-config" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-zinc-200">
+                                <option value="standard">Standard (Verse, Chorus, Solo)</option>
+                                <option value="progressive">Prog Epic (Intros, Instrumentals, Dynamic Shifts)</option>
+                                <option value="brutal">Aggressive Short (In-your-face, breakdown heavy)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <button 
+                        id="generate-btn"
+                        onclick="forgeMetal()" 
+                        class="w-full py-4 bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 hover:from-red-500 hover:to-orange-500 text-zinc-950 hover:text-white font-metal font-black text-lg rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(239,68,68,0.3)] border border-yellow-500/20 cursor-pointer select-none"
+                    >
+                        <i class="fa-solid fa-guitar animate-bounce"></i> FORGE THE TRACK
+                    </button>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: OUTPUT ENGINE & DEMO PLAYERS (7 Cols) -->
+            <section class="lg:col-span-7 space-y-8">
+                
+                <!-- Loading State placeholder -->
+                <div id="forge-loader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-6 animate-pulse">
+                    <div class="relative flex items-center justify-center">
+                        <div class="w-16 h-16 border-4 border-red-600 border-t-yellow-500 rounded-full animate-spin"></div>
+                        <i class="fa-solid fa-fire text-orange-500 absolute text-xl"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="font-metal text-xl text-orange-500 uppercase tracking-widest">Crucible at Maximum Temp</p>
+                        <p class="text-xs text-zinc-500">Formulating custom audio prompts, generating lyrics, painting cover art, and priming the TTS intro...</p>
+                    </div>
+                </div>
+
+                <!-- Generated Output Panel -->
+                <div id="forge-output" class="space-y-8">
+                    
+                    <!-- EXPLANATORY / INTRO BOARD -->
+                    <div id="intro-board" class="bg-zinc-900/40 border border-zinc-800/40 rounded-2xl p-8 text-center space-y-4">
+                        <div class="w-16 h-16 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto text-red-500 text-2xl">
+                            <i class="fa-solid fa-anvil"></i>
+                        </div>
+                        <div class="max-w-md mx-auto">
+                            <h3 class="font-bold text-zinc-200 uppercase tracking-wide">Enter the Forge</h3>
+                            <p class="text-sm text-zinc-400 mt-2">
+                                Provide styling, themes, or custom titles. Choose from metal core, indie rock, or electronic atmospheric categories. The Forge will output absolute gold for Suno/Udio!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TRACK INFO & PROMPT BOXES -->
+                    <div id="track-results" class="hidden space-y-6">
+                        
+                        <!-- TITLE & STYLE CARD -->
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-red-600/90 text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase">
+                                Track Specs
+                            </div>
+
+                            <div class="mt-2 space-y-4">
+                                <!-- Track Title Display -->
+                                <div>
+                                    <div class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest mb-1">Song Title</div>
+                                    <div class="flex items-center justify-between bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-3">
+                                        <span id="output-title" class="font-metal text-lg text-yellow-500 tracking-wide font-bold">Unreleased Anthem</span>
+                                        <button onclick="copyToClipboard('output-title', this)" class="p-2 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-lg transition duration-200 flex items-center justify-center border border-transparent" title="Copy Title">
+                                            <i class="fa-regular fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Suno Style Tags Display -->
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <div class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Suno Style Prompt <span class="text-zinc-600">(Optimal: Under 120/200 characters)</span></div>
+                                        <span id="style-count" class="text-[10px] text-zinc-500 font-mono">0 / 200 chars</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-3">
+                                        <span id="output-style" class="text-sm text-zinc-200 leading-relaxed font-mono">-</span>
+                                        <button onclick="copyToClipboard('output-style', this)" class="p-2 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-lg transition duration-200 flex items-center justify-center border border-transparent" title="Copy Style Tags">
+                                            <i class="fa-regular fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LYRIC WORKBENCH -->
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-orange-600/90 text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase">
+                                Lyric Blueprint
+                            </div>
+
+                            <div class="mt-3 flex justify-between items-center mb-3">
+                                <span class="text-xs text-zinc-400">Copy these fully optimized metatags into Suno Lyric Mode</span>
+                                <button onclick="copyToClipboard('output-lyrics', this)" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-850 hover:bg-zinc-700 text-xs font-bold text-zinc-200 hover:text-white rounded-lg border border-zinc-800 transition duration-200">
+                                    <i class="fa-regular fa-copy"></i> Copy Full Lyrics
+                                </button>
+                            </div>
+
+                            <div class="bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-5 max-h-[350px] overflow-y-auto font-mono text-sm leading-relaxed text-zinc-300 relative">
+                                <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-red-600/30 font-mono text-xs md:text-sm"></pre>
+                            </div>
+
+                            <!-- AI LYRIC CO-PILOT CHAT -->
+                            <div class="mt-4 pt-4 border-t border-zinc-800/80 space-y-3">
+                                <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between">
+                                    <span><i class="fa-solid fa-comments text-orange-500 mr-1.5"></i> AI Lyric Co-Pilot (Refine &amp; Edit)</span>
+                                    <span class="text-[9px] text-zinc-500">Multiturn Chat</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        type="text" 
+                                        id="copilot-input" 
+                                        placeholder="e.g., Make Verse 2 more melodic, or insert a dramatic synth break segment..."
+                                        class="flex-grow bg-zinc-950/80 border border-zinc-800 focus:border-orange-500 rounded-xl px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none transition"
+                                        onkeydown="if(event.key === 'Enter') refineLyrics()"
+                                    >
+                                    <button 
+                                        onclick="refineLyrics()" 
+                                        class="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-zinc-950 hover:text-white font-bold text-xs rounded-xl transition cursor-pointer"
+                                    >
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div id="copilot-loader" class="hidden text-center text-[10px] text-orange-400 animate-pulse font-mono">
+                                    <i class="fa-solid fa-skull-crossbones animate-spin mr-1"></i> Reworking lyric tapestry...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COVER ART & SPOKEN INTRO DEMO -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- ALBUM COVER ART GENERATOR -->
+                            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col">
+                                <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center justify-between">
+                                    <span><i class="fa-solid fa-compact-disc text-red-500 mr-1.5"></i> Custom Cover Art</span>
+                                    <button onclick="regenerateCoverArt()" class="text-[10px] text-orange-500 hover:text-orange-400 uppercase flex items-center gap-1">
+                                        <i class="fa-solid fa-arrows-rotate"></i> Re-Roll Art
+                                    </button>
+                                </div>
+                                <div class="flex-grow flex items-center justify-center bg-zinc-950 border border-zinc-800/60 rounded-xl overflow-hidden aspect-square relative group">
+                                    <!-- Image element -->
+                                    <img id="cover-art" src="" alt="Album Cover" class="hidden w-full h-full object-cover">
+                                    
+                                    <!-- Cover loader placeholder -->
+                                    <div id="cover-loader" class="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-zinc-950">
+                                        <div class="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Pouring molten artwork...</p>
+                                    </div>
+
+                                    <!-- Cover Generation Failed or Not Started -->
+                                    <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                                        <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
+                                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
+                                        <button onclick="regenerateCoverArt()" class="mt-2 text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-3 py-1 rounded-md transition">Try Again</button>
+                                    </div>
+                                    
+                                    <!-- Hover actions -->
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                        <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-red-600 text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
+                                            <i class="fa-solid fa-download text-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TTS INTRO NARRATOR -->
+                            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                                        <span><i class="fa-solid fa-volume-high text-yellow-500 mr-1.5"></i> Spoken Dialogue Preview</span>
+                                        <span class="text-[9px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">Dual-Speaker</span>
+                                    </div>
+                                    <p class="text-[11px] text-zinc-500 leading-normal mb-4">
+                                        Listen to a theatrical dual-speaker dialogue prologue generated via Gemini Multi-Speaker TTS (The Overlord vs. The Seer!).
+                                    </p>
+                                </div>
+
+                                <div class="bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-4 space-y-4">
+                                    <!-- Dialogue / Quote of the narration -->
+                                    <div id="tts-quote-container" class="max-h-[120px] overflow-y-auto space-y-2">
+                                        <p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">
+                                            "Waiting for lyrics to materialize..."
+                                        </p>
+                                    </div>
+
+                                    <!-- AUDIO CONTROL SUITE -->
+                                    <div class="flex items-center justify-between pt-2 border-t border-zinc-800/60">
+                                        <!-- Mini Visualizer (Canvas) -->
+                                        <canvas id="visualizer" class="h-8 w-24 bg-zinc-900/40 rounded border border-zinc-800/40"></canvas>
+                                        
+                                        <!-- Play/Pause Trigger -->
+                                        <button 
+                                            id="tts-play-btn" 
+                                            onclick="toggleTTSAudio()"
+                                            disabled
+                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 hover:bg-yellow-400 text-zinc-950 hover:scale-105 transition duration-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                        >
+                                            <i id="tts-play-icon" class="fa-solid fa-play ml-0.5 text-sm"></i>
+                                        </button>
+                                    </div>
+                                    <div id="tts-loader" class="hidden text-center text-[10px] text-yellow-500/80 animate-pulse font-mono font-bold">
+                                        <i class="fa-solid fa-skull animate-spin mr-1"></i> Grunting epic voice intro...
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- SUNO AI TIPS & METATAG REFERENCE -->
+                        <div class="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6">
+                            <h4 class="text-xs font-bold uppercase text-zinc-400 tracking-wider mb-3 flex items-center">
+                                <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> How to Maximize Tracks in Suno
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-zinc-400">
+                                <ul class="space-y-1.5 list-disc list-inside">
+                                    <li>Use <span class="text-yellow-500 font-mono">[Guitar Solo]</span> or <span class="text-yellow-500 font-mono">[Synth Drop]</span> to trigger breaks.</li>
+                                    <li>Add <span class="text-yellow-500 font-mono">[Drum Fill]</span> between chorus and verses.</li>
+                                    <li>In Suno Style box, mix styles like: <span class="text-zinc-300 font-mono">grunge, heavy fuzz, soaring vocals, 120 bpm</span>.</li>
+                                </ul>
+                                <ul class="space-y-1.5 list-disc list-inside">
+                                    <li>Format lyrics with <span class="text-yellow-500 font-mono">[Verse]</span> and <span class="text-yellow-500 font-mono">[Chorus]</span> headers clearly.</li>
+                                    <li>Add <span class="text-yellow-500 font-mono">[Outro]</span> or <span class="text-yellow-500 font-mono">[Fade Out]</span> to get clean endings without cuts.</li>
+                                    <li>Set Suno settings to "Custom" to paste full formatted blocks.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- FEATURE 4: SESSION HISTORY SECTION -->
+        <section class="mt-8 bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative">
+            <h3 class="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-box-archive text-yellow-500"></i> Forge Archives (Session History)
+            </h3>
+            
+            <div id="history-loading" class="text-center py-6 text-xs text-zinc-500 font-mono">
+                <i class="fa-solid fa-spinner animate-spin mr-2"></i> Synching archives...
+            </div>
+
+            <div id="history-empty" class="hidden text-center py-8 border border-dashed border-zinc-800 rounded-xl text-xs text-zinc-500 font-mono">
+                No past music iterations cataloged inside this crucible yet. Click "Forge" to write history!
+            </div>
+
+            <!-- Horizontal Scrollable History Grid -->
+            <div id="history-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1">
+                <!-- Dynamically populated card structure -->
+            </div>
+        </section>
+
+        <!-- FOOTER SECTION -->
+        <footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
+            <p>© 2026 Metal Forge AI. Specially optimized for Suno AI and Udio prompting pipelines.</p>
+        </footer>
+
+    </div>
+
+    <!-- UI NOTIFICATION / TOAST BOX -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 scale-95 transition-all duration-300 pointer-events-none bg-zinc-900 border border-red-500 text-zinc-100 px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0_4px_20px_rgba(239,68,68,0.4)]">
+        <i class="fa-solid fa-fire text-red-500 animate-pulse"></i>
+        <span id="toast-msg" class="text-xs font-semibold tracking-wide uppercase">Prompt Loaded!</span>
+    </div>
+
+    <!-- FIREBASE AND CORE APP MODULE JS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration Setup (RULE 1, 2, 3)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-metal-forge-app';
+        let db = null;
+        let auth = null;
+        let currentUserId = null;
+        let isCloudActive = false;
+
+        // Fallback simple memory array if Firebase config is missing/mocked
+        let localMemoryHistory = [];
+
+        // Global properties used throughout scope
+        window.currentStyle = "";
+        window.currentTheme = "";
+        window.currentTitle = "";
+        window.currentBand = "";
+        window.currentLyrics = "";
+        window.currentCoverArt = "";
+        window.currentSpokenText = "";
+        window.currentSpokenDialog = "";
+        
+        window.audioBlob = null;
+        window.audioUrl = null;
+        window.audioObj = null;
+        window.audioCtx = null;
+        window.audioSource = null;
+        window.analyser = null;
+        window.visualizerAnimFrame = null;
+
+        // Custom preset helpers
+        window.setStylePreset = function(val) {
+            const input = document.getElementById('style-input');
+            input.value = val;
+            updateCharacterCounter(val);
+            showToast("Style Preset Active!");
+        };
+
+        window.setThemePreset = function(val) {
+            const input = document.getElementById('theme-input');
+            const currentVal = input.value.trim();
+            if (currentVal) {
+                // Determine punctuation buffer to append naturally
+                const delimiter = currentVal.endsWith(',') ? ' ' : ', ';
+                input.value = currentVal + delimiter + val;
+            } else {
+                input.value = val;
+            }
+            showToast("Theme Preset Appended!");
+        };
+
+        // Custom Toast system
+        window.showToast = function(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = message;
+            
+            toast.classList.remove('translate-y-10', 'opacity-0', 'scale-95');
+            toast.classList.add('translate-y-0', 'opacity-100', 'scale-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
+                toast.classList.add('translate-y-10', 'opacity-0', 'scale-95');
+            }, 3000);
+        };
+
+        // FEATURE 1: Interactive Parameter Chips logic
+        window.toggleMatrixChip = function(btn, phrase) {
+            const styleInput = document.getElementById('style-input');
+            let currentText = styleInput.value.trim();
+            const phraseLower = phrase.toLowerCase();
+            
+            // Highlight button toggler state
+            if (btn.classList.contains('bg-red-600/30')) {
+                // Removing parameter
+                btn.classList.remove('bg-red-600/30', 'text-red-400', 'border-red-500/50');
+                btn.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
+                
+                // Regex parsing to remove comma cleanly
+                const pattern = new RegExp(`(^|,\\s*)${phraseLower}(,\\s*|$)`, 'i');
+                currentText = currentText.replace(pattern, '$2').trim();
+                if (currentText.startsWith(',')) currentText = currentText.substring(1).trim();
+                if (currentText.endsWith(',')) currentText = currentText.slice(0, -1).trim();
+            } else {
+                // Adding parameter
+                btn.classList.add('bg-red-600/30', 'text-red-400', 'border-red-500/50');
+                btn.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
+                
+                if (currentText) {
+                    currentText += `, ${phraseLower}`;
+                } else {
+                    currentText = phraseLower;
+                }
+            }
+            
+            styleInput.value = currentText;
+            updateCharacterCounter(currentText);
+        };
+
+        // Style Modifiers Accordion toggle
+        window.toggleAccordion = function(panelId) {
+            const panel = document.getElementById(panelId);
+            const icon = document.getElementById(panelId + '-icon');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                panel.classList.add('hidden');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        };
+
+        // FEATURE 2: 200-Character Count warning calculations
+        window.updateCharacterCounter = function(text) {
+            const length = text.length;
+            const counterLabel = document.getElementById('style-character-counter');
+            const gauge = document.getElementById('character-gauge');
+            const warningAlert = document.getElementById('character-warning');
+            
+            counterLabel.innerText = `${length}/200`;
+            
+            // Set gauge percentages bounded at max 100%
+            const pct = Math.min(100, (length / 200) * 100);
+            gauge.style.width = `${pct}%`;
+            
+            // Adjust gauge & panel coloring states dynamically
+            if (length > 200) {
+                // Flash Red Alert state
+                gauge.className = "h-full bg-red-600 transition-all duration-300 shadow-[0_0_12px_rgba(239,68,68,0.8)] animate-pulse";
+                counterLabel.className = "text-xs font-mono text-red-500 font-bold";
+                warningAlert.classList.remove('hidden');
+            } else if (length >= 120) {
+                // Orange warning state
+                gauge.className = "h-full bg-yellow-500 transition-all duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]";
+                counterLabel.className = "text-xs font-mono text-yellow-500";
+                warningAlert.classList.add('hidden');
+            } else {
+                // Normal green state
+                gauge.className = "h-full bg-green-500 transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.5)]";
+                counterLabel.className = "text-xs font-mono text-zinc-500";
+                warningAlert.classList.add('hidden');
+            }
+        };
+
+        // FEATURE 3: Animated Tactile Copy-To-Clipboard button
+        window.copyToClipboard = function(elementId, btn) {
+            const el = document.getElementById(elementId);
+            const textToCopy = el.innerText || el.textContent;
+            
+            // Fallback selection range coping method (iFrame compliant)
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                document.execCommand('copy');
+                
+                // Satisfying physical button transitions
+                const oldHTML = btn.innerHTML;
+                btn.classList.add('bg-green-600/30', 'text-green-400', 'border-green-500/50', 'scale-105', 'shadow-[0_0_10px_rgba(34,197,94,0.4)]');
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+                
+                showToast("Copied safely to clipboard!");
+                
+                setTimeout(() => {
+                    btn.classList.remove('bg-green-600/30', 'text-green-400', 'border-green-500/50', 'scale-105', 'shadow-[0_0_10px_rgba(34,197,94,0.4)]');
+                    btn.innerHTML = oldHTML;
+                }, 1500);
+            } catch (err) {
+                showToast("Manual selection copy requested.");
+            }
+            selection.removeAllRanges();
+        };
+
+        // --- CLOUD STORAGE SETUP & AUTH RULES (RULES 1, 2, 3) ---
+        async function initializeVault() {
+            try {
+                if (typeof __firebase_config === 'undefined') {
+                    activateLocalMemoryMode("No configuration detected");
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Priority Custom Auth Token fallback (RULE 3)
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        isCloudActive = true;
+                        document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-cloud text-green-500 mr-1 animate-pulse"></i> IRON VAULT CONNECTED';
+                        startRealtimeHistoryListener();
+                    } else {
+                        activateLocalMemoryMode("Anonymous transition failure");
+                    }
+                });
+
+            } catch (err) {
+                console.warn("Vault storage offline. Transitioning to safe in-memory archives.", err);
+                activateLocalMemoryMode(err.message);
+            }
+        }
+
+        function activateLocalMemoryMode(reason) {
+            isCloudActive = false;
+            document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-cloud-slash text-zinc-500 mr-1"></i> Local Storage Mode';
+            document.getElementById('history-loading').classList.add('hidden');
+            renderHistoryUI(localMemoryHistory);
+        }
+
+        // FEATURE 4: Safe real-time data sync with memory query fallback (RULE 1 & 2)
+        function startRealtimeHistoryListener() {
+            if (!isCloudActive || !currentUserId) return;
+            
+            // Private Path Rule: /artifacts/{appId}/users/{userId}/history (RULE 1)
+            const historyCol = collection(db, 'artifacts', appId, 'users', currentUserId, 'history');
+            
+            // RULE 2: Avoiding order limits. Fetching simply and sorting local memory arrays
+            onSnapshot(historyCol, (snapshot) => {
+                const cloudItems = [];
+                snapshot.forEach(doc => {
+                    cloudItems.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Memory array sorting cleanly
+                cloudItems.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                document.getElementById('history-loading').classList.add('hidden');
+                renderHistoryUI(cloudItems);
+            }, (error) => {
+                console.error("Vault session error:", error);
+                activateLocalMemoryMode("Snapshot disconnected");
+            });
+        }
+
+        window.archiveTrack = async function(trackData) {
+            if (!isCloudActive || !currentUserId) {
+                // Memory fallback matching instructions
+                localMemoryHistory = localMemoryHistory.filter(item => item.title !== trackData.title);
+                localMemoryHistory.unshift({
+                    id: 'local-' + Date.now(),
+                    timestamp: Date.now(),
+                    ...trackData
+                });
+                renderHistoryUI(localMemoryHistory);
+                return;
+            }
+
+            try {
+                const historyCol = collection(db, 'artifacts', appId, 'users', currentUserId, 'history');
+                await addDoc(historyCol, {
+                    ...trackData,
+                    timestamp: Date.now()
+                });
+                showToast("Track written to Forge Vault!");
+            } catch (err) {
+                console.error("Failed writing track to vault history:", err);
+            }
+        };
+
+        window.deleteFromVault = async function(docId, event) {
+            if (event) event.stopPropagation(); // Stop parent load card click
+            
+            if (String(docId).startsWith('local-')) {
+                localMemoryHistory = localMemoryHistory.filter(item => item.id !== docId);
+                renderHistoryUI(localMemoryHistory);
+                showToast("Track deleted from single session memory.");
+                return;
+            }
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'history', docId);
+                await deleteDoc(docRef);
+                showToast("Track deleted from Forge Vault!");
+            } catch (err) {
+                console.error("Could not remove vault doc:", err);
+            }
+        };
+
+        // Render Session History GUI
+        function renderHistoryUI(historyArray) {
+            const grid = document.getElementById('history-grid');
+            const emptyState = document.getElementById('history-empty');
+            
+            if (!historyArray || historyArray.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = "";
+
+            historyArray.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800/80 hover:border-red-500/50 p-4 rounded-xl flex items-center gap-4 transition duration-300 cursor-pointer relative group";
+                card.onclick = () => window.loadTrackFromArchive(item);
+
+                // Quick visual subgenre tag calculation
+                const shortStyles = item.styleTags ? item.styleTags.substring(0, 45) + '...' : 'Unknown';
+
+                card.innerHTML = `
+                    <div class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+                        ${item.coverArt ? `<img src="${item.coverArt}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-guitar text-zinc-600 text-lg"></i>`}
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <h4 class="font-metal font-bold text-xs text-yellow-500 truncate mb-0.5">${item.title || 'Untitled Track'}</h4>
+                        <p class="text-[10px] text-zinc-400 truncate font-mono">${shortStyles}</p>
+                        <p class="text-[9px] text-zinc-600 font-mono mt-0.5">${new Date(item.timestamp).toLocaleDateString()}</p>
+                    </div>
+                    <button onclick="window.deleteFromVault('${item.id}', event)" class="p-2 text-zinc-600 hover:text-red-500 transition rounded-lg hover:bg-zinc-900 absolute top-2 right-2 opacity-0 group-hover:opacity-100 duration-200" title="Delete Archive">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // LOAD ARCHIVED TRACK BACK TO CANVAS WORKSPACE
+        window.loadTrackFromArchive = function(item) {
+            // Restore active state configs
+            window.currentTitle = item.title;
+            window.currentBand = item.bandName || "";
+            window.currentStyle = item.styleTags;
+            window.currentTheme = item.themeRequested;
+            window.currentLyrics = item.lyrics;
+            window.currentSpokenText = item.spokenIntroText;
+            window.currentSpokenDialog = item.spokenIntroDialog;
+            window.currentCoverArt = item.coverArt;
+
+            // Load UI fields
+            document.getElementById('title-input').value = item.title || "";
+            document.getElementById('band-input').value = item.bandName || "";
+            document.getElementById('style-input').value = item.styleTags || "";
+            document.getElementById('theme-input').value = item.themeRequested || "";
+            updateCharacterCounter(item.styleTags || "");
+
+            // Results UI injection
+            document.getElementById('intro-board').classList.add('hidden');
+            document.getElementById('track-results').classList.remove('hidden');
+
+            document.getElementById('output-title').innerText = item.title;
+            document.getElementById('output-style').innerText = item.styleTags;
+            document.getElementById('output-lyrics').innerText = item.lyrics;
+
+            // Re-render narrator dialogue structures
+            const quoteContainer = document.getElementById('tts-quote-container');
+            if (item.spokenIntroDialog) {
+                quoteContainer.innerHTML = '';
+                const lines = item.spokenIntroDialog.split('\n');
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        const parts = line.split(':');
+                        const speaker = parts[0]?.trim();
+                        const text = parts.slice(1).join(':')?.trim();
+                        
+                        const p = document.createElement('p');
+                        p.className = 'text-[11px] leading-relaxed mb-1';
+                        if (speaker === "Overlord") {
+                            p.innerHTML = `<span class="text-red-500 font-bold uppercase tracking-wider">Overlord:</span> <span class="text-zinc-300 italic">"${text}"</span>`;
+                        } else if (speaker === "Seer") {
+                            p.innerHTML = `<span class="text-yellow-500 font-bold uppercase tracking-wider">Seer:</span> <span class="text-zinc-300 italic">"${text}"</span>`;
+                        } else {
+                            p.innerHTML = `<span class="text-zinc-400 italic">"${line}"</span>`;
+                        }
+                        quoteContainer.appendChild(p);
+                    }
+                });
+            } else {
+                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${item.spokenIntroText}"</p>`;
+            }
+
+            // Un-hide cover art elements
+            const coverEl = document.getElementById('cover-art');
+            const loaderEl = document.getElementById('cover-loader');
+            const fallbackEl = document.getElementById('cover-fallback');
+            if (item.coverArt) {
+                coverEl.src = item.coverArt;
+                coverEl.classList.remove('hidden');
+                loaderEl.classList.add('hidden');
+                fallbackEl.classList.add('hidden');
+                document.getElementById('download-cover-btn').href = item.coverArt;
+            } else {
+                coverEl.classList.add('hidden');
+                loaderEl.classList.add('hidden');
+                fallbackEl.classList.remove('hidden');
+            }
+
+            // Prep speech play triggers
+            generateNarratorTTS(item.spokenIntroText, item.spokenIntroDialog);
+            showToast(`Loaded Specs for: ${item.title}`);
+        };
+
+        // --- EXPORTED FORGING ACTIONS ---
+        window.forgeMetal = async function() {
+            const styleInput = document.getElementById('style-input').value.trim();
+            const themeInput = document.getElementById('theme-input').value.trim();
+            const titleInput = document.getElementById('title-input').value.trim();
+            const bandInput = document.getElementById('band-input').value.trim();
+            const vocalSelect = document.getElementById('vocal-config').value;
+            const structureSelect = document.getElementById('structure-config').value;
+
+            document.getElementById('intro-board').classList.add('hidden');
+            document.getElementById('track-results').classList.add('hidden');
+            document.getElementById('forge-loader').classList.remove('hidden');
+
+            const style = styleInput || "Classic Heavy Metal & Thrash Metal Influence";
+            const theme = themeInput || "Epic battle of warriors, lightning and fire";
+            const title = titleInput || "A randomized dark metal title";
+            const band = bandInput || "";
+
+            window.currentBand = band;
+
+            try {
+                const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
+While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested (from brutal death metal to synthwave, rock, dark ambient, jazz fusion, and beyond).
+Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
+
+Adapt your style tags, lyrics structure, and vocabulary to the chosen genre. For example, if synthwave is requested, generate retro-futuristic synthwave-style lyrics and appropriate style tags; if rock is requested, use rock structures.
+If a non-metal style is requested, adapt the lyrics, style tags, and spoken intro dialogue to reflect that style elegantly instead of forcing heavy metal characteristics (unless blended).
+
+Respond strictly in raw JSON matching this schema:
+{
+  "title": "Generated Song Title",
+  "styleTags": "optimized, comma, separated, tags, under, 200, chars",
+  "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n...",
+  "spokenIntroText": "A grand cinematic prologue statement matching the style.",
+  "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!"
+}`;
+
+                const userPrompt = `Generate a music track blueprint package based on:
+Style/Genre/Bands: ${style}
+Theme/Lyrics: ${theme}
+Song Title requested: ${titleInput || "Random Metal Title"}`;
+
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                    },
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!jsonText) throw new Error("No payload returned from generation.");
+
+                const songData = JSON.parse(jsonText);
+
+                // Populate specs globally
+                window.currentTitle = songData.title;
+                window.currentStyle = songData.styleTags;
+                window.currentTheme = theme;
+                window.currentLyrics = songData.lyrics;
+                window.currentSpokenText = songData.spokenIntroText;
+                window.currentSpokenDialog = songData.spokenIntroDialog;
+
+                // Adjust Style Box count displays
+                const styleLength = songData.styleTags.length;
+                document.getElementById('style-count').innerText = `${styleLength} / 200 chars`;
+                if (styleLength > 200) {
+                    document.getElementById('style-count').classList.add('text-red-500');
+                } else {
+                    document.getElementById('style-count').classList.remove('text-red-500');
+                }
+
+                document.getElementById('output-title').innerText = songData.title;
+                document.getElementById('output-style').innerText = songData.styleTags;
+                document.getElementById('output-lyrics').innerText = songData.lyrics;
+
+                // Format quote dialogue lines in HTML view
+                const quoteContainer = document.getElementById('tts-quote-container');
+                if (songData.spokenIntroDialog) {
+                    quoteContainer.innerHTML = '';
+                    const lines = songData.spokenIntroDialog.split('\n');
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const parts = line.split(':');
+                            const speaker = parts[0]?.trim();
+                            const text = parts.slice(1).join(':')?.trim();
+                            
+                            const p = document.createElement('p');
+                            p.className = 'text-[11px] leading-relaxed mb-1';
+                            if (speaker === "Overlord") {
+                                p.innerHTML = `<span class="text-red-500 font-bold uppercase tracking-wider">Overlord:</span> <span class="text-zinc-300 italic">"${text}"</span>`;
+                            } else if (speaker === "Seer") {
+                                p.innerHTML = `<span class="text-yellow-500 font-bold uppercase tracking-wider">Seer:</span> <span class="text-zinc-300 italic">"${text}"</span>`;
+                            } else {
+                                p.innerHTML = `<span class="text-zinc-400 italic">"${line}"</span>`;
+                            }
+                            quoteContainer.appendChild(p);
+                        }
+                    });
+                } else {
+                    quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${songData.spokenIntroText}"</p>`;
+                }
+
+                document.getElementById('forge-loader').classList.add('hidden');
+                document.getElementById('track-results').classList.remove('hidden');
+
+                // Trigger Sub-generations
+                generateAlbumCover(songData.title, songData.styleTags, theme, band);
+                generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
+
+            } catch (error) {
+                console.error("Error forging metal track package:", error);
+                showToast("Forge failure! The forge ran out of steam. Try again.");
+                document.getElementById('forge-loader').classList.add('hidden');
+                document.getElementById('intro-board').classList.remove('hidden');
+            }
+        };
+
+        // Album Cover Art Generation
+        async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
+            const coverEl = document.getElementById('cover-art');
+            const loaderEl = document.getElementById('cover-loader');
+            const fallbackEl = document.getElementById('cover-fallback');
+
+            coverEl.classList.add('hidden');
+            loaderEl.classList.remove('hidden');
+            fallbackEl.classList.add('hidden');
+
+            try {
+                let brandingClause = "";
+                if (bandName) {
+                    brandingClause = ` Featuring the band name "${bandName}" in high-quality typography logo branding at the top of the album cover artwork.`;
+                }
+                const prompt = `A highly detailed, cinematic, high-contrast professional album cover illustration. Centered motif based on: ${songTheme}. The visual aesthetic must perfectly match a blend of the song style/genres: ${songStyle}. Maintain a rich, dramatic, premium look with deep, dark, or style-appropriate vivid hues, and avoid generic clip art. No text labels outside of dramatic typography branding. ${brandingClause} Title implied text: '${songTitle}'.`;
+                
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+
+                const payload = {
+                    instances: { prompt: prompt },
+                    parameters: { sampleCount: 1 }
+                };
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const base64Data = result.predictions?.[0]?.bytesBase64Encoded;
+
+                if (base64Data) {
+                    const imgUrl = `data:image/png;base64,${base64Data}`;
+                    window.currentCoverArt = imgUrl;
+                    coverEl.src = imgUrl;
+                    coverEl.classList.remove('hidden');
+                    loaderEl.classList.add('hidden');
+
+                    document.getElementById('download-cover-btn').href = imgUrl;
+                    document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.png`;
+
+                    // Write successfully generated specs to Archive
+                    window.archiveTrack({
+                        title: window.currentTitle,
+                        bandName: window.currentBand,
+                        styleTags: window.currentStyle,
+                        themeRequested: window.currentTheme,
+                        lyrics: window.currentLyrics,
+                        spokenIntroText: window.currentSpokenText,
+                        spokenIntroDialog: window.currentSpokenDialog,
+                        coverArt: window.currentCoverArt
+                    });
+                } else {
+                    throw new Error("No cover art bytes found.");
+                }
+
+            } catch (err) {
+                console.error("Error generating Cover Art:", err);
+                loaderEl.classList.add('hidden');
+                fallbackEl.classList.remove('hidden');
+            }
+        }
+
+        window.regenerateCoverArt = function() {
+            if (!window.currentTitle) {
+                showToast("Forge a track first before regenerating art!");
+                return;
+            }
+            generateAlbumCover(window.currentTitle, window.currentStyle, window.currentTheme, window.currentBand);
+        };
+
+        // Dual-Speaker Spoken Intro TTS
+        async function generateNarratorTTS(spokenIntroText, spokenIntroDialog = "") {
+            const playBtn = document.getElementById('tts-play-btn');
+            const ttsLoader = document.getElementById('tts-loader');
+            
+            playBtn.disabled = true;
+            ttsLoader.classList.remove('hidden');
+            
+            if (window.audioObj) {
+                window.audioObj.pause();
+                window.audioObj = null;
+            }
+            if (window.audioUrl) {
+                URL.revokeObjectURL(window.audioUrl);
+                window.audioUrl = null;
+            }
+
+            try {
+                let payload;
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                if (spokenIntroDialog) {
+                    const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, adapting the dramatic tone and cadence to perfectly match the musical style of ${window.currentStyle}:\n${spokenIntroDialog}`;
+                    payload = {
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                multiSpeakerVoiceConfig: {
+                                    speakerVoiceConfigs: [
+                                        { speaker: "Overlord", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Algenib" } } },
+                                        { speaker: "Seer", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
+                                    ]
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+                } else {
+                    const promptText = `Say in a highly dramatic, cinematic, style-appropriate voice matching the musical theme of "${window.currentStyle}": ${spokenIntroText}`;
+                    payload = {
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: "Algenib" }
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+                }
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    let sampleRate = 24000;
+                    const rateMatch = mimeType.match(/rate=(\d+)/);
+                    if (rateMatch) {
+                        sampleRate = parseInt(rateMatch[1], 10);
+                    }
+
+                    const rawBuffer = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(rawBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+
+                    window.audioUrl = URL.createObjectURL(wavBlob);
+                    window.audioObj = new Audio(window.audioUrl);
+
+                    window.audioObj.onplay = () => {
+                        document.getElementById('tts-play-icon').className = "fa-solid fa-pause text-sm";
+                        startVisualizer();
+                    };
+                    window.audioObj.onended = () => {
+                        document.getElementById('tts-play-icon').className = "fa-solid fa-play ml-0.5 text-sm";
+                        stopVisualizer();
+                    };
+                    window.audioObj.onpause = () => {
+                        document.getElementById('tts-play-icon').className = "fa-solid fa-play ml-0.5 text-sm";
+                        stopVisualizer();
+                    };
+
+                    playBtn.disabled = false;
+                    ttsLoader.classList.add('hidden');
+                    showToast("Intro Dialogue Primed!");
+                } else {
+                    throw new Error("Invalid TTS audio returned.");
+                }
+
+            } catch (err) {
+                console.error("Error preparing TTS Intro:", err);
+                ttsLoader.classList.add('hidden');
+                document.getElementById('tts-quote-container').innerHTML = `<p class="text-red-500 font-bold text-center">Failed to ignite narration ritual.</p>`;
+            }
+        }
+
+        // Multimodal Vision Image Processing
+        let uploadedImageBase64 = null;
+        let uploadedImageMimeType = null;
+
+        window.handleVisionImageUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImageBase64 = e.target.result.split(',')[1];
+                uploadedImageMimeType = file.type;
+                
+                document.getElementById('vision-thumbnail').src = e.target.result;
+                document.getElementById('vision-filename').innerText = file.name;
+                document.getElementById('vision-thumb-container').classList.remove('hidden');
+                document.getElementById('vision-btn').disabled = false;
+                
+                showToast("Visual inspiration loaded!");
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.removeVisionImage = function() {
+            uploadedImageBase64 = null;
+            uploadedImageMimeType = null;
+            document.getElementById('vision-image-input').value = "";
+            document.getElementById('vision-thumb-container').classList.add('hidden');
+            document.getElementById('vision-btn').disabled = true;
+        };
+
+        window.analyzeVisionImage = async function() {
+            if (!uploadedImageBase64) return;
+
+            const visionBtn = document.getElementById('vision-btn');
+            const visionLoader = document.getElementById('vision-loader');
+
+            visionBtn.disabled = true;
+            visionLoader.classList.remove('hidden');
+
+            try {
+                const prompt = `You are an expert visual music analyst. Analyze this visual inspiration and generate:
+1. A highly appropriate song title matching the mood or content.
+2. A list of musical styles or genres matched to this artwork's visual weight (comma-separated, up to 4 styles).
+3. An epic poetic descriptive theme/motif that would inspire the lyrics.
+
+Format your output strictly as a JSON object:
+{
+  "title": "Song Title",
+  "styles": "Doom Metal, Synthwave, Atmospheric Dark Ambient",
+  "theme": "A detailed 1-2 sentence lyrical theme based on the visual vibe"
+}`;
+
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: uploadedImageMimeType,
+                                        data: uploadedImageBase64
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                    }
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!responseText) throw new Error("No payload from Gemini vision.");
+
+                const analysis = JSON.parse(responseText);
+
+                document.getElementById('title-input').value = analysis.title;
+                document.getElementById('style-input').value = analysis.styles;
+                document.getElementById('theme-input').value = analysis.theme;
+                updateCharacterCounter(analysis.styles);
+
+                showToast("Vision analyzed! Inputs populated!");
+            } catch (err) {
+                console.error("Error analyzing image:", err);
+                showToast("Failed to divine the visual energy.");
+            } finally {
+                visionBtn.disabled = false;
+                visionLoader.classList.add('hidden');
+            }
+        };
+
+        // AI Multi-Turn Lyric Refinement
+        window.refineLyrics = async function() {
+            const input = document.getElementById('copilot-input');
+            const instruction = input.value.trim();
+            const currentLyrics = document.getElementById('output-lyrics').innerText;
+
+            if (!instruction) return;
+            if (!currentLyrics || currentLyrics === "Waiting for lyrics to materialize...") {
+                showToast("Forge a track first before refining lyrics!");
+                return;
+            }
+
+            const copilotLoader = document.getElementById('copilot-loader');
+            copilotLoader.classList.remove('hidden');
+
+            try {
+                const systemPrompt = `You are an expert master lyric builder. You will take existing lyrics and refine them based on the user's specific instructions.
+Maintain the exact format tags like [Intro], [Verse], [Chorus], [Guitar Solo/Instrumental Break], [Bridge], [Breakdown/Drop], [Outro]. Make sure the structure details are highly polished.
+Return only the newly edited full song lyrics. Do not add conversational intro/outro text, just the raw lyrics code.`;
+
+                const userPrompt = `Existing Lyrics:\n${currentLyrics}\n\nInstruction: ${instruction}`;
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const newLyrics = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (newLyrics) {
+                    window.currentLyrics = newLyrics.trim();
+                    document.getElementById('output-lyrics').innerText = newLyrics.trim();
+                    input.value = "";
+                    showToast("Lyrics refined successfully!");
+
+                    // If active user is saved, update existing specs document
+                    window.archiveTrack({
+                        title: window.currentTitle,
+                        bandName: window.currentBand,
+                        styleTags: window.currentStyle,
+                        themeRequested: window.currentTheme,
+                        lyrics: window.currentLyrics,
+                        spokenIntroText: window.currentSpokenText,
+                        spokenIntroDialog: window.currentSpokenDialog,
+                        coverArt: window.currentCoverArt
+                    });
+                } else {
+                    throw new Error("Empty response from AI refinement.");
+                }
+
+            } catch (err) {
+                console.error("Error refining lyrics:", err);
+                showToast("Co-pilot ran out of steam!");
+            } finally {
+                copilotLoader.classList.add('hidden');
+            }
+        };
+
+        // --- AUDIO COMPRESSION & UTILITY FUNCTIONS ---
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16.length * 2, true);
+
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        window.toggleTTSAudio = function() {
+            if (!window.audioObj) return;
+
+            if (window.audioObj.paused) {
+                setupAudioContextVisualizer();
+                window.audioObj.play();
+            } else {
+                window.audioObj.pause();
+            }
+        };
+
+        function setupAudioContextVisualizer() {
+            if (window.audioCtx) return;
+
+            try {
+                window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                window.analyser = window.audioCtx.createAnalyser();
+                window.analyser.fftSize = 64;
+
+                window.audioSource = window.audioCtx.createMediaElementSource(window.audioObj);
+                window.audioSource.connect(window.analyser);
+                window.analyser.connect(window.audioCtx.destination);
+            } catch (err) {
+                console.warn("Audio Context setup skipped or unsupported:", err);
+            }
+        }
+
+        function startVisualizer() {
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            
+            if (!canvas || !ctx) return;
+
+            const bufferLength = window.analyser ? window.analyser.frequencyBinCount : 32;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                window.visualizerAnimFrame = requestAnimationFrame(draw);
+
+                if (window.analyser) {
+                    window.analyser.getByteFrequencyData(dataArray);
+                } else {
+                    for(let i=0; i<bufferLength; i++) {
+                        dataArray[i] = Math.floor(Math.random() * 80) + (Math.sin(Date.now() / 100 + i) * 20 + 20);
+                    }
+                }
+
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const barWidth = (canvas.width / bufferLength) * 1.5;
+                let barHeight;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 2.5;
+                    ctx.fillStyle = `rgb(${Math.min(255, barHeight * 3 + 150)}, ${Math.min(255, barHeight * 1.5 + 50)}, 0)`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+                    x += barWidth;
+                }
+            }
+            draw();
+        }
+
+        function stopVisualizer() {
+            if (window.visualizerAnimFrame) {
+                cancelAnimationFrame(window.visualizerAnimFrame);
+            }
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            if (ctx && canvas) {
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    if (response.status === 429 && retries > 0) {
+                        await new Promise(res => setTimeout(res, delay));
+                        return fetchWithRetry(url, options, retries - 1, delay * 2);
+                    }
+                    throw new Error(`HTTP Error Status: ${response.status}`);
+                }
+                return response;
+            } catch (err) {
+                if (retries > 0) {
+                    await new Promise(res => setTimeout(res, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                }
+                throw err;
+            }
+        }
+
+        // --- AMBIENT CANVASES ---
+        const sparksCanvas = document.getElementById('sparks-canvas');
+        const sCtx = sparksCanvas.getContext('2d');
+        let sparks = [];
+
+        function resizeSparksCanvas() {
+            sparksCanvas.width = window.innerWidth;
+            sparksCanvas.height = window.innerHeight;
+        }
+
+        class Spark {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * sparksCanvas.width;
+                this.y = sparksCanvas.height + Math.random() * 100;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedY = -(Math.random() * 2 + 0.5);
+                this.speedX = (Math.random() - 0.5) * 1;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.color = Math.random() > 0.4 ? '#f59e0b' : '#ef4444';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.opacity -= 0.002;
+                if (this.opacity <= 0 || this.x < 0 || this.x > sparksCanvas.width || this.y < 0) {
+                    this.reset();
+                }
+            }
+            draw() {
+                sCtx.save();
+                sCtx.globalAlpha = this.opacity;
+                sCtx.fillStyle = this.color;
+                sCtx.beginPath();
+                sCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                sCtx.fill();
+                sCtx.restore();
+            }
+        }
+
+        function initSparks() {
+            resizeSparksCanvas();
+            window.addEventListener('resize', resizeSparksCanvas);
+            
+            const sparkCount = window.innerWidth < 768 ? 35 : 80;
+            for(let i = 0; i < sparkCount; i++) {
+                sparks.push(new Spark());
+            }
+
+            function animate() {
+                sCtx.clearRect(0, 0, sparksCanvas.width, sparksCanvas.height);
+                sparks.forEach(spark => {
+                    spark.update();
+                    spark.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Vault Loading Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initSparks();
+            initializeVault();
+        });
+
+    </script>
+</body>
+</html>
