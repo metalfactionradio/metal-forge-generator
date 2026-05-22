@@ -1,8 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
-
-// Initialize the SDK. It naturally grabs the GEMINI_API_KEY from Vercel's environment variables.
-const ai = new GoogleGenAI();
-
 export default async function handler(req, res) {
   // Only allow secure POST traffic
   if (req.method !== 'POST') {
@@ -11,19 +6,29 @@ export default async function handler(req, res) {
 
   try {
     const { prompt } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!prompt) {
       return res.status(400).json({ error: 'A prompt blueprint is required' });
     }
 
-    // Call Gemini 2.5 Flash securely in the cloud
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
+    // Direct, standard browser-native cloud call to the Gemini 2.5 Flash API
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const googleResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
     });
 
-    // Send the generated heavy music asset back to the user's browser
-    return res.status(200).json({ text: response.text });
+    const data = await googleResponse.json();
+    
+    // Safely extract the generated heavy metal lyrics/prompt asset
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "The Forge returned an empty response.";
+
+    return res.status(200).json({ text: generatedText });
 
   } catch (error) {
     console.error("Iron Vault Gatekeeper Error:", error);
