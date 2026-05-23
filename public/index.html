@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metal Forge AI - Multi-Genre Suno Prompt Builder</title>
+    <title>Metal Forge – Multi-Genre Suno Prompt Builder</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & Cinzel Decorative -->
@@ -24,6 +24,7 @@
                             900: '#09090b',
                             800: '#18181b',
                             700: '#27272a',
+                            accent: 'var(--forge-accent, #ef4444)',
                             gold: '#f59e0b',
                             fire: '#ef4444',
                         }
@@ -41,13 +42,13 @@
             background: #09090b;
         }
         ::-webkit-scrollbar-thumb {
-            background: #ef4444;
+            background: var(--forge-accent, #ef4444);
             border-radius: 3px;
         }
         /* Heavy Metal glow animations */
         @keyframes fire-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 10px rgba(245, 158, 11, 0.5); }
+            0%, 100% { box-shadow: 0 0 15px rgba(var(--forge-accent-rgb, 239, 68, 68), 0.4); }
+            50% { box-shadow: 0 0 30px rgba(var(--forge-accent-rgb, 239, 68, 68), 0.8), 0 0 10px rgba(245, 158, 11, 0.5); }
         }
         .glow-fire {
             animation: fire-glow 4s infinite alternate;
@@ -61,7 +62,7 @@
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans selection:bg-red-600 selection:text-white relative overflow-x-hidden">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans selection:bg-metal-accent/30 selection:text-white relative overflow-x-hidden">
 
     <!-- Background Sparks Canvas -->
     <canvas id="sparks-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
@@ -72,8 +73,8 @@
         <!-- HEADER section -->
         <header class="text-center mb-8 relative flex flex-col items-center">
             <div class="inline-block relative">
-                <div class="absolute -inset-1 bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-                <h1 class="font-metal text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 tracking-wider font-extrabold uppercase py-2">
+                <div class="absolute -inset-1 bg-gradient-to-r from-metal-accent via-yellow-500 to-metal-accent rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <h1 class="font-metal text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-metal-accent via-orange-500 to-yellow-500 tracking-wider font-extrabold uppercase py-2">
                     Metal Forge AI
                 </h1>
             </div>
@@ -81,7 +82,7 @@
                 Suno AI heavy metal &amp; multi-genre prompting suite
             </p>
             <div class="flex flex-wrap justify-center gap-4 mt-3 text-xs text-zinc-500 uppercase tracking-wider">
-                <span><i class="fa-solid fa-guitar text-red-500 mr-1"></i> Multi-Genre Alchemy</span>
+                <span><i class="fa-solid fa-guitar text-metal-accent mr-1"></i> Multi-Genre Alchemy</span>
                 <span>•</span>
                 <span><i class="fa-solid fa-fire text-orange-500 mr-1"></i> Fire artwork</span>
                 <span>•</span>
@@ -94,15 +95,20 @@
             
             <!-- LEFT COLUMN: INPUT FORGE (5 Cols) -->
             <section class="lg:col-span-5 bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative glow-fire">
-                <div class="absolute top-0 right-0 bg-red-600/10 border-l border-b border-red-500/20 px-3 py-1 rounded-bl-xl text-[10px] font-bold text-red-400 uppercase tracking-widest">
-                    The Crucible
-                </div>
-                
-                <h2 class="text-lg font-bold text-zinc-200 mb-6 flex items-center uppercase tracking-wider">
-                    <span class="p-2 bg-red-600/20 text-red-500 rounded-lg mr-3">
-                        <i class="fa-solid fa-skull-crossbones"></i>
+                              
+                <h2 class="text-lg font-bold text-zinc-200 mb-6 flex items-center justify-between uppercase tracking-wider">
+                    <span class="flex items-center">
+                        <span class="p-2 bg-metal-accent/20 text-metal-accent rounded-lg mr-3 transition-colors duration-300">
+                            <i class="fa-solid fa-skull-crossbones"></i>
+                        </span>
+                        Forge Your Sound
                     </span>
-                    Forge Your Sound
+                    <!-- Atmosphere Theme Selector Buttons -->
+                    <div class="flex items-center gap-1.5 ml-2 bg-zinc-950/60 p-1.5 rounded-full border border-zinc-800/80">
+                        <button onclick="changeForgeAtmosphere('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#ef4444]" title="Hellfire Red" id="btn-theme-red"></button>
+                        <button onclick="changeForgeAtmosphere('#22c55e')" class="w-4 h-4 rounded-full bg-[#22c55e] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#22c55e]" title="Toxic Sludge Green" id="btn-theme-green"></button>
+                        <button onclick="changeForgeAtmosphere('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#3b82f6]" title="Frozen Fjord Blue" id="btn-theme-blue"></button>
+                    </div>
                 </h2>
 
                 <div class="space-y-6">
@@ -124,7 +130,7 @@
                             type="text" 
                             id="style-input" 
                             placeholder="e.g., Heavy Metal, or Retro Synthwave with dark basslines"
-                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
                             oninput="updateCharacterCounter(this.value)"
                         >
 
@@ -136,16 +142,16 @@
                         <!-- STYLE MODIFIERS ACCORDION (GENRE EXPANSION) -->
                         <div class="mt-4 bg-zinc-950/40 border border-zinc-800/60 p-3 rounded-xl space-y-2">
                             <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
-                                <span><i class="fa-solid fa-square-plus text-red-500 mr-1.5"></i> Style Modifiers Matrix</span>
+                                <span><i class="fa-solid fa-square-plus text-metal-accent mr-1.5"></i> Style Modifiers Matrix</span>
                                 <span class="text-[9px] text-zinc-500">Tap to toggle style chips</span>
                             </div>
 
                             <div class="space-y-2">
                                 <!-- Category 1: Core Metal Modifiers -->
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
-                                    <button type="button" onclick="toggleAccordion('metal-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
+                                    <button type="button" onclick="toggleAccordion('metal-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition bg-zinc-950/20">
                                         <span class="flex items-center gap-2">
-                                            <i class="fa-solid fa-skull text-red-500 text-[10px]"></i> Core Metal Modifiers
+                                            <i class="fa-solid fa-skull text-metal-accent text-[10px]"></i> Core Metal Modifiers
                                         </span>
                                         <i id="metal-panel-icon" class="fa-solid fa-chevron-up text-[10px] text-zinc-500 transition"></i>
                                     </button>
@@ -154,9 +160,9 @@
                                             <button onclick="toggleMatrixChip(this, 'Blast Beats')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Blast Beats</button>
                                             <button onclick="toggleMatrixChip(this, 'HM-2 Distortion')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">HM-2 Distortion</button>
                                             <button onclick="toggleMatrixChip(this, 'Ripping Solos')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Ripping Solos</button>
-                                            <button onclick="toggleMatrixChip(this, 'double-bass drums')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Double Bass</button>
-                                            <button onclick="toggleMatrixChip(this, 'demonic growls')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Growls</button>
-                                            <button onclick="toggleMatrixChip(this, 'breakneck thrash')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Thrash Tempo (180bpm)</button>
+                                            <button onclick="toggleMatrixChip(this, 'Double Bass')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Double Bass</button>
+                                            <button onclick="toggleMatrixChip(this, 'Growls')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Growls</button>
+                                            <button onclick="toggleMatrixChip(this, 'Thrash Tempo')" class="text-[10px] bg-zinc-900 hover:bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800/60 transition">Thrash Tempo</button>
                                         </div>
                                     </div>
                                 </div>
@@ -165,7 +171,7 @@
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
                                     <button type="button" onclick="toggleAccordion('rock-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
                                         <span class="flex items-center gap-2">
-                                            <i class="fa-solid fa-guitar text-orange-500 text-[10px]"></i> Rock & Alternative
+                                            <i class="fa-solid fa-guitar text-orange-500 text-[10px]"></i> Rock &amp; Alternative
                                         </span>
                                         <i id="rock-panel-icon" class="fa-solid fa-chevron-down text-[10px] text-zinc-500 transition"></i>
                                     </button>
@@ -185,7 +191,7 @@
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
                                     <button type="button" onclick="toggleAccordion('atmospheric-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
                                         <span class="flex items-center gap-2">
-                                            <i class="fa-solid fa-cloud-moon text-yellow-500 text-[10px]"></i> Atmospheric & Other Genres
+                                            <i class="fa-solid fa-cloud-moon text-yellow-500 text-[10px]"></i> Atmospheric &amp; Other Genres
                                         </span>
                                         <i id="atmospheric-panel-icon" class="fa-solid fa-chevron-down text-[10px] text-zinc-500 transition"></i>
                                     </button>
@@ -202,7 +208,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Theme/Lyrics Input -->
@@ -217,13 +222,13 @@
                             id="theme-input" 
                             rows="3"
                             placeholder="e.g., Ragnarok battle, cosmic void horror, a soul betrayed fighting inner demons"
-                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner resize-none"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner resize-none"
                         ></textarea>
                         
                         <!-- Expanded Collapsible Theme Presets -->
                         <div class="mt-3 space-y-2 bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/60">
                             <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
-                                <span><i class="fa-solid fa-wand-magic-sparkles text-red-500 mr-1.5"></i> Theme Alchemy Presets</span>
+                                <span><i class="fa-solid fa-wand-magic-sparkles text-metal-accent mr-1.5"></i> Theme Alchemy Presets</span>
                                 <span class="text-[9px] text-zinc-500">Tap to append themes</span>
                             </div>
 
@@ -232,15 +237,15 @@
                                 <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
                                     <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
                                         <span class="flex items-center gap-1.5">
-                                            <i class="fa-solid fa-film text-red-500 text-[9px]"></i> Visual &amp; Cinematic
+                                            <i class="fa-solid fa-film text-metal-accent text-[9px]"></i> Visual &amp; Cinematic
                                         </span>
                                         <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
                                     </summary>
                                     <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
-                                        <button type="button" onclick="setThemePreset('Viking mythology, sailing into battle, storms of lightning, roaring high seas')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Viking Ragnarok</button>
-                                        <button type="button" onclick="setThemePreset('Sci-Fi cyberpunk rebellion, AI cyberlords, neon fire, glitching holograms')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cyberpunk Neon</button>
-                                        <button type="button" onclick="setThemePreset('Cosmic void horror, cold black infinity, black hole swallowing stars')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cosmic Void</button>
-                                        <button type="button" onclick="setThemePreset('Ruined obsidian castles, forgotten ancient curses, blood-red moons')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Grim Dark Fantasy</button>
+                                        <button type="button" onclick="setThemePreset('Viking mythology, sailing into battle, storms of lightning, roaring high seas')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Viking Ragnarok</button>
+                                        <button type="button" onclick="setThemePreset('Sci-Fi cyberpunk rebellion, AI cyberlords, neon fire, glitching holograms')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cyberpunk Neon</button>
+                                        <button type="button" onclick="setThemePreset('Cosmic void horror, cold black infinity, black hole swallowing stars')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Cosmic Void</button>
+                                        <button type="button" onclick="setThemePreset('Ruined obsidian castles, forgotten ancient curses, blood-red moons')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Grim Dark Fantasy</button>
                                     </div>
                                 </details>
 
@@ -253,10 +258,10 @@
                                         <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
                                     </summary>
                                     <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
-                                        <button type="button" onclick="setThemePreset('Inner demons, mental entrapment, breaking free from chains of despair')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Inner Demons</button>
-                                        <button type="button" onclick="setThemePreset('Smashing the system, rising from ashes, defiant fists raised in fury')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Rebellion &amp; Rage</button>
-                                        <button type="button" onclick="setThemePreset('Shattered trust, cold calculated revenge, reclaiming lost power')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Betrayal &amp; Vengeance</button>
-                                        <button type="button" onclick="setThemePreset('The slow march of time, decaying empires, facing the ultimate truth of mortality')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Existential Dread</button>
+                                        <button type="button" onclick="setThemePreset('Inner demons, mental entrapment, breaking free from chains of despair')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Inner Demons</button>
+                                        <button type="button" onclick="setThemePreset('Smashing the system, rising from ashes, defiant fists raised in fury')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Rebellion &amp; Rage</button>
+                                        <button type="button" onclick="setThemePreset('Shattered trust, cold calculated revenge, reclaiming lost power')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Betrayal &amp; Vengeance</button>
+                                        <button type="button" onclick="setThemePreset('The slow march of time, decaying empires, facing the ultimate truth of mortality')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Existential Dread</button>
                                     </div>
                                 </details>
 
@@ -269,10 +274,10 @@
                                         <i class="fa-solid fa-chevron-down text-[9px] text-zinc-500 group-open:rotate-180 transition-transform"></i>
                                     </summary>
                                     <div class="p-2 border-t border-zinc-800/50 bg-zinc-950/50 flex flex-wrap gap-1">
-                                        <button type="button" onclick="setThemePreset('Mechanized heartbeats, rust and steam, cold factory halls, concrete dystopia')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Industrial Decay</button>
-                                        <button type="button" onclick="setThemePreset('Jazz noir streets, flickering neon signs, rain-soaked pavement, trenchcoat shadows')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Noir Rain Mood</button>
-                                        <button type="button" onclick="setThemePreset('Drifting through clouds, fading memories, surreal misty woods, ghostly voices')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Ethereal Dreamscape</button>
-                                        <button type="button" onclick="setThemePreset('Rain hitting windowpanes, low embers of fire, quiet solitude, bittersweet departure')" class="text-[9px] bg-zinc-900 hover:bg-red-600/20 hover:text-red-400 text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Melancholic Acoustic</button>
+                                        <button type="button" onclick="setThemePreset('Mechanized heartbeats, rust and steam, cold factory halls, concrete dystopia')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Industrial Decay</button>
+                                        <button type="button" onclick="setThemePreset('Jazz noir streets, flickering neon signs, rain-soaked pavement, trenchcoat shadows')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Noir Rain Mood</button>
+                                        <button type="button" onclick="setThemePreset('Drifting through clouds, fading memories, surreal misty woods, ghostly voices')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Ethereal Dreamscape</button>
+                                        <button type="button" onclick="setThemePreset('Rain hitting windowpanes, low embers of fire, quiet solitude, bittersweet departure')" class="text-[9px] bg-zinc-900 hover:bg-metal-accent/20 hover:text-metal-accent text-zinc-400 border border-zinc-800 rounded px-2 py-0.5 transition">Melancholic Acoustic</button>
                                     </div>
                                 </details>
                             </div>
@@ -282,8 +287,8 @@
                     <!-- VISCERAL VISION IMAGE-TO-METAL PROMPT -->
                     <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
                         <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between">
-                            <span><i class="fa-solid fa-eye text-red-500 mr-2"></i> Visceral Vision (Image-to-Metal)</span>
-                            <span class="text-[9px] bg-red-600/20 text-red-400 px-1.5 py-0.5 rounded">Multimodal</span>
+                            <span><i class="fa-solid fa-eye text-metal-accent mr-2"></i> Visceral Vision (Image-to-Metal)</span>
+                            <span class="text-[9px] bg-metal-accent/20 text-metal-accent px-1.5 py-0.5 rounded">Multimodal</span>
                         </div>
                         <p class="text-[10px] text-zinc-500 leading-normal">
                             Upload visual inspiration to extract style modifiers, matching titles, and dramatic themes automatically.
@@ -294,7 +299,7 @@
                                 <i class="fa-solid fa-upload"></i> Upload Image
                                 <input type="file" id="vision-image-input" accept="image/*" class="hidden" onchange="handleVisionImageUpload(event)">
                             </label>
-                            <button id="vision-btn" disabled onclick="analyzeVisionImage()" class="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 hover:text-white text-xs font-bold rounded-lg transition">
+                            <button id="vision-btn" disabled onclick="analyzeVisionImage()" class="px-4 py-2 bg-metal-accent hover:bg-metal-accent/80 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 hover:text-white text-xs font-bold rounded-lg transition">
                                 <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Analyze
                             </button>
                         </div>
@@ -303,9 +308,9 @@
                         <div id="vision-thumb-container" class="hidden flex items-center gap-3 p-2 bg-zinc-950/80 border border-zinc-800/60 rounded-lg">
                             <img id="vision-thumbnail" src="" class="w-10 h-10 object-cover rounded border border-zinc-700">
                             <span class="text-[10px] text-zinc-400 truncate flex-grow" id="vision-filename">Inspiration loaded</span>
-                            <button onclick="removeVisionImage()" class="text-zinc-500 hover:text-red-500 transition px-1"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="removeVisionImage()" class="text-zinc-500 hover:text-metal-accent transition px-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
-                        <div id="vision-loader" class="hidden text-center text-[10px] text-red-400 animate-pulse font-mono">
+                        <div id="vision-loader" class="hidden text-center text-[10px] text-metal-accent animate-pulse font-mono">
                             <i class="fa-solid fa-yin-yang animate-spin mr-1"></i> Extracting visceral energy...
                         </div>
                     </div>
@@ -322,7 +327,7 @@
                             type="text" 
                             id="title-input" 
                             placeholder="e.g., Reign of Obsidian Flame"
-                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
                         >
                     </div>
 
@@ -338,14 +343,14 @@
                             type="text" 
                             id="band-input" 
                             placeholder="e.g., Obsidian Overlord"
-                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
                         >
                     </div>
 
                     <!-- Suno Prompt Optimization Settings -->
                     <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
                         <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center">
-                            <i class="fa-solid fa-sliders text-red-500 mr-2"></i> Prompt Blueprint Config
+                            <i class="fa-solid fa-sliders text-metal-accent mr-2"></i> Prompt Blueprint Config
                         </div>
                         
                         <!-- Toggle for Vocal Style inside tag structure -->
@@ -373,13 +378,22 @@
                     </div>
 
                     <!-- ACTION BUTTONS -->
-                    <button 
-                        id="generate-btn"
-                        onclick="forgeMetal()" 
-                        class="w-full py-4 bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 hover:from-red-500 hover:to-orange-500 text-zinc-950 hover:text-white font-metal font-black text-lg rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(239,68,68,0.3)] border border-yellow-500/20 cursor-pointer select-none"
-                    >
-                        <i class="fa-solid fa-guitar animate-bounce"></i> FORGE THE TRACK
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button 
+                            id="generate-btn"
+                            onclick="forgeMetal()" 
+                            class="flex-grow py-4 bg-gradient-to-r from-metal-accent via-orange-600 to-yellow-600 hover:from-metal-accent/80 hover:to-orange-500 text-zinc-950 hover:text-white font-metal font-black text-lg rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(var(--forge-accent-rgb),0.3)] border border-yellow-500/20 cursor-pointer select-none"
+                        >
+                            <i class="fa-solid fa-guitar animate-bounce"></i> FORGE THE TRACK
+                        </button>
+                        <button 
+                            id="reset-btn"
+                            onclick="resetForge()" 
+                            class="sm:w-1/3 py-4 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-metal-accent hover:text-metal-accent text-zinc-400 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer select-none"
+                        >
+                            <i class="fa-solid fa-arrows-rotate"></i> RESET FORGE
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -389,7 +403,7 @@
                 <!-- Loading State placeholder -->
                 <div id="forge-loader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-6 animate-pulse">
                     <div class="relative flex items-center justify-center">
-                        <div class="w-16 h-16 border-4 border-red-600 border-t-yellow-500 rounded-full animate-spin"></div>
+                        <div class="w-16 h-16 border-4 border-metal-accent border-t-yellow-500 rounded-full animate-spin"></div>
                         <i class="fa-solid fa-fire text-orange-500 absolute text-xl"></i>
                     </div>
                     <div class="space-y-2">
@@ -403,23 +417,42 @@
                     
                     <!-- EXPLANATORY / INTRO BOARD -->
                     <div id="intro-board" class="bg-zinc-900/40 border border-zinc-800/40 rounded-2xl p-8 text-center space-y-4">
-                        <div class="w-16 h-16 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto text-red-500 text-2xl">
-                            <i class="fa-solid fa-anvil"></i>
-                        </div>
-                        <div class="max-w-md mx-auto">
-                            <h3 class="font-bold text-zinc-200 uppercase tracking-wide">Enter the Forge</h3>
-                            <p class="text-sm text-zinc-400 mt-2">
-                                Provide styling, themes, or custom titles. Choose from metal core, indie rock, or electronic atmospheric categories. The Forge will output absolute gold for Suno/Udio!
-                            </p>
-                        </div>
-                    </div>
+  <div class="w-16 h-16 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto text-metal-accent text-2xl">
+    <i class="fa-solid fa-anvil"></i>
+  </div>
+  <div class="max-w-md mx-auto">
+    <h3 class="font-bold text-zinc-200 uppercase tracking-wide">Enter the Forge</h3>
+    <p class="text-sm text-zinc-400 mt-2">
+      Provide styling, themes, or custom titles. Choose from metal core, indie rock, or electronic atmospheric categories. The Forge will output absolute gold for Suno/Udio!
+    </p>
+
+    <div class="text-left border-t border-zinc-800/60 pt-4 mt-4 space-y-3">
+      <div class="flex items-start gap-2.5">
+        <div class="text-metal-accent mt-0.5 text-xs"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <p class="text-[11px] text-zinc-400 leading-normal"><strong class="text-zinc-300">Select Modifiers:</strong> Use the Style Matrix and collapsible Theme Alchemy presets to stack sonic blueprints quickly.</p>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <div class="text-metal-accent mt-0.5 text-xs"><i class="fa-solid fa-palette"></i></div>
+        <p class="text-[11px] text-zinc-400 leading-normal"><strong class="text-zinc-300">Shift Atmosphere:</strong> Tap the colored glowing matrix nodes at the top left to instantly transition between Hellfire, Toxic Sludge, or Frozen Fjord layouts.</p>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <div class="text-metal-accent mt-0.5 text-xs"><i class="fa-solid fa-lock"></i></div>
+        <p class="text-[11px] text-zinc-400 leading-normal"><strong class="text-zinc-300">Targeted Forging:</strong> Lock individual output panels to freeze your favorite lyrics or art concepts while re-rolling other parameters dynamically.</p>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <div class="text-metal-accent mt-0.5 text-xs"><i class="fa-solid fa-trash-can"></i></div>
+        <p class="text-[11px] text-zinc-400 leading-normal"><strong class="text-zinc-300">Purge Workspace:</strong> Slam the Reset Forge command button at the bottom to instantly sweep the entire canvas clean and build a fresh track project.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
                     <!-- TRACK INFO & PROMPT BOXES -->
                     <div id="track-results" class="hidden space-y-6">
                         
                         <!-- TITLE & STYLE CARD -->
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
-                            <div class="absolute -top-3 left-6 px-3 py-1 bg-red-600/90 text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
                                 Track Specs
                             </div>
 
@@ -453,7 +486,7 @@
 
                         <!-- LYRIC WORKBENCH -->
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
-                            <div class="absolute -top-3 left-6 px-3 py-1 bg-orange-600/90 text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
                                 Lyric Blueprint
                             </div>
 
@@ -465,7 +498,7 @@
                             </div>
 
                             <div class="bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-5 max-h-[350px] overflow-y-auto font-mono text-sm leading-relaxed text-zinc-300 relative">
-                                <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-red-600/30 font-mono text-xs md:text-sm"></pre>
+                                <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-metal-accent/30 font-mono text-xs md:text-sm"></pre>
                             </div>
 
                             <!-- AI LYRIC CO-PILOT CHAT -->
@@ -501,7 +534,7 @@
                             <!-- ALBUM COVER ART GENERATOR -->
                             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col">
                                 <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                                    <span><i class="fa-solid fa-compact-disc text-red-500 mr-1.5"></i> Custom Cover Art</span>
+                                    <span><i class="fa-solid fa-compact-disc text-metal-accent mr-1.5"></i> Custom Cover Art</span>
                                     <button onclick="regenerateCoverArt()" class="text-[10px] text-orange-500 hover:text-orange-400 uppercase flex items-center gap-1">
                                         <i class="fa-solid fa-arrows-rotate"></i> Re-Roll Art
                                     </button>
@@ -512,7 +545,7 @@
                                     
                                     <!-- Cover loader placeholder -->
                                     <div id="cover-loader" class="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-zinc-950">
-                                        <div class="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                                        <div class="w-8 h-8 border-2 border-metal-accent border-t-transparent rounded-full animate-spin"></div>
                                         <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Pouring molten artwork...</p>
                                     </div>
 
@@ -520,12 +553,12 @@
                                     <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
                                         <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
                                         <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
-                                        <button onclick="regenerateCoverArt()" class="mt-2 text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-3 py-1 rounded-md transition">Try Again</button>
+                                        <button onclick="regenerateCoverArt()" class="mt-2 text-xs bg-metal-accent/20 hover:bg-metal-accent/40 text-metal-accent px-3 py-1 rounded-md transition">Try Again</button>
                                     </div>
                                     
                                     <!-- Hover actions -->
                                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                                        <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-red-600 text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
+                                        <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-metal-accent text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
                                             <i class="fa-solid fa-download text-lg"></i>
                                         </a>
                                     </div>
@@ -537,10 +570,10 @@
                                 <div>
                                     <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
                                         <span><i class="fa-solid fa-volume-high text-yellow-500 mr-1.5"></i> Spoken Dialogue Preview</span>
-                                        <span class="text-[9px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">Dual-Speaker</span>
+                                        <span class="text-[9px] bg-metal-accent/20 text-metal-accent border border-metal-accent/30 px-1.5 py-0.5 rounded transition-colors duration-300">Dual-Speaker</span>
                                     </div>
                                     <p class="text-[11px] text-zinc-500 leading-normal mb-4">
-                                        Listen to a theatrical dual-speaker dialogue prologue generated via Gemini Multi-Speaker TTS (The Overlord vs. The Seer!).
+                                        Listen to a theatrical dual-speaker dialogue prologue generated via Gemini Multi-Speaker TTS <span id="dynamic-speakers" class="text-metal-accent font-semibold"></span>
                                     </p>
                                 </div>
 
@@ -562,7 +595,7 @@
                                             id="tts-play-btn" 
                                             onclick="toggleTTSAudio()"
                                             disabled
-                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 hover:bg-yellow-400 text-zinc-950 hover:scale-105 transition duration-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-metal-accent hover:opacity-90 text-zinc-950 hover:scale-105 transition duration-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             <i id="tts-play-icon" class="fa-solid fa-play ml-0.5 text-sm"></i>
                                         </button>
@@ -615,7 +648,7 @@
             </div>
 
             <!-- Horizontal Scrollable History Grid -->
-            <div id="history-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1">
+            <div id="history-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1 animate-fadeIn">
                 <!-- Dynamically populated card structure -->
             </div>
         </section>
@@ -628,8 +661,8 @@
     </div>
 
     <!-- UI NOTIFICATION / TOAST BOX -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 scale-95 transition-all duration-300 pointer-events-none bg-zinc-900 border border-red-500 text-zinc-100 px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0_4px_20px_rgba(239,68,68,0.4)]">
-        <i class="fa-solid fa-fire text-red-500 animate-pulse"></i>
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 scale-95 transition-all duration-300 pointer-events-none bg-zinc-900 border border-metal-accent text-zinc-100 px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0_4px_20px_rgba(var(--forge-accent-rgb),0.4)]">
+        <i class="fa-solid fa-fire text-metal-accent animate-pulse"></i>
         <span id="toast-msg" class="text-xs font-semibold tracking-wide uppercase">Prompt Loaded!</span>
     </div>
 
@@ -639,7 +672,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration Setup (RULE 1, 2, 3)
+        // Firebase Configuration Setup
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-metal-forge-app';
         let db = null;
         let auth = null;
@@ -666,6 +699,36 @@
         window.audioSource = null;
         window.analyser = null;
         window.visualizerAnimFrame = null;
+
+        function updateDynamicSpeakers(dialogText) {
+            const spanEl = document.getElementById('dynamic-speakers');
+            if (!spanEl) return;
+            
+            if (!dialogText) {
+                spanEl.textContent = '';
+                return;
+            }
+            
+            const lines = dialogText.split('\n');
+            const speakers = [];
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed && trimmed.includes(':')) {
+                    const speaker = trimmed.split(':')[0].replace(/["']/g, '').trim();
+                    if (speaker && !speakers.includes(speaker)) {
+                        speakers.push(speaker);
+                    }
+                }
+            });
+            
+            if (speakers.length >= 2) {
+                spanEl.textContent = `(${speakers[0]} vs. ${speakers[1]}!)`;
+            } else if (speakers.length === 1) {
+                spanEl.textContent = `(${speakers[0]}!)`;
+            } else {
+                spanEl.textContent = '';
+            }
+        }
 
         // Custom preset helpers
         window.setStylePreset = function(val) {
@@ -710,9 +773,9 @@
             const phraseLower = phrase.toLowerCase();
             
             // Highlight button toggler state
-            if (btn.classList.contains('bg-red-600/30')) {
+            if (btn.classList.contains('bg-metal-accent/30')) {
                 // Removing parameter
-                btn.classList.remove('bg-red-600/30', 'text-red-400', 'border-red-500/50');
+                btn.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
                 btn.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
                 
                 // Regex parsing to remove comma cleanly
@@ -722,7 +785,7 @@
                 if (currentText.endsWith(',')) currentText = currentText.slice(0, -1).trim();
             } else {
                 // Adding parameter
-                btn.classList.add('bg-red-600/30', 'text-red-400', 'border-red-500/50');
+                btn.classList.add('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
                 btn.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
                 
                 if (currentText) {
@@ -815,7 +878,7 @@
             selection.removeAllRanges();
         };
 
-        // --- CLOUD STORAGE SETUP & AUTH RULES (RULES 1, 2, 3) ---
+        // --- CLOUD STORAGE SETUP & AUTH RULES ---
         async function initializeVault() {
             try {
                 if (typeof __firebase_config === 'undefined') {
@@ -827,7 +890,7 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                // Priority Custom Auth Token fallback (RULE 3)
+                // Priority Custom Auth Token fallback
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
                     await signInWithCustomToken(auth, token);
@@ -855,18 +918,17 @@
         function activateLocalMemoryMode(reason) {
             isCloudActive = false;
             document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-cloud-slash text-zinc-500 mr-1"></i> Local Storage Mode';
-            document.getElementById('history-loading').classList.add('hidden');
+            const loadingEl = document.getElementById('history-loading');
+            if (loadingEl) loadingEl.classList.add('hidden');
             renderHistoryUI(localMemoryHistory);
         }
 
-        // FEATURE 4: Safe real-time data sync with memory query fallback (RULE 1 & 2)
+        // FEATURE 4: Safe real-time data sync with memory query fallback
         function startRealtimeHistoryListener() {
             if (!isCloudActive || !currentUserId) return;
             
-            // Private Path Rule: /artifacts/{appId}/users/{userId}/history (RULE 1)
             const historyCol = collection(db, 'artifacts', appId, 'users', currentUserId, 'history');
             
-            // RULE 2: Avoiding order limits. Fetching simply and sorting local memory arrays
             onSnapshot(historyCol, (snapshot) => {
                 const cloudItems = [];
                 snapshot.forEach(doc => {
@@ -876,7 +938,8 @@
                 // Memory array sorting cleanly
                 cloudItems.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 
-                document.getElementById('history-loading').classList.add('hidden');
+                const loadingEl = document.getElementById('history-loading');
+                if (loadingEl) loadingEl.classList.add('hidden');
                 renderHistoryUI(cloudItems);
             }, (error) => {
                 console.error("Vault session error:", error);
@@ -884,7 +947,55 @@
             });
         }
 
+        // Helper to shrink base64 images to prevent Firestore document size ceiling violations
+        function shrinkImageBase64(base64Str, maxDim = 256, quality = 0.7) {
+            return new Promise((resolve) => {
+                if (!base64Str || !base64Str.startsWith('data:image')) {
+                    resolve(base64Str);
+                    return;
+                }
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = function() {
+                    resolve(base64Str); // Fallback to raw string if processing breaks
+                };
+                img.src = base64Str;
+            });
+        }
+
         window.archiveTrack = async function(trackData) {
+            // Compress original artwork to a lightweight preview thumbnail size to fit within Firestore quotas
+            if (trackData.coverArt) {
+                try {
+                    trackData.coverArt = await shrinkImageBase64(trackData.coverArt);
+                } catch (err) {
+                    console.warn("Image compression pipeline skipped:", err);
+                }
+            }
+
             if (!isCloudActive || !currentUserId) {
                 // Memory fallback matching instructions
                 localMemoryHistory = localMemoryHistory.filter(item => item.title !== trackData.title);
@@ -945,7 +1056,7 @@
 
             historyArray.forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800/80 hover:border-red-500/50 p-4 rounded-xl flex items-center gap-4 transition duration-300 cursor-pointer relative group";
+                card.className = "bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800/80 hover:border-metal-accent/50 p-4 rounded-xl flex items-center gap-4 transition duration-300 cursor-pointer relative group";
                 card.onclick = () => window.loadTrackFromArchive(item);
 
                 // Quick visual subgenre tag calculation
@@ -994,6 +1105,8 @@
             document.getElementById('output-title').innerText = item.title;
             document.getElementById('output-style').innerText = item.styleTags;
             document.getElementById('output-lyrics').innerText = item.lyrics;
+
+            updateDynamicSpeakers(item.spokenIntroDialog);
 
             // Re-render narrator dialogue structures
             const quoteContainer = document.getElementById('tts-quote-container');
@@ -1044,6 +1157,87 @@
         };
 
         // --- EXPORTED FORGING ACTIONS ---
+        window.resetForge = function() {
+            // Clear inputs
+            document.getElementById('style-input').value = "";
+            document.getElementById('theme-input').value = "";
+            document.getElementById('title-input').value = "";
+            document.getElementById('band-input').value = "";
+            
+            // Reset character counters and gauges
+            updateCharacterCounter("");
+            
+            // Remove uploaded vision image if any
+            if (typeof window.removeVisionImage === 'function') {
+                window.removeVisionImage();
+            }
+            
+            // Stop active spoken dialog prologue playback
+            if (window.audioObj) {
+                window.audioObj.pause();
+                window.audioObj = null;
+            }
+            if (window.audioUrl) {
+                URL.revokeObjectURL(window.audioUrl);
+                window.audioUrl = null;
+            }
+            stopVisualizer();
+            
+            // Reset speaker spans & preview elements
+            const playBtn = document.getElementById('tts-play-btn');
+            if (playBtn) playBtn.disabled = true;
+            
+            const playIcon = document.getElementById('tts-play-icon');
+            if (playIcon) playIcon.className = "fa-solid fa-play ml-0.5 text-sm";
+            
+            const speakerSpan = document.getElementById('dynamic-speakers');
+            if (speakerSpan) speakerSpan.textContent = '';
+            
+            const quoteContainer = document.getElementById('tts-quote-container');
+            if (quoteContainer) {
+                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"Waiting for lyrics to materialize..."</p>`;
+            }
+            
+            // Clear generated outputs
+            const lyricsPre = document.getElementById('output-lyrics');
+            if (lyricsPre) lyricsPre.innerText = "";
+            
+            const coverEl = document.getElementById('cover-art');
+            if (coverEl) {
+                coverEl.src = "";
+                coverEl.classList.add('hidden');
+            }
+            const coverLoader = document.getElementById('cover-loader');
+            if (coverLoader) coverLoader.classList.add('hidden');
+            
+            const coverFallback = document.getElementById('cover-fallback');
+            if (coverFallback) coverFallback.classList.add('hidden');
+            
+            // Clear global spec values
+            window.currentTitle = "";
+            window.currentBand = "";
+            window.currentStyle = "";
+            window.currentTheme = "";
+            window.currentLyrics = "";
+            window.currentSpokenText = "";
+            window.currentSpokenDialog = "";
+            window.currentCoverArt = "";
+            
+            // Return layout view panels to instructions intro
+            document.getElementById('intro-board').classList.remove('hidden');
+            document.getElementById('track-results').classList.add('hidden');
+            document.getElementById('forge-loader').classList.add('hidden');
+            
+            // Reset style modifier matrix buttons that are currently toggled
+            const activeChips = document.querySelectorAll('.bg-metal-accent\\/30');
+            activeChips.forEach(chip => {
+                chip.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
+                chip.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
+            });
+            
+            showToast("Crucible cleared! Forge has been reset.");
+        };
+
         window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
@@ -1130,6 +1324,8 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('output-title').innerText = songData.title;
                 document.getElementById('output-style').innerText = songData.styleTags;
                 document.getElementById('output-lyrics').innerText = songData.lyrics;
+
+                updateDynamicSpeakers(songData.spokenIntroDialog);
 
                 // Format quote dialogue lines in HTML view
                 const quoteContainer = document.getElementById('tts-quote-container');
@@ -1690,7 +1886,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                 this.speedY = -(Math.random() * 2 + 0.5);
                 this.speedX = (Math.random() - 0.5) * 1;
                 this.opacity = Math.random() * 0.7 + 0.3;
-                this.color = Math.random() > 0.4 ? '#f59e0b' : '#ef4444';
+                this.color = Math.random() > 0.4 ? '#f59e0b' : (window.currentAccentHex || '#ef4444');
             }
             update() {
                 this.y += this.speedY;
@@ -1735,7 +1931,62 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
         window.addEventListener('DOMContentLoaded', () => {
             initSparks();
             initializeVault();
+
+            // Apply saved forge theme or default Hellfire Red
+            const savedTheme = localStorage.getItem('forge-theme') || '#ef4444';
+            window.changeForgeAtmosphere(savedTheme);
         });
+
+        // Theme / Atmosphere Switcher Mapping
+        const themeRgbMap = {
+            '#ef4444': '239, 68, 68',  // Hellfire Red
+            '#22c55e': '34, 197, 94',   // Toxic Sludge Green
+            '#3b82f6': '59, 130, 246'  // Frozen Fjord Blue
+        };
+
+        window.changeForgeAtmosphere = function(colorHex) {
+            const rgb = themeRgbMap[colorHex] || '239, 68, 68';
+            document.documentElement.style.setProperty('--forge-accent', colorHex);
+            document.documentElement.style.setProperty('--forge-accent-rgb', rgb);
+            window.currentAccentHex = colorHex;
+            localStorage.setItem('forge-theme', colorHex);
+
+            // Toggle indicators on buttons
+            const colors = ['#ef4444', '#22c55e', '#3b82f6'];
+            const buttonIds = ['btn-theme-red', 'btn-theme-green', 'btn-theme-blue'];
+            colors.forEach((c, idx) => {
+                const btn = document.getElementById(buttonIds[idx]);
+                if (btn) {
+                    if (c === colorHex) {
+                        btn.classList.add('ring-2', 'ring-white', 'scale-110');
+                        btn.classList.remove('scale-100');
+                    } else {
+                        btn.classList.remove('ring-2', 'ring-white', 'scale-110');
+                        btn.classList.add('scale-100');
+                    }
+                }
+            });
+        };
+
+// Clean slate reset function
+window.resetForge = function() {
+  // Clear core inputs safely by checking if they exist first
+  ['style-input', 'theme-input', 'title-input', 'band-input'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  // Clear output containers safely
+  ['output-style', 'output-lyrics', 'tts-quote-container'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = "";
+  });
+
+  const coverImg = document.getElementById('custom-cover-art');
+  if (coverImg) coverImg.src = ""; 
+
+  console.log("Forge purged cleanly.");
+};
 
     </script>
 </body>
