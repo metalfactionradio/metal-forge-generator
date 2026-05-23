@@ -1299,8 +1299,7 @@ Style/Genre/Bands: ${style}
 Theme/Lyrics: ${theme}
 Song Title requested: ${titleInput || "Random Metal Title"}`;
 
-                const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8"; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const apiUrl = '/api/forge';
 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
@@ -1414,8 +1413,7 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 }
                 const prompt = `A highly detailed, cinematic, high-contrast professional album cover illustration. Centered motif based on: ${songTheme}. The visual aesthetic must perfectly match a blend of the song style/genres: ${songStyle}. Maintain a rich, dramatic, premium look with deep, dark, or style-appropriate vivid hues, and avoid generic clip art. No text labels outside of dramatic typography branding. ${brandingClause} Title implied text: '${songTitle}'.`;
                 
-                const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                const apiUrl = '/api/forge';
 
                 const payload = {
                     instances: [
@@ -1504,8 +1502,7 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
 
             try {
                 let payload;
-                const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                const apiUrl = '/api/forge';
 
                 if (spokenIntroDialog) {
                     const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, adapting the dramatic tone and cadence to perfectly match the musical style of ${window.currentStyle}:\n${spokenIntroDialog}`;
@@ -1669,8 +1666,7 @@ Format your output strictly as a JSON object:
                     }
                 };
 
-                const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const apiUrl = '/api/forge';
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
@@ -1721,8 +1717,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
 
                 const userPrompt = `Existing Lyrics:\n${currentLyrics}\n\nInstruction: ${instruction}`;
 
-                const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const apiUrl = '/api/forge';
 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
