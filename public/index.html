@@ -476,9 +476,15 @@
                                     </div>
                                     <div class="flex items-center justify-between bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-3">
                                         <span id="output-style" class="text-sm text-zinc-200 leading-relaxed font-mono">-</span>
-                                        <button onclick="copyToClipboard('output-style', this)" class="p-2 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-lg transition duration-200 flex items-center justify-center border border-transparent" title="Copy Style Tags">
-                                            <i class="fa-regular fa-copy"></i>
-                                        </button>
+                                       <div class="flex items-center gap-1">
+            <button onclick="toggleForgeLock('style')" id="lock-btn-style" class="p-2 text-zinc-500 hover:text-metal-accent transition-colors duration-200" title="Lock Component">
+                <i class="fa-solid fa-lock-open" id="lock-icon-style"></i>
+            </button>
+
+            <button onclick="copyToClipboard('output-style', this)" class="p-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 rounded-lg transition-colors duration-200">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+        </div>
                                     </div>
                                 </div>
                             </div>
@@ -498,8 +504,19 @@
                             </div>
 
                             <div class="bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-5 max-h-[350px] overflow-y-auto font-mono text-sm leading-relaxed text-zinc-300 relative">
-                                <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-metal-accent/30 font-mono text-xs md:text-sm"></pre>
-                            </div>
+    
+    <div class="absolute top-3 right-3 flex items-center gap-1 z-10 bg-zinc-950/90 p-1 rounded-lg border border-zinc-800/40 shadow-md">
+        <button onclick="toggleForgeLock('lyrics')" id="lock-btn-lyrics" class="p-1.5 text-zinc-500 hover:text-metal-accent transition-colors duration-200" title="Lock Component">
+            <i class="fa-solid fa-lock-open" id="lock-icon-lyrics"></i>
+        </button>
+
+        <button onclick="copyToClipboard('output-lyrics', this)" class="p-1.5 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 rounded-md transition-colors duration-200" title="Copy Lyrics">
+            <i class="fa-regular fa-copy"></i>
+        </button>
+    </div>
+
+    <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-metal-accent/30 font-mono text-xs md:text-sm"></pre>
+</div>
 
                             <!-- AI LYRIC CO-PILOT CHAT -->
                             <div class="mt-4 pt-4 border-t border-zinc-800/80 space-y-3">
@@ -1199,8 +1216,11 @@
             }
             
             // Clear generated outputs
-            const lyricsPre = document.getElementById('output-lyrics');
-            if (lyricsPre) lyricsPre.innerText = "";
+const lyricsPre = document.getElementById('output-lyrics');
+if (lyricsPre && !activeForgeLocks.lyrics) {
+    lyricsPre.innerText = "";
+    window.currentLyrics = ""; 
+}
             
             const coverEl = document.getElementById('cover-art');
             if (coverEl) {
@@ -1235,7 +1255,7 @@
                 chip.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
             });
             
-            showToast("Crucible cleared! Forge has been reset.");
+            showToast("Workspace cleared! Forge has been reset.");
         };
 
         window.forgeMetal = async function() {
@@ -1293,39 +1313,47 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 };
 
                 const response = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+});
 
-                const result = await response.json();
-                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!jsonText) throw new Error("No payload returned from generation.");
+const result = await response.json();
+const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+if (!jsonText) throw new Error("No payload returned from generation.");
 
-                const songData = JSON.parse(jsonText);
+const songData = JSON.parse(jsonText);
 
-                // Populate specs globally
-                window.currentTitle = songData.title;
-                window.currentStyle = songData.styleTags;
-                window.currentTheme = theme;
-                window.currentLyrics = songData.lyrics;
-                window.currentSpokenText = songData.spokenIntroText;
-                window.currentSpokenDialog = songData.spokenIntroDialog;
+// Populate specs globally & UI elements (With Lockdown Safety Checks)
+window.currentTitle = songData.title;
+window.currentTheme = theme;
+window.currentSpokenText = songData.spokenIntroText;
+window.currentSpokenDialog = songData.spokenIntroDialog;
 
-                // Adjust Style Box count displays
-                const styleLength = songData.styleTags.length;
-                document.getElementById('style-count').innerText = `${styleLength} / 200 chars`;
-                if (styleLength > 200) {
-                    document.getElementById('style-count').classList.add('text-red-500');
-                } else {
-                    document.getElementById('style-count').classList.remove('text-red-500');
-                }
+document.getElementById('output-title').innerText = songData.title;
 
-                document.getElementById('output-title').innerText = songData.title;
-                document.getElementById('output-style').innerText = songData.styleTags;
-                document.getElementById('output-lyrics').innerText = songData.lyrics;
+// --- STYLE LOCK GATE ---
+if (!activeForgeLocks.style) {
+    window.currentStyle = songData.styleTags;
+    document.getElementById('output-style').innerText = songData.styleTags;
 
-                updateDynamicSpeakers(songData.spokenIntroDialog);
+    // Adjust Style Box count displays (Only updates if style is unlocked!)
+    const styleLength = songData.styleTags.length;
+    document.getElementById('style-count').innerText = `${styleLength} / 200 chars`;
+    if (styleLength > 200) {
+        document.getElementById('style-count').classList.add('text-red-500');
+    } else {
+        document.getElementById('style-count').classList.remove('text-red-500');
+    }
+}
+
+// --- LYRICS LOCK GATE ---
+if (!activeForgeLocks.lyrics) {
+    window.currentLyrics = songData.lyrics;
+    document.getElementById('output-lyrics').innerText = songData.lyrics;
+}
+
+updateDynamicSpeakers(songData.spokenIntroDialog);
 
                 // Format quote dialogue lines in HTML view
                 const quoteContainer = document.getElementById('tts-quote-container');
@@ -1845,6 +1873,26 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             }
         }
 
+// Master tracker for element locks
+const activeForgeLocks = {
+    style: false,
+    lyrics: false
+};
+
+function toggleForgeLock(field) {
+    activeForgeLocks[field] = !activeForgeLocks[field];
+    
+    const icon = document.getElementById(`lock-icon-${field}`);
+    const btn = document.getElementById(`lock-btn-${field}`);
+    
+    if (activeForgeLocks[field]) {
+        icon.className = "fa-solid fa-lock text-metal-accent";
+        btn.title = "Component Locked";
+    } else {
+        icon.className = "fa-solid fa-lock-open text-zinc-500";
+        btn.title = "Lock Component";
+    }
+}
         async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
             try {
                 const response = await fetch(url, options);
@@ -1976,11 +2024,18 @@ window.resetForge = function() {
     if (el) el.value = "";
   });
 
-  // Clear output containers safely
-  ['output-style', 'output-lyrics', 'tts-quote-container'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = "";
-  });
+  // Clear output containers safely if they aren't locked down
+    ['output-style', 'output-lyrics', 'tts-quote-container'].forEach(id => {
+        if (id === 'output-style' && activeForgeLocks.style) return;
+        if (id === 'output-lyrics' && activeForgeLocks.lyrics) return;
+
+        const el = document.getElementById(id);
+        if (el) el.innerText = "";
+
+        // Clear out the global memory trackers alongside the UI text
+        if (id === 'output-style') window.currentStyle = "";
+        if (id === 'output-lyrics') window.currentLyrics = "";
+    });
 
   const coverImg = document.getElementById('custom-cover-art');
   if (coverImg) coverImg.src = ""; 
