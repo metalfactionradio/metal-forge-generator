@@ -1,3 +1,5 @@
+// EXPLICITLY EXTEND TIMEOUT CAPACITY FOR AUDIO STREAM PROCESSING
+export const maxDuration = 60;
 export default async function handler(req, res) {
     // Block anything that isn't a secure POST request
     if (req.method !== 'POST') {
