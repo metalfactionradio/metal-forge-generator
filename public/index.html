@@ -407,7 +407,7 @@
                         <i class="fa-solid fa-fire text-orange-500 absolute text-xl"></i>
                     </div>
                     <div class="space-y-2">
-                        <p class="font-metal text-xl text-orange-500 uppercase tracking-widest">Crucible at Maximum Temp</p>
+                        <p class="font-metal text-xl text-orange-500 uppercase tracking-widest">Forge at Maximum Temp</p>
                         <p class="text-xs text-zinc-500">Formulating custom audio prompts, generating lyrics, painting cover art, and priming the TTS intro...</p>
                     </div>
                 </div>
@@ -917,7 +917,7 @@
 
         function activateLocalMemoryMode(reason) {
             isCloudActive = false;
-            document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-zinc-500 mr-1"></i> SONIC BLUEPRINTS';
+            document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-metal-accent mr-1"></i> SONIC BLUEPRINTS';
             const loadingEl = document.getElementById('history-loading');
             if (loadingEl) loadingEl.classList.add('hidden');
             renderHistoryUI(localMemoryHistory);
