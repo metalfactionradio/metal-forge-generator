@@ -1278,12 +1278,14 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
             window.currentBand = band;
 
             try {
-                const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
+const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
 While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested (from brutal death metal to synthwave, rock, dark ambient, jazz fusion, and beyond).
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
 Adapt your style tags, lyrics structure, and vocabulary to the chosen genre. For example, if synthwave is requested, generate retro-futuristic synthwave-style lyrics and appropriate style tags; if rock is requested, use rock structures.
 If a non-metal style is requested, adapt the lyrics, style tags, and spoken intro dialogue to reflect that style elegantly instead of forcing heavy metal characteristics (unless blended).
+
+CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined) so the resulting audio file fits safely under serverless payload limits.
 
 Respond strictly in raw JSON matching this schema:
 {
@@ -1505,44 +1507,43 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 const apiUrl = '/api/forge';
 
                 if (spokenIntroDialog) {
-                    // Add the restriction right before the closing backtick:
-const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, adapting the dramatic tone to match the band style. Keep this spoken interaction fast-paced and brief. The total audio generation duration must stay under 30 seconds to prevent buffer overruns.`;
-                    payload = {
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }],
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                multiSpeakerVoiceConfig: {
-                                    speakerVoiceConfigs: [
-                                        { speaker: "Overlord", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Algenib" } } },
-                                        { speaker: "Seer", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
-                                    ]
-                                }
-                            }
-                        },
-                        model: "gemini-2.5-flash-preview-tts"
-                    };
-                } else {
-                    // Do the same exact thing for the fallback prompt:
-const promptText = `Say in a highly dramatic, cinematic, style-appropriate voice matching the musical theme of "${window.currentContext}". Keep this spoken interaction fast-paced and brief. The total audio generation duration must stay under 30 seconds to prevent buffer overruns.`;
-                    payload = {
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }],
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: "Algenib" }
-                                }
-                            }
-                        },
-                        model: "gemini-2.5-flash-preview-tts"
-                    };
+    // Restores the multi-speaker narration target variable template
+    const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, keeping the delivery punchy, fast-paced, and short:\n${spokenIntroDialog}`;
+    payload = {
+        contents: [{
+            parts: [{ text: promptText }]
+        }],
+        generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: {
+                multiSpeakerVoiceConfig: {
+                    speakerVoiceConfigs: [
+                        { speaker: "Overlord", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Algenib" } } },
+                        { speaker: "Seer", voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
+                    ]
                 }
-
+            }
+        },
+        model: "gemini-2.5-flash-preview-tts"
+    };
+} else {
+    // Restores the single-speaker backup text variable template
+    const promptText = `Say the following cinematic intro text in a highly dramatic, style-appropriate voice: "${spokenIntroText}"`;
+    payload = {
+        contents: [{
+            parts: [{ text: promptText }]
+        }],
+        generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: {
+                voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName: "Algenib" }
+                }
+            }
+        },
+        model: "gemini-2.5-flash-preview-tts"
+    };
+}
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
