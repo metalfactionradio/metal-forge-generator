@@ -1397,7 +1397,7 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             }
         };
 
-       // Album Cover Art Generation
+      // Album Cover Art Generation
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
@@ -1417,19 +1417,15 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
 
-                // Explicit, fully-parameterized Imagen 4 REST blueprint
                 const payload = {
                     instances: [
                         { prompt: prompt }
                     ],
                     parameters: {
-                        sampleCount: 1,
-                        aspectRatio: "1:1",
-                        outputMimeType: "image/jpeg"
+                        sampleCount: 1
                     }
                 };
 
-                // Direct fetch to intercept and expose hidden server errors
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1447,34 +1443,41 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
 
                 const base64Data = result.predictions?.[0]?.bytesBase64Encoded;
                 if (base64Data) {
-                    const imgUrl = `data:image/jpeg;base64,${base64Data}`;
+                    const imgUrl = `data:image/png;base64,${base64Data}`;
                     window.currentCoverArt = imgUrl;
                     coverEl.src = imgUrl;
                     coverEl.classList.remove('hidden');
                     loaderEl.classList.add('hidden');
 
                     document.getElementById('download-cover-btn').href = imgUrl;
-                    document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
-
-                    // Write successfully generated specs to Archive
-                    window.archiveTrack({
-                        title: window.currentTitle,
-                        bandName: window.currentBand,
-                        styleTags: window.currentStyle,
-                        themeRequested: window.currentTheme,
-                        lyrics: window.currentLyrics,
-                        spokenIntroText: window.currentSpokenText,
-                        spokenIntroDialog: window.currentSpokenDialog,
-                        coverArt: window.currentCoverArt
-                    });
+                    document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.png`;
                 } else {
-                    throw new Error("No cover art bytes returned in predictions payload.");
+                    throw new Error("No cover art bytes found.");
                 }
 
             } catch (err) {
                 console.error("Error generating Cover Art:", err);
                 loaderEl.classList.add('hidden');
                 fallbackEl.classList.remove('hidden');
+                
+                const fallbackText = fallbackEl.querySelector('p');
+                if (fallbackText) {
+                    fallbackText.innerHTML = `Failed to forge canvas.<br><span class="text-[9px] text-red-400 font-mono tracking-normal normal-case mt-1.5 block max-w-xs mx-auto leading-normal">${err.message}</span>`;
+                }
+            } finally {
+                // This always runs, forcing your session history to save even if the image fails!
+                window.archiveTrack({
+                    title: window.currentTitle,
+                    bandName: window.currentBand,
+                    styleTags: window.currentStyle,
+                    themeRequested: window.currentTheme,
+                    lyrics: window.currentLyrics,
+                    spokenIntroText: window.currentSpokenText,
+                    spokenIntroDialog: window.currentSpokenDialog,
+                    coverArt: window.currentCoverArt || ""
+                });
+            }
+        }
                 
                 // UNMASK THE BUG: Forces the precise backend reason onto the UI card
                 const fallbackText = fallbackEl.querySelector('p');
