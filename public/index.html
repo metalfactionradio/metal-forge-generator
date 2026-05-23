@@ -1887,7 +1887,8 @@ const activeForgeLocks = {
     lyrics: false
 };
 
-function toggleForgeLock(field) {
+// EXPOSE TO WINDOW: Allows inline HTML buttons to trigger locks flawlessly
+window.toggleForgeLock = function(field) {
     activeForgeLocks[field] = !activeForgeLocks[field];
     
     const icon = document.getElementById(`lock-icon-${field}`);
@@ -1900,7 +1901,7 @@ function toggleForgeLock(field) {
         icon.className = "fa-solid fa-lock-open text-zinc-500";
         btn.title = "Lock Component";
     }
-}
+};
         async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
             try {
                 const response = await fetch(url, options);
@@ -2023,33 +2024,6 @@ function toggleForgeLock(field) {
                 }
             });
         };
-
-// Clean slate reset function
-window.resetForge = function() {
-  // Clear core inputs safely by checking if they exist first
-  ['style-input', 'theme-input', 'title-input', 'band-input'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-
-  // Clear output containers safely if they aren't locked down
-    ['output-style', 'output-lyrics', 'tts-quote-container'].forEach(id => {
-        if (id === 'output-style' && activeForgeLocks.style) return;
-        if (id === 'output-lyrics' && activeForgeLocks.lyrics) return;
-
-        const el = document.getElementById(id);
-        if (el) el.innerText = "";
-
-        // Clear out the global memory trackers alongside the UI text
-        if (id === 'output-style') window.currentStyle = "";
-        if (id === 'output-lyrics') window.currentLyrics = "";
-    });
-
-  const coverImg = document.getElementById('custom-cover-art');
-  if (coverImg) coverImg.src = ""; 
-
-  console.log("Forge purged cleanly.");
-};
 
     </script>
 </body>
