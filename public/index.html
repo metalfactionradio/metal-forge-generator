@@ -1418,9 +1418,9 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
 
                 const payload = {
-                    instances: { prompt: prompt },
-                    parameters: { sampleCount: 1 }
-                };
+        instances: [ { prompt: prompt } ],
+        parameters: { sampleCount: 1 }
+    };
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
