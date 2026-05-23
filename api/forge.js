@@ -23,7 +23,8 @@ export default async function handler(req, res) {
         );
 
         const data = await googleResponse.json();
-        return res.status(200).json(data);
+// PASS TRUE STATUS CODES SO FETCHWITHRETRY CAN RUN AUTOMATIC RETRIES
+return res.status(googleResponse.status).json(data);
 
     } catch (error) {
         console.error("Serverless Shield Error:", error);
