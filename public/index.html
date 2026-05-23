@@ -1397,7 +1397,7 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             }
         };
 
-        // Album Cover Art Generation
+       // Album Cover Art Generation
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
@@ -1415,26 +1415,55 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 const prompt = `A highly detailed, cinematic, high-contrast professional album cover illustration. Centered motif based on: ${songTheme}. The visual aesthetic must perfectly match a blend of the song style/genres: ${songStyle}. Maintain a rich, dramatic, premium look with deep, dark, or style-appropriate vivid hues, and avoid generic clip art. No text labels outside of dramatic typography branding. ${brandingClause} Title implied text: '${songTitle}'.`;
                 
                 const apiKey = "AIzaSyDRllrXA6jUPCbGzEOlK0SBjrerkjQs1B8";
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:generateImages?key=${apiKey}`;
+                
+                // Blueprint Config Plan A: Stable Imagen 3
+                let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+                let payload = {
+                    instances: [
+                        { prompt: prompt }
+                    ],
+                    parameters: {
+                        sampleCount: 1,
+                        aspectRatio: "1:1"
+                    }
+                };
 
-    const payload = {
-        prompt: prompt,
-        numberOfImages: 1,
-        aspectRatio: "1:1",
-        outputMimeType: "image/jpeg"
-    };
+                let response;
+                let result;
+                
+                try {
+                    response = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    result = await response.json();
+                    
+                    // If Google flags an implicit error shape, drop to fallback catch
+                    if (result.error || !result.predictions) {
+                        throw new Error("Targeting fallback");
+                    }
+                } catch (fallbackTrigger) {
+                    console.warn("Primary image engine offline. Deploying Imagen 4 pipeline...");
+                    
+                    // Blueprint Config Plan B: Fallback Imagen 4
+                    apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                    response = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    result = await response.json();
+                }
 
-    const response = await fetchWithRetry(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+                console.log("DEBUG - Imagen Core Output:", result);
 
-    const result = await response.json();
-    console.log("DEBUG - Imagen Core Output:", result);
-    
-    // Pulls the image string using AI Studio's native response paths
-    const base64Data = result.generatedImages?.[0]?.image?.imageBytes;
+                if (result.error) {
+                    throw new Error(result.error.message || "Structural API rejection.");
+                }
+
+                const base64Data = result.predictions?.[0]?.bytesBase64Encoded;
+                
                 if (base64Data) {
                     const imgUrl = `data:image/png;base64,${base64Data}`;
                     window.currentCoverArt = imgUrl;
@@ -1457,24 +1486,23 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                         coverArt: window.currentCoverArt
                     });
                 } else {
-                    throw new Error("No cover art bytes found.");
+                    // Pull explicit safety blocks or restriction details from Google's log
+                    const safetyReason = result.predictions?.[0]?.status?.message || "Rejection via active safety filters.";
+                    throw new Error(safetyReason);
                 }
 
             } catch (err) {
                 console.error("Error generating Cover Art:", err);
                 loaderEl.classList.add('hidden');
                 fallbackEl.classList.remove('hidden');
+                
+                // UNMASK THE BUG: Renders the precise error reason directly on the card block
+                const fallbackText = fallbackEl.querySelector('p');
+                if (fallbackText) {
+                    fallbackText.innerHTML = `Failed to forge canvas.<br><span class="text-[9px] text-red-400 font-mono tracking-normal normal-case mt-1 block">${err.message}</span>`;
+                }
             }
         }
-
-        window.regenerateCoverArt = function() {
-            if (!window.currentTitle) {
-                showToast("Forge a track first before regenerating art!");
-                return;
-            }
-            generateAlbumCover(window.currentTitle, window.currentStyle, window.currentTheme, window.currentBand);
-        };
-
         // Dual-Speaker Spoken Intro TTS
         async function generateNarratorTTS(spokenIntroText, spokenIntroDialog = "") {
             const playBtn = document.getElementById('tts-play-btn');
