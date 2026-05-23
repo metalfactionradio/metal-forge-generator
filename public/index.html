@@ -1505,7 +1505,8 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 const apiUrl = '/api/forge';
 
                 if (spokenIntroDialog) {
-                    const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, adapting the dramatic tone and cadence to perfectly match the musical style of ${window.currentStyle}:\n${spokenIntroDialog}`;
+                    // Add the restriction right before the closing backtick:
+const promptText = `TTS the following theatrical dramatic conversation between Overlord and Seer, adapting the dramatic tone to match the band style. Keep this spoken interaction fast-paced and brief. The total audio generation duration must stay under 30 seconds to prevent buffer overruns.`;
                     payload = {
                         contents: [{
                             parts: [{ text: promptText }]
@@ -1524,7 +1525,8 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                         model: "gemini-2.5-flash-preview-tts"
                     };
                 } else {
-                    const promptText = `Say in a highly dramatic, cinematic, style-appropriate voice matching the musical theme of "${window.currentStyle}": ${spokenIntroText}`;
+                    // Do the same exact thing for the fallback prompt:
+const promptText = `Say in a highly dramatic, cinematic, style-appropriate voice matching the musical theme of "${window.currentContext}". Keep this spoken interaction fast-paced and brief. The total audio generation duration must stay under 30 seconds to prevent buffer overruns.`;
                     payload = {
                         contents: [{
                             parts: [{ text: promptText }]
