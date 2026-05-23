@@ -1479,13 +1479,6 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             }
         }
                 
-                // UNMASK THE BUG: Forces the precise backend reason onto the UI card
-                const fallbackText = fallbackEl.querySelector('p');
-                if (fallbackText) {
-                    fallbackText.innerHTML = `Failed to forge canvas.<br><span class="text-[9px] text-red-400 font-mono tracking-normal normal-case mt-1.5 block max-w-xs mx-auto leading-normal">${err.message}</span>`;
-                }
-            }
-        }
         // Dual-Speaker Spoken Intro TTS
         async function generateNarratorTTS(spokenIntroText, spokenIntroDialog = "") {
             const playBtn = document.getElementById('tts-play-btn');
