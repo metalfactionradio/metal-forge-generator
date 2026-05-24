@@ -1527,40 +1527,40 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                     const promptText = `TTS the following theatrical dramatic conversation between ${speaker1} and ${speaker2}, keeping the delivery punchy, fast-paced, and short:\n${spokenIntroDialog}`;
                     
                     payload = {
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }],
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                multiSpeakerVoiceConfig: {
-                                    speakerVoiceConfigs: [
-                                        { speaker: speaker1, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Algenib" } } },
-                                        { speaker: speaker2, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
-                                    ]
-                                }
-                            }
-                        },
-                        model: "gemini-2.5-flash-preview-tts"
-                    };
-                } else {
-                    // Single-speaker fallback framework configuration
-                    const promptText = `Say the following cinematic intro text in a highly dramatic, style-appropriate voice: "${spokenIntroText}"`;
-                    payload = {
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }],
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: "Algenib" }
-                                }
-                            }
-                        },
-                        model: "gemini-2.5-flash-preview-tts"
-                    };
-                }
+                contents: [{
+                    parts: [{ text: promptText }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        multiSpeakerVoiceConfig: {
+                            speakerVoiceConfigs: [
+                                { speaker: speaker1, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Charon" } } },
+                                { speaker: speaker2, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
+                            ]
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+        } else {
+            // Single-speaker fallback framework configuration
+            const promptText = `Say the following cinematic intro text in a highly dramatic, style-appropriate voice: "${spokenIntroText}"`;
+            payload = {
+                contents: [{
+                    parts: [{ text: promptText }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Charon" }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+        }
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
