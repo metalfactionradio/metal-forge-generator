@@ -1387,8 +1387,8 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 document.getElementById('track-results').classList.remove('hidden');
 
                 // Trigger Sub-generations
-                generateAlbumCover(songData.title, songData.styleTags, theme, band);
-                generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
+                await generateAlbumCover(songData.title, songData.styleTags, theme, band);
+await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
 
             } catch (error) {
                 console.error("Error forging metal track package:", error);
@@ -1938,9 +1938,7 @@ window.regenerateCoverArt = function() {
     generateAlbumCover(window.currentTitle, window.currentStyle, window.currentTheme, window.currentBand);
 };
 
-async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
-    try {
-        async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
             try {
                 const response = await fetch(url, options);
                 if (!response.ok) {
