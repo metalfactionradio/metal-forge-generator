@@ -1409,9 +1409,6 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             loaderEl.classList.remove('hidden');
             fallbackEl.classList.add('hidden');
 
-            // Premium dark-industrial placeholder asset
-            const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
-            
             // Instantly mount the image elements with ZERO network calls
             window.currentCoverArt = mockImgUrl;
             coverEl.src = mockImgUrl;
