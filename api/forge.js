@@ -46,3 +46,4 @@ async function handler(req, res) {
 // Traditional export syntax that Vercel compiles without extra configuration files
 handler.maxDuration = 60;
 module.exports = handler;
+// trigger production sync
