@@ -1,6 +1,4 @@
-// Clean, traditional Node.js backend proxy script
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
+// Clean, traditional Node.js backend proxy script using native Node 24 fetch
 async function handler(req, res) {
     // Only accept POST requests from your frontend
     if (req.method !== 'POST') {
@@ -22,10 +20,10 @@ async function handler(req, res) {
             apiAction = ":predict";
         }
 
-        // 3. Assemble the exact destination path
+        // 3. Construct the exact target URL destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
-        // Forward the payload data to Google exactly as structured
+        // Forward the payload data to Google exactly as structured using native global fetch
         const googleResponse = await fetch(googleUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -43,7 +41,6 @@ async function handler(req, res) {
     }
 }
 
-// Traditional export syntax that Vercel compiles without extra configuration files
+// Traditional export syntax that Vercel compiles natively
 handler.maxDuration = 60;
 module.exports = handler;
-// trigger production sync
