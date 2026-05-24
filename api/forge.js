@@ -1,8 +1,5 @@
-export const config = {
-    maxDuration: 60
-};
-
-export default async function handler(req, res) {
+// Clean, traditional Node.js backend proxy script using native runtime fetch
+async function handler(req, res) {
     // Only accept POST requests from your frontend
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
@@ -23,7 +20,7 @@ export default async function handler(req, res) {
             apiAction = ":predict";
         }
 
-        // 3. Construct the exact target URL destination path
+        // 3. Construct the perfect target URL destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
         // Forward the payload data to Google exactly as structured using native global fetch
@@ -43,3 +40,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Failed to process orchestration request.' });
     }
 }
+
+// Traditional export syntax that Vercel compiles natively
+handler.maxDuration = 60;
+module.exports = handler;
