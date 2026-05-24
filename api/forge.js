@@ -1,6 +1,6 @@
-export const maxDuration = 60; 
+// Traditional CommonJS configuration for standard Vercel vanilla environments
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
@@ -13,7 +13,6 @@ export default async function handler(req, res) {
         }
 
         // 1. Dynamically read the model requested by the frontend layout payload
-        // Fall back to a rock-solid text model if none is specified
         const requestedModel = req.body.model || "gemini-1.5-flash";
         
         // 2. Automatically select the correct endpoint action based on model type
@@ -44,3 +43,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Failed to process orchestration request.' });
     }
 }
+
+// Map exports to match traditional Node runtime definitions 
+handler.maxDuration = 60;
+module.exports = handler;
