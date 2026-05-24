@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Suno AI Prompting and Lyric Studio Suite",
   "main": "api/forge.js",
+  "type": "module",
   "engines": {
     "node": "24.x"
   }
