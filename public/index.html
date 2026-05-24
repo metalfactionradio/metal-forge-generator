@@ -1398,39 +1398,43 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             }
         };
 
-      // Album Cover Art Generation (INSTANT STATIC PREVIEW BYPASS)
+     // Album Cover Art Generation (INSTANT STATIC PREVIEW BYPASS)
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
             const fallbackEl = document.getElementById('cover-fallback');
 
-            // Quick visual state reset
-            coverEl.classList.add('hidden');
-            loaderEl.classList.remove('hidden');
-            fallbackEl.classList.add('hidden');
-
-            // Instantly mount the image elements with ZERO network calls
-            window.currentCoverArt = mockImgUrl;
-            coverEl.src = mockImgUrl;
+            // Instantly swap visibility tags with zero network delays
             coverEl.classList.remove('hidden');
             loaderEl.classList.add('hidden');
             fallbackEl.classList.add('hidden');
 
-            // Configure download anchors
-            document.getElementById('download-cover-btn').href = mockImgUrl;
-            document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
+            // Premium dark placeholder asset
+            const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
+            
+            window.currentCoverArt = mockImgUrl;
+            coverEl.src = mockImgUrl;
 
-            // Commit metadata directly to your database history tracking logs
-            window.archiveTrack({
-                title: window.currentTitle,
-                bandName: window.currentBand,
-                styleTags: window.currentStyle,
-                themeRequested: window.currentTheme,
-                lyrics: window.currentLyrics,
-                spokenIntroText: window.currentSpokenText,
-                spokenIntroDialog: window.currentSpokenDialog,
-                coverArt: window.currentCoverArt || ""
-            });
+            // Configure download link anchors safely
+            const downloadBtn = document.getElementById('download-cover-btn');
+            if (downloadBtn) {
+                downloadBtn.href = mockImgUrl;
+                downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
+            }
+
+            // Smoothly archive metadata to history vault
+            if (typeof window.archiveTrack === 'function') {
+                window.archiveTrack({
+                    title: window.currentTitle,
+                    bandName: window.currentBand,
+                    styleTags: window.currentStyle,
+                    themeRequested: window.currentTheme,
+                    lyrics: window.currentLyrics,
+                    spokenIntroText: window.currentSpokenText,
+                    spokenIntroDialog: window.currentSpokenDialog,
+                    coverArt: window.currentCoverArt || ""
+                });
+            }
         }
                 
         // Dual-Speaker Spoken Intro TTS (DYNAMIC ARCHITECTURE PATCH)
