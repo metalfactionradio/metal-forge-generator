@@ -1398,93 +1398,42 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             }
         };
 
-      // Album Cover Art Generation (LIVE ENGINE ACTIVATION)
+      // Album Cover Art Generation (INSTANT STATIC PREVIEW BYPASS)
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
             const fallbackEl = document.getElementById('cover-fallback');
 
+            // Visual loading state trigger
             coverEl.classList.add('hidden');
             loaderEl.classList.remove('hidden');
             fallbackEl.classList.add('hidden');
 
-            try {
-                let brandingClause = "";
-                if (bandName) {
-                    brandingClause = ` Featuring the band name "${bandName}" in high-quality typography logo branding at the top of the album cover artwork.`;
-                }
-                const prompt = `A highly detailed, cinematic, high-contrast professional album cover illustration. Centered motif based on: ${songTheme}. The visual aesthetic must perfectly match a blend of the song style/genres: ${songStyle}. Maintain a rich, dramatic, premium look with deep, dark, or style-appropriate vivid hues, and avoid generic clip art. No text labels outside of dramatic typography branding. ${brandingClause} Title implied text: '${songTitle}'.`;
-                
-                const apiUrl = '/api/forge';
+            // Premium dark-industrial placeholder layout asset
+            const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
+            
+            // Instantly render layout elements without making an external cloud API network call
+            window.currentCoverArt = mockImgUrl;
+            coverEl.src = mockImgUrl;
+            coverEl.classList.remove('hidden');
+            loaderEl.classList.add('hidden');
+            fallbackEl.classList.add('hidden');
 
-                const payload = {
-                    model: "imagen-3.0-generate-002", // Explicit flag for your serverless proxy routing
-                    instances: [
-                        { prompt: prompt }
-                    ],
-                    parameters: {
-                        sampleCount: 1
-                    }
-                };
+            // Wire up the immediate image download buttons
+            document.getElementById('download-cover-btn').href = mockImgUrl;
+            document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
 
-                // Upgraded to your project's fetchWithRetry for resilient network connection paths
-                const response = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorJson = await response.json().catch(() => ({}));
-                    const specificMessage = errorJson.error?.message || `HTTP Error Status: ${response.status}`;
-                    throw new Error(specificMessage);
-                }
-
-                const result = await response.json();
-                console.log("DEBUG - Imagen Core Output:", result);
-
-                const base64Data = result.predictions?.[0]?.bytesBase64Encoded;
-                if (base64Data) {
-                    const imgUrl = `data:image/png;base64,${base64Data}`;
-                    window.currentCoverArt = imgUrl;
-                    coverEl.src = imgUrl;
-                    coverEl.classList.remove('hidden');
-                    loaderEl.classList.add('hidden');
-
-                    document.getElementById('download-cover-btn').href = imgUrl;
-                    document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.png`;
-                } else {
-                    throw new Error("No cover art bytes found.");
-                }
-
-           } catch (err) {
-                console.warn("API network or permission gate error. Falling back to layout preview modal context.", err);
-                
-                // Keep the static lifeline intact as an absolute fallback mechanism
-                const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
-                
-                window.currentCoverArt = mockImgUrl;
-                coverEl.src = mockImgUrl;
-                coverEl.classList.remove('hidden');
-                loaderEl.classList.add('hidden');
-                fallbackEl.classList.add('hidden');
-
-                document.getElementById('download-cover-btn').href = mockImgUrl;
-                document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
-
-            } finally {
-                // This always executes to ensure your data saves flawlessly to the database archives
-                window.archiveTrack({
-                    title: window.currentTitle,
-                    bandName: window.currentBand,
-                    styleTags: window.currentStyle,
-                    themeRequested: window.currentTheme,
-                    lyrics: window.currentLyrics,
-                    spokenIntroText: window.currentSpokenText,
-                    spokenIntroDialog: window.currentSpokenDialog,
-                    coverArt: window.currentCoverArt || ""
-                });
-            }
+            // Write metadata variables directly to your database history tracking logs
+            window.archiveTrack({
+                title: window.currentTitle,
+                bandName: window.currentBand,
+                styleTags: window.currentStyle,
+                themeRequested: window.currentTheme,
+                lyrics: window.currentLyrics,
+                spokenIntroText: window.currentSpokenText,
+                spokenIntroDialog: window.currentSpokenDialog,
+                coverArt: window.currentCoverArt || ""
+            });
         }
                 
         // Dual-Speaker Spoken Intro TTS (DYNAMIC ARCHITECTURE PATCH)
