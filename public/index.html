@@ -1404,26 +1404,26 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
             const loaderEl = document.getElementById('cover-loader');
             const fallbackEl = document.getElementById('cover-fallback');
 
-            // Visual loading state trigger
+            // Quick visual state reset
             coverEl.classList.add('hidden');
             loaderEl.classList.remove('hidden');
             fallbackEl.classList.add('hidden');
 
-            // Premium dark-industrial placeholder layout asset
+            // Premium dark-industrial placeholder asset
             const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
             
-            // Instantly render layout elements without making an external cloud API network call
+            // Instantly mount the image elements with ZERO network calls
             window.currentCoverArt = mockImgUrl;
             coverEl.src = mockImgUrl;
             coverEl.classList.remove('hidden');
             loaderEl.classList.add('hidden');
             fallbackEl.classList.add('hidden');
 
-            // Wire up the immediate image download buttons
+            // Configure download anchors
             document.getElementById('download-cover-btn').href = mockImgUrl;
             document.getElementById('download-cover-btn').download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
 
-            // Write metadata variables directly to your database history tracking logs
+            // Commit metadata directly to your database history tracking logs
             window.archiveTrack({
                 title: window.currentTitle,
                 bandName: window.currentBand,
