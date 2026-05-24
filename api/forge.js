@@ -12,19 +12,32 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
         }
 
-        // Shoot the exact frontend payload directly to Google completely unaltered
-        const googleResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(req.body) 
-            }
-        );
+        // 1. Dynamically read the model requested by the frontend layout payload
+        // Fall back to a rock-solid text model if none is specified
+        const requestedModel = req.body.model || "gemini-1.5-flash";
+        
+        // 2. Automatically select the correct endpoint action based on model type
+        let apiAction = ":generateContent";
+        if (requestedModel.includes("imagen")) {
+            apiAction = ":predict";
+        }
+
+        // 3. Construct the perfect target URL for Google Cloud's gateway
+        const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
+
+        console.log(`[ORCHESTRATION] Routing payload cleanly to: ${requestedModel} via ${apiAction}`);
+
+        // Forward the payload exactly as the frontend structured it
+        const googleResponse = await fetch(googleUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body) 
+        });
 
         const data = await googleResponse.json();
-// PASS TRUE STATUS CODES SO FETCHWITHRETRY CAN RUN AUTOMATIC RETRIES
-return res.status(googleResponse.status).json(data);
+        
+        // PASS TRUE STATUS CODES SO FETCHWITHRETRY CAN RUN AUTOMATIC RETRIES
+        return res.status(googleResponse.status).json(data);
 
     } catch (error) {
         console.error("Serverless Shield Error:", error);
