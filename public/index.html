@@ -1926,6 +1926,20 @@ window.toggleForgeLock = function(field) {
         btn.title = "Lock Component";
     }
 };
+        
+
+// EXPOSE TO WINDOW: Activates the Re-Roll Art UI buttons
+window.regenerateCoverArt = function() {
+    if (!window.currentTitle) {
+        window.showToast("Forge a track configuration first before re-rolling artwork!");
+        return;
+    }
+    window.showToast("Re-rolling visual layout layers...");
+    generateAlbumCover(window.currentTitle, window.currentStyle, window.currentTheme, window.currentBand);
+};
+
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+    try {
         async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
             try {
                 const response = await fetch(url, options);
