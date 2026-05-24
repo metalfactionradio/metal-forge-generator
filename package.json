@@ -4,6 +4,6 @@
   "description": "Suno AI Prompting and Lyric Studio Suite",
   "main": "api/forge.js",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   }
 }
