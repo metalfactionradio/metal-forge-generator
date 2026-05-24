@@ -1,8 +1,6 @@
-export const config = {
-    maxDuration: 60
-};
-
-export default async function handler(req, res) {
+// Clean, traditional Node.js backend proxy script using native Node 24 fetch
+async function handler(req, res) {
+    // Only accept POST requests from your frontend canvas
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
@@ -13,16 +11,19 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
         }
 
+        // 1. Automatically read the explicit model passed by your frontend payload
         const requestedModel = req.body.model || "gemini-1.5-flash";
         
+        // 2. Select the correct gateway suffix based on the model target
         let apiAction = ":generateContent";
         if (requestedModel.includes("imagen")) {
             apiAction = ":predict";
         }
 
+        // 3. Construct the perfect destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
-        // Leverage Node 24's native global fetch engine cleanly
+        // Forward the payload data to Google exactly as structured using native global fetch
         const googleResponse = await fetch(googleUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -30,6 +31,8 @@ export default async function handler(req, res) {
         });
 
         const data = await googleResponse.json();
+        
+        // Return the exact status code and data back to your frontend canvas
         return res.status(googleResponse.status).json(data);
 
     } catch (error) {
@@ -37,3 +40,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Failed to process orchestration request.' });
     }
 }
+
+// Traditional export syntax that Vercel compiles natively
+handler.maxDuration = 60;
+module.exports = handler;
