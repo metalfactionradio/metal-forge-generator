@@ -1392,7 +1392,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         };
 
-        // Upgraded Album Cover Art Generation via Developer-Tier Image Engine
+       // Upgraded Album Cover Art Generation via Developer-Tier Imagen Engine
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
@@ -1405,10 +1405,13 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             try {
                 const artPrompt = `An epic high-contrast heavy metal album art layout for a track titled "${songTitle}", styled in genres of ${songStyle}. Theme features: ${songTheme}. Cyberpunk gothic-industrial dark biomechanical aesthetic, rusted iron structures, intricate dark fantasy details, 1:1 aspect ratio square composition, no text.`;
 
-                // Aligned payload configuration matching the standard content structure cleanly
+                // Configured payload matching Google's strict Imagen schema architecture
                 const payload = {
-                    contents: [{ parts: [{ text: artPrompt }] }],
-                    model: "gemini-2.5-flash-image"
+                    model: "imagen-3.0-generate-002",
+                    prompt: artPrompt,
+                    numberOfImages: 1,
+                    aspectRatio: "1:1",
+                    outputMimeType: "image/jpeg"
                 };
 
                 const response = await fetchWithRetry('/api/forge', {
@@ -1418,7 +1421,9 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 });
 
                 const data = await response.json();
-                const base64ImageBytes = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                
+                // Extract image base64 bytes directly from the specialized generatedImages array
+                const base64ImageBytes = data.generatedImages?.[0]?.image?.imageBytes;
 
                 if (!base64ImageBytes) {
                     throw new Error("No image tokens returned from proxy asset stream.");
