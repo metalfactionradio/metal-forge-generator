@@ -684,7 +684,7 @@
     </div>
 
     <!-- FIREBASE AND CORE APP MODULE JS -->
-   <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1120,7 +1120,7 @@
                     }
                 });
             } else {
-                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${item.spokenIntroText}"</p>`;
+                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${songData.spokenIntroText}"</p>`;
             }
 
             generateAlbumCover(item.coverArt, item.title);
@@ -1207,7 +1207,7 @@
             window.currentSpokenDialog = "";
             window.currentCoverArt = "";
             
-            document.getElementById('intro-board').classList.remove('hidden');
+            document.getElementById('intro-board').className = "bg-zinc-900/40 border border-zinc-800/40 rounded-2xl p-8 text-center space-y-4";
             document.getElementById('track-results').classList.add('hidden');
             document.getElementById('forge-loader').classList.add('hidden');
             
@@ -1348,8 +1348,15 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
 
-                generateAlbumCover(songData.coverArtPrompt, songData.title);
-                await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
+                // --- OPTIMIZED MODULE COLD STORAGE BYPASS ---
+                // We leave the functional parsers in active scope for vault loading, 
+                // but comment out their real-time execution loops to optimize for raw tracking performance.
+                // generateAlbumCover(songData.coverArtPrompt, songData.title);
+                // await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
+
+                // Dynamically hide the lower card cluster element row to keep the layout grid streamlined
+                const lowerRow = document.getElementById('cover-art')?.parentElement?.parentElement;
+                if(lowerRow) lowerRow.classList.add('hidden');
 
             } catch (error) {
                 console.error("Error forging metal track package:", error);
@@ -1361,15 +1368,12 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
 
         // Upgraded Graphic Prompt Vault Interface
         function generateAlbumCover(promptString, songTitle) {
-            const artBlock = document.getElementById('cover-art').parentElement;
+            const artBlock = document.getElementById('cover-art')?.parentElement;
             if (!artBlock) return;
 
             window.currentCoverArt = promptString || "";
 
-            // Transforms the simple image card frame into a custom tactical text terminal panel
             artBlock.className = "flex-grow flex flex-col justify-between bg-zinc-950 border border-zinc-800/80 rounded-xl overflow-hidden aspect-square p-4 relative font-mono text-[11px] leading-relaxed select-text shadow-inner";
-            
-            // Render a premium dark metallic overlay vault with full interactive clip actions
             artBlock.innerHTML = `
                 <div class="flex-grow overflow-y-auto space-y-3 pr-1 text-zinc-300 custom-scrollbar selection:bg-orange-500/20">
                     <div class="text-[10px] uppercase font-bold text-orange-500/80 tracking-widest border-b border-zinc-800/60 pb-1 flex items-center justify-between">
@@ -1736,7 +1740,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             view.setUint32(40, pcm16.length * 2, true);
 
             for (let i = 0; i < pcm16.length; i++) {
-                view.setUint16(44 + i * 2, pcm16[i], true); // Secure safe un-signed index maps
+                view.setUint16(44 + i * 2, pcm16[i], true);
             }
 
             return new Blob([view], { type: 'audio/wav' });
