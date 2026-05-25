@@ -684,7 +684,7 @@
     </div>
 
     <!-- FIREBASE AND CORE APP MODULE JS -->
-    <script type="module">
+   <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -759,7 +759,6 @@
             const input = document.getElementById('theme-input');
             const currentVal = input.value.trim();
             if (currentVal) {
-                // Determine punctuation buffer to append naturally
                 const delimiter = currentVal.endsWith(',') ? ' ' : ', ';
                 input.value = currentVal + delimiter + val;
             } else {
@@ -783,25 +782,21 @@
             }, 3000);
         };
 
-        // FEATURE 1: Interactive Parameter Chips logic
+        // Parameter Chips logic
         window.toggleMatrixChip = function(btn, phrase) {
             const styleInput = document.getElementById('style-input');
             let currentText = styleInput.value.trim();
             const phraseLower = phrase.toLowerCase();
             
-            // Highlight button toggler state
             if (btn.classList.contains('bg-metal-accent/30')) {
-                // Removing parameter
                 btn.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
                 btn.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
                 
-                // Regex parsing to remove comma cleanly
                 const pattern = new RegExp(`(^|,\\s*)${phraseLower}(,\\s*|$)`, 'i');
                 currentText = currentText.replace(pattern, '$2').trim();
                 if (currentText.startsWith(',')) currentText = currentText.substring(1).trim();
                 if (currentText.endsWith(',')) currentText = currentText.slice(0, -1).trim();
             } else {
-                // Adding parameter
                 btn.classList.add('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
                 btn.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
                 
@@ -831,7 +826,7 @@
             }
         };
 
-        // FEATURE 2: 200-Character Count warning calculations
+        // 200-Character Count warning calculations
         window.updateCharacterCounter = function(text) {
             const length = text.length;
             const counterLabel = document.getElementById('style-character-counter');
@@ -839,36 +834,29 @@
             const warningAlert = document.getElementById('character-warning');
             
             counterLabel.innerText = `${length}/200`;
-            
-            // Set gauge percentages bounded at max 100%
             const pct = Math.min(100, (length / 200) * 100);
             gauge.style.width = `${pct}%`;
             
-            // Adjust gauge & panel coloring states dynamically
             if (length > 200) {
-                // Flash Red Alert state
                 gauge.className = "h-full bg-red-600 transition-all duration-300 shadow-[0_0_12px_rgba(239,68,68,0.8)] animate-pulse";
                 counterLabel.className = "text-xs font-mono text-red-500 font-bold";
                 warningAlert.classList.remove('hidden');
             } else if (length >= 120) {
-                // Orange warning state
                 gauge.className = "h-full bg-yellow-500 transition-all duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]";
                 counterLabel.className = "text-xs font-mono text-yellow-500";
                 warningAlert.classList.add('hidden');
             } else {
-                // Normal green state
                 gauge.className = "h-full bg-green-500 transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.5)]";
                 counterLabel.className = "text-xs font-mono text-zinc-500";
                 warningAlert.classList.add('hidden');
             }
         };
 
-        // FEATURE 3: Animated Tactile Copy-To-Clipboard button
+        // Copy-To-Clipboard implementation
         window.copyToClipboard = function(elementId, btn) {
             const el = document.getElementById(elementId);
             const textToCopy = el.innerText || el.textContent;
             
-            // Fallback selection range coping method (iFrame compliant)
             const selection = window.getSelection();
             const range = document.createRange();
             range.selectNodeContents(el);
@@ -877,8 +865,6 @@
             
             try {
                 document.execCommand('copy');
-                
-                // Satisfying physical button transitions
                 const oldHTML = btn.innerHTML;
                 btn.classList.add('bg-green-600/30', 'text-green-400', 'border-green-500/50', 'scale-105', 'shadow-[0_0_10px_rgba(34,197,94,0.4)]');
                 btn.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
@@ -895,7 +881,7 @@
             selection.removeAllRanges();
         };
 
-        // --- CLOUD STORAGE SETUP & AUTH RULES ---
+        // --- VAULT STORAGE SETUP & LISTENERS ---
         async function initializeVault() {
             try {
                 if (typeof __firebase_config === 'undefined') {
@@ -907,7 +893,6 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                // Priority Custom Auth Token fallback
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
                     await signInWithCustomToken(auth, token);
@@ -940,10 +925,8 @@
             renderHistoryUI(localMemoryHistory);
         }
 
-        // FEATURE 4: Safe real-time data sync with memory query fallback
         function startRealtimeHistoryListener() {
             if (!isCloudActive || !currentUserId) return;
-            
             const historyCol = collection(db, 'artifacts', appId, 'users', currentUserId, 'history');
             
             onSnapshot(historyCol, (snapshot) => {
@@ -952,9 +935,7 @@
                     cloudItems.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // Memory array sorting cleanly
                 cloudItems.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                
                 const loadingEl = document.getElementById('history-loading');
                 if (loadingEl) loadingEl.classList.add('hidden');
                 renderHistoryUI(cloudItems);
@@ -964,7 +945,6 @@
             });
         }
 
-        // Helper to shrink base64 images to prevent Firestore document size ceiling violations
         function shrinkImageBase64(base64Str, maxDim = 256, quality = 0.7) {
             return new Promise((resolve) => {
                 if (!base64Str || !base64Str.startsWith('data:image')) {
@@ -997,14 +977,13 @@
                     resolve(canvas.toDataURL('image/jpeg', quality));
                 };
                 img.onerror = function() {
-                    resolve(base64Str); // Fallback to raw string if processing breaks
+                    resolve(base64Str);
                 };
                 img.src = base64Str;
             });
         }
 
         window.archiveTrack = async function(trackData) {
-            // Compress original artwork to a lightweight preview thumbnail size to fit within Firestore quotas
             if (trackData.coverArt) {
                 try {
                     trackData.coverArt = await shrinkImageBase64(trackData.coverArt);
@@ -1014,7 +993,6 @@
             }
 
             if (!isCloudActive || !currentUserId) {
-                // Memory fallback matching instructions
                 localMemoryHistory = localMemoryHistory.filter(item => item.title !== trackData.title);
                 localMemoryHistory.unshift({
                     id: 'local-' + Date.now(),
@@ -1038,7 +1016,7 @@
         };
 
         window.deleteFromVault = async function(docId, event) {
-            if (event) event.stopPropagation(); // Stop parent load card click
+            if (event) event.stopPropagation();
             
             if (String(docId).startsWith('local-')) {
                 localMemoryHistory = localMemoryHistory.filter(item => item.id !== docId);
@@ -1056,7 +1034,6 @@
             }
         };
 
-        // Render Session History GUI
         function renderHistoryUI(historyArray) {
             const grid = document.getElementById('history-grid');
             const emptyState = document.getElementById('history-empty');
@@ -1076,7 +1053,6 @@
                 card.className = "bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-800/80 hover:border-metal-accent/50 p-4 rounded-xl flex items-center gap-4 transition duration-300 cursor-pointer relative group";
                 card.onclick = () => window.loadTrackFromArchive(item);
 
-                // Quick visual subgenre tag calculation
                 const shortStyles = item.styleTags ? item.styleTags.substring(0, 45) + '...' : 'Unknown';
 
                 card.innerHTML = `
@@ -1096,9 +1072,7 @@
             });
         }
 
-        // LOAD ARCHIVED TRACK BACK TO CANVAS WORKSPACE
         window.loadTrackFromArchive = function(item) {
-            // Restore active state configs
             window.currentTitle = item.title;
             window.currentBand = item.bandName || "";
             window.currentStyle = item.styleTags;
@@ -1108,14 +1082,12 @@
             window.currentSpokenDialog = item.spokenIntroDialog;
             window.currentCoverArt = item.coverArt;
 
-            // Load UI fields
             document.getElementById('title-input').value = item.title || "";
             document.getElementById('band-input').value = item.bandName || "";
             document.getElementById('style-input').value = item.styleTags || "";
             document.getElementById('theme-input').value = item.themeRequested || "";
             updateCharacterCounter(item.styleTags || "");
 
-            // Results UI injection
             document.getElementById('intro-board').classList.add('hidden');
             document.getElementById('track-results').classList.remove('hidden');
 
@@ -1125,7 +1097,6 @@
 
             updateDynamicSpeakers(item.spokenIntroDialog);
 
-            // Re-render narrator dialogue structures
             const quoteContainer = document.getElementById('tts-quote-container');
             if (item.spokenIntroDialog) {
                 quoteContainer.innerHTML = '';
@@ -1149,10 +1120,9 @@
                     }
                 });
             } else {
-                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${item.spokenIntroText}"</p>`;
+                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${songData.spokenIntroText}"</p>`;
             }
 
-            // Un-hide cover art elements
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
             const fallbackEl = document.getElementById('cover-fallback');
@@ -1168,28 +1138,20 @@
                 fallbackEl.classList.remove('hidden');
             }
 
-            // Prep speech play triggers
             generateNarratorTTS(item.spokenIntroText, item.spokenIntroDialog);
             showToast(`Loaded Specs for: ${item.title}`);
         };
 
         // --- EXPORTED FORGING ACTIONS ---
         window.resetForge = function() {
-            // Clear inputs
             document.getElementById('style-input').value = "";
             document.getElementById('theme-input').value = "";
             document.getElementById('title-input').value = "";
             document.getElementById('band-input').value = "";
             
-            // Reset character counters and gauges
             updateCharacterCounter("");
+            if (typeof window.removeVisionImage === 'function') window.removeVisionImage();
             
-            // Remove uploaded vision image if any
-            if (typeof window.removeVisionImage === 'function') {
-                window.removeVisionImage();
-            }
-            
-            // Stop active spoken dialog prologue playback
             if (window.audioObj) {
                 window.audioObj.pause();
                 window.audioObj = null;
@@ -1200,7 +1162,6 @@
             }
             stopVisualizer();
             
-            // Reset speaker spans & preview elements
             const playBtn = document.getElementById('tts-play-btn');
             if (playBtn) playBtn.disabled = true;
             
@@ -1215,25 +1176,20 @@
                 quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"Waiting for lyrics to materialize..."</p>`;
             }
             
-            // Clear generated outputs
-const lyricsPre = document.getElementById('output-lyrics');
-if (lyricsPre && !activeForgeLocks.lyrics) {
-    lyricsPre.innerText = "";
-    window.currentLyrics = ""; 
-}
+            const lyricsPre = document.getElementById('output-lyrics');
+            if (lyricsPre && !activeForgeLocks.lyrics) {
+                lyricsPre.innerText = "";
+                window.currentLyrics = ""; 
+            }
             
             const coverEl = document.getElementById('cover-art');
             if (coverEl) {
                 coverEl.src = "";
                 coverEl.classList.add('hidden');
             }
-            const coverLoader = document.getElementById('cover-loader');
-            if (coverLoader) coverLoader.classList.add('hidden');
+            document.getElementById('cover-loader').classList.add('hidden');
+            document.getElementById('cover-fallback').classList.add('hidden');
             
-            const coverFallback = document.getElementById('cover-fallback');
-            if (coverFallback) coverFallback.classList.add('hidden');
-            
-            // Clear global spec values
             window.currentTitle = "";
             window.currentBand = "";
             window.currentStyle = "";
@@ -1243,12 +1199,10 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
             window.currentSpokenDialog = "";
             window.currentCoverArt = "";
             
-            // Return layout view panels to instructions intro
             document.getElementById('intro-board').classList.remove('hidden');
             document.getElementById('track-results').classList.add('hidden');
             document.getElementById('forge-loader').classList.add('hidden');
             
-            // Reset style modifier matrix buttons that are currently toggled
             const activeChips = document.querySelectorAll('.bg-metal-accent\\/30');
             activeChips.forEach(chip => {
                 chip.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
@@ -1258,7 +1212,7 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
             showToast("Workspace cleared! Forge has been reset.");
         };
 
-       window.forgeMetal = async function() {
+        window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
@@ -1382,7 +1336,6 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
 
-                // Pass the freshly minted vector data straight into your art canvas processor
                 generateAlbumCover(songData.coverArtSvg, songData.title);
                 await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
 
@@ -1394,7 +1347,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         };
 
-        // Processes the custom vector code payload into a clean visual asset directly inside the browser
+        // Custom Vector SVG Art Mounting Canvas 
         function generateAlbumCover(svgString, songTitle) {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
@@ -1405,17 +1358,14 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             fallbackEl.classList.add('hidden');
 
             try {
-                // Secure a solid default industrial blueprint layout if vector content runs dry
                 let processedSvg = svgString || `<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#09090b"/><circle cx="250" cy="250" r="180" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="10 5"/><path d="M150 250 L350 250 M250 150 L250 350" stroke="#ef4444" stroke-width="2" opacity="0.3"/></svg>`;
 
-                // If the response wraps raw formatting characters, clean the string layout instantly
                 if (processedSvg.includes('```xml')) {
                     processedSvg = processedSvg.split('```xml')[1].split('```')[0].trim();
                 } else if (processedSvg.includes('```html')) {
                     processedSvg = processedSvg.split('```html')[1].split('```')[0].trim();
                 }
 
-                // Transform the raw code tokens into a safe browser-native data URL structure
                 const fullImgUrl = `data:image/svg+xml;utf8,${encodeURIComponent(processedSvg)}`;
                 
                 window.currentCoverArt = fullImgUrl;
@@ -1452,87 +1402,8 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 coverEl.classList.remove('hidden');
             }
         }
-
-       // Upgraded Album Cover Art Generation via Developer-Tier Imagen Engine
-        async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
-            const coverEl = document.getElementById('cover-art');
-            const loaderEl = document.getElementById('cover-loader');
-            const fallbackEl = document.getElementById('cover-fallback');
-
-            coverEl.classList.add('hidden');
-            loaderEl.classList.remove('hidden');
-            fallbackEl.classList.add('hidden');
-
-            try {
-                const artPrompt = `An epic high-contrast heavy metal album art layout for a track titled "${songTitle}", styled in genres of ${songStyle}. Theme features: ${songTheme}. Cyberpunk gothic-industrial dark biomechanical aesthetic, rusted iron structures, intricate dark fantasy details, 1:1 aspect ratio square composition, no text.`;
-
-                const payload = {
-                    model: "imagen-3.0-generate-002",
-                    prompt: artPrompt,
-                    numberOfImages: 1,
-                    aspectRatio: "1:1",
-                    outputMimeType: "image/jpeg"
-                };
-
-                const response = await fetchWithRetry('/api/forge', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
                 
-                // Print explicit descriptions straight to console if Google logs a content error
-                if (data.error) {
-                    console.error("Google Image Engine error response context:", data.error);
-                    throw new Error(`Google API Error: ${data.error.message || "Validation rejection"}`);
-                }
-
-                const base64ImageBytes = data.generatedImages?.[0]?.image?.imageBytes;
-
-                if (!base64ImageBytes) {
-                    throw new Error("No image tokens returned from proxy asset stream.");
-                }
-
-                const fullImgUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
-                
-                window.currentCoverArt = fullImgUrl;
-                coverEl.src = fullImgUrl;
-                
-                coverEl.classList.remove('hidden');
-                loaderEl.classList.add('hidden');
-
-                const downloadBtn = document.getElementById('download-cover-btn');
-                if (downloadBtn) {
-                    downloadBtn.href = fullImgUrl;
-                    downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
-                }
-
-                if (typeof window.archiveTrack === 'function') {
-                    window.archiveTrack({
-                        title: window.currentTitle,
-                        bandName: window.currentBand,
-                        styleTags: window.currentStyle,
-                        themeRequested: window.currentTheme,
-                        lyrics: window.currentLyrics,
-                        spokenIntroText: window.currentSpokenText,
-                        spokenIntroDialog: window.currentSpokenDialog,
-                        coverArt: window.currentCoverArt || ""
-                    });
-                }
-
-            } catch (err) {
-                console.error("Art generation proxy failed, applying dark geometric fallback:", err);
-                loaderEl.classList.add('hidden');
-                
-                const darkMetalFallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=500&auto=format&fit=crop";
-                window.currentCoverArt = darkMetalFallback;
-                coverEl.src = darkMetalFallback;
-                coverEl.classList.remove('hidden');
-            }
-        }
-                
-        // Dual-Speaker Spoken Intro TTS (DYNAMIC ARCHITECTURE PATCH)
+        // Dual-Speaker Spoken Intro TTS
         async function generateNarratorTTS(spokenIntroText, spokenIntroDialog = "") {
             const playBtn = document.getElementById('tts-play-btn');
             const ttsLoader = document.getElementById('tts-loader');
@@ -1554,7 +1425,6 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 const apiUrl = '/api/forge';
 
                 if (spokenIntroDialog) {
-                    // 1. Parse out the dynamic speaker names generated by the AI model
                     const lines = spokenIntroDialog.split('\n');
                     const detectedSpeakers = [];
                     lines.forEach(line => {
@@ -1566,48 +1436,40 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                         }
                     });
 
-                    // Fallback safeguards if the text format splits unexpectedly
                     const speaker1 = detectedSpeakers[0] || "Overlord";
                     const speaker2 = detectedSpeakers[1] || "Seer";
-
-                    // 2. Build the voice payload matching the exact text tokens
                     const promptText = `TTS the following theatrical dramatic conversation between ${speaker1} and ${speaker2}, keeping the delivery punchy, fast-paced, and short:\n${spokenIntroDialog}`;
                     
                     payload = {
-                contents: [{
-                    parts: [{ text: promptText }]
-                }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        multiSpeakerVoiceConfig: {
-                            speakerVoiceConfigs: [
-                                { speaker: speaker1, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Charon" } } },
-                                { speaker: speaker2, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
-                            ]
-                        }
-                    }
-                },
-                model: "gemini-2.5-flash-preview-tts"
-            };
-        } else {
-            // Single-speaker fallback framework configuration
-            const promptText = `Say the following cinematic intro text in a highly dramatic, style-appropriate voice: "${spokenIntroText}"`;
-            payload = {
-                contents: [{
-                    parts: [{ text: promptText }]
-                }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: "Charon" }
-                        }
-                    }
-                },
-                model: "gemini-2.5-flash-preview-tts"
-            };
-        }
+                        contents: [{ parts: [{ text: promptText }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                multiSpeakerVoiceConfig: {
+                                    speakerVoiceConfigs: [
+                                        { speaker: speaker1, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Charon" } } },
+                                        { speaker: speaker2, voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } } }
+                                    ]
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+                } else {
+                    const promptText = `Say the following cinematic intro text in a highly dramatic, style-appropriate voice: "${spokenIntroText}"`;
+                    payload = {
+                        contents: [{ parts: [{ text: promptText }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: "Charon" }
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+                }
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
@@ -1661,7 +1523,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         }
 
-        // Multimodal Vision Image Processing
+        // Multimodal Vision Processing
         let uploadedImageBase64 = null;
         let uploadedImageMimeType = null;
 
@@ -1763,7 +1625,7 @@ Format your output strictly as a JSON object:
             }
         };
 
-        // AI Multi-Turn Lyric Refinement
+        // AI Lyric Refinement
         window.refineLyrics = async function() {
             const input = document.getElementById('copilot-input');
             const instruction = input.value.trim();
@@ -1784,14 +1646,11 @@ Maintain the exact format tags like [Intro], [Verse], [Chorus], [Guitar Solo/Ins
 Return only the newly edited full song lyrics. Do not add conversational intro/outro text, just the raw lyrics code.`;
 
                 const userPrompt = `Existing Lyrics:\n${currentLyrics}\n\nInstruction: ${instruction}`;
-
                 const apiUrl = '/api/forge';
 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    }
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
 
                 const response = await fetchWithRetry(apiUrl, {
@@ -1809,7 +1668,6 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                     input.value = "";
                     showToast("Lyrics refined successfully!");
 
-                    // If active user is saved, update existing specs document
                     window.archiveTrack({
                         title: window.currentTitle,
                         bandName: window.currentBand,
@@ -1832,7 +1690,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             }
         };
 
-        // --- AUDIO COMPRESSION & UTILITY FUNCTIONS ---
+        // --- BINARY COMPRESSION & UTILITY FUNCTIONS ---
         function base64ToArrayBuffer(base64) {
             const binaryString = atob(base64);
             const len = binaryString.length;
@@ -1950,40 +1808,36 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             }
         }
 
-// Master tracker for element locks
-const activeForgeLocks = {
-    style: false,
-    lyrics: false
-};
+        // Workspace Lockdown Management Tracker
+        const activeForgeLocks = {
+            style: false,
+            lyrics: false
+        };
 
-// EXPOSE TO WINDOW: Allows inline HTML buttons to trigger locks flawlessly
-window.toggleForgeLock = function(field) {
-    activeForgeLocks[field] = !activeForgeLocks[field];
-    
-    const icon = document.getElementById(`lock-icon-${field}`);
-    const btn = document.getElementById(`lock-btn-${field}`);
-    
-    if (activeForgeLocks[field]) {
-        icon.className = "fa-solid fa-lock text-metal-accent";
-        btn.title = "Component Locked";
-    } else {
-        icon.className = "fa-solid fa-lock-open text-zinc-500";
-        btn.title = "Lock Component";
-    }
-};
-        
+        window.toggleForgeLock = function(field) {
+            activeForgeLocks[field] = !activeForgeLocks[field];
+            const icon = document.getElementById(`lock-icon-${field}`);
+            const btn = document.getElementById(`lock-btn-${field}`);
+            
+            if (activeForgeLocks[field]) {
+                icon.className = "fa-solid fa-lock text-metal-accent";
+                btn.title = "Component Locked";
+            } else {
+                icon.className = "fa-solid fa-lock-open text-zinc-500";
+                btn.title = "Lock Component";
+            }
+        };
 
-// EXPOSE TO WINDOW: Maps the cover art re-roll UI components straight to the main crucible engine
-window.regenerateCoverArt = function() {
-    if (!window.currentTitle) {
-        window.showToast("Forge a track configuration first before re-rolling artwork!");
-        return;
-    }
-    window.showToast("Refining industrial vector elements...");
-    window.forgeMetal();
-};
+        window.regenerateCoverArt = function() {
+            if (!window.currentTitle) {
+                window.showToast("Forge a track configuration first before re-rolling artwork!");
+                return;
+            }
+            window.showToast("Refining industrial vector elements...");
+            window.forgeMetal();
+        };
 
-async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
+        async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
             try {
                 const response = await fetch(url, options);
                 if (!response.ok) {
@@ -2003,7 +1857,7 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
             }
         }
 
-        // --- AMBIENT CANVASES ---
+        // --- BACKGROUND SPARK ANIMATION PARTICLES ---
         const sparksCanvas = document.getElementById('sparks-canvas');
         const sCtx = sparksCanvas.getContext('2d');
         let sparks = [];
@@ -2065,21 +1919,20 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
             animate();
         }
 
-        // Vault Loading Initialization
+        // Vault Initialization Lifecycles
         window.addEventListener('DOMContentLoaded', () => {
             initSparks();
             initializeVault();
 
-            // Apply saved forge theme or default Hellfire Red
             const savedTheme = localStorage.getItem('forge-theme') || '#ef4444';
             window.changeForgeAtmosphere(savedTheme);
         });
 
-        // Theme / Atmosphere Switcher Mapping
+        // Theme Switcher Mappings
         const themeRgbMap = {
-            '#ef4444': '239, 68, 68',  // Hellfire Red
-            '#22c55e': '34, 197, 94',   // Toxic Sludge Green
-            '#3b82f6': '59, 130, 246'  // Frozen Fjord Blue
+            '#ef4444': '239, 68, 68',
+            '#22c55e': '34, 197, 94',
+            '#3b82f6': '59, 130, 246'
         };
 
         window.changeForgeAtmosphere = function(colorHex) {
@@ -2089,7 +1942,6 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
             window.currentAccentHex = colorHex;
             localStorage.setItem('forge-theme', colorHex);
 
-            // Toggle indicators on buttons
             const colors = ['#ef4444', '#22c55e', '#3b82f6'];
             const buttonIds = ['btn-theme-red', 'btn-theme-green', 'btn-theme-blue'];
             colors.forEach((c, idx) => {
@@ -2105,7 +1957,6 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
                 }
             });
         };
-
     </script>
 </body>
 </html>
