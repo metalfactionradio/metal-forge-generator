@@ -1973,14 +1973,14 @@ window.toggleForgeLock = function(field) {
 };
         
 
-// EXPOSE TO WINDOW: Activates the Re-Roll Art UI buttons
+// EXPOSE TO WINDOW: Maps the cover art re-roll UI components straight to the main crucible engine
 window.regenerateCoverArt = function() {
     if (!window.currentTitle) {
         window.showToast("Forge a track configuration first before re-rolling artwork!");
         return;
     }
-    window.showToast("Re-rolling visual layout layers...");
-    generateAlbumCover(window.currentTitle, window.currentStyle, window.currentTheme, window.currentBand);
+    window.showToast("Refining industrial vector elements...");
+    window.forgeMetal();
 };
 
 async function fetchWithRetry(url, options = {}, retries = 3, delay = 2500) {
