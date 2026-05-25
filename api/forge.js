@@ -13,12 +13,17 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
         }
 
-        // DIAGNOSTIC LOG 1: See exactly what your frontend is passing over
         console.log("=== Incoming Request Body ===", JSON.stringify(req.body));
 
-        const requestedModel = req.body.model || "gemini-1.5-flash";
+        // 1. Fallback default to modern production-grade flash layout
+        let requestedModel = req.body.model || "gemini-2.5-flash";
         
-        // Automatically switch to the correct Developer API method if an image model is called
+        // 2. AUTO-UPGRADE INTERCEPT: If the frontend sends the retired 1.5 string,
+        // we transform it instantly so it never hits Google dead.
+        if (requestedModel === "gemini-1.5-flash") {
+            requestedModel = "gemini-2.5-flash";
+        }
+
         let apiAction = ":generateContent";
         if (requestedModel.includes("imagen")) {
             apiAction = ":generateImages"; 
@@ -26,7 +31,6 @@ export default async function handler(req, res) {
 
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
-        // DIAGNOSTIC LOG 2: See the exact URL pathway being sent to Google
         console.log("=== Constructed Google URL ===", googleUrl.replace(apiKey, "HIDDEN_KEY"));
 
         const googleResponse = await fetch(googleUrl, {
