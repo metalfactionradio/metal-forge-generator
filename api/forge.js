@@ -23,7 +23,7 @@ export default async function handler(req, res) {
             apiAction = ":predict";
         }
 
-        // 3. Assemble the exact destination path
+        // 3. Assemble the destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
         // Forward the payload data to Google exactly as structured using native global fetch
