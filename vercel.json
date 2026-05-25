@@ -1,6 +1,11 @@
 {
-  "version": 2,
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/forge",
+      "destination": "/api/forge.js"
+    }
+  ],
   "functions": {
     "api/forge.js": {
       "maxDuration": 60
