@@ -1392,7 +1392,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         };
 
-        // Upgraded Art Generation Engine mapping directly into your API Gateway
+        // Upgraded Album Cover Art Generation via Developer-Tier Image Engine
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
@@ -1403,15 +1403,12 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             fallbackEl.classList.add('hidden');
 
             try {
-                // Assemble an explicit artistic prompt for Imagen 3
                 const artPrompt = `An epic high-contrast heavy metal album art layout for a track titled "${songTitle}", styled in genres of ${songStyle}. Theme features: ${songTheme}. Cyberpunk gothic-industrial dark biomechanical aesthetic, rusted iron structures, intricate dark fantasy details, 1:1 aspect ratio square composition, no text.`;
 
+                // Aligned payload configuration matching the standard content structure cleanly
                 const payload = {
-                    model: "imagen-3.0-generate-002",
-                    prompt: artPrompt,
-                    numberOfImages: 1,
-                    outputMimeType: "image/jpeg",
-                    aspectRatio: "1:1"
+                    contents: [{ parts: [{ text: artPrompt }] }],
+                    model: "gemini-2.5-flash-image"
                 };
 
                 const response = await fetchWithRetry('/api/forge', {
@@ -1421,7 +1418,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 });
 
                 const data = await response.json();
-                const base64ImageBytes = data.generatedImages?.[0]?.image?.imageBytes;
+                const base64ImageBytes = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
                 if (!base64ImageBytes) {
                     throw new Error("No image tokens returned from proxy asset stream.");
@@ -1441,7 +1438,6 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                     downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
                 }
 
-                // Push finalized structural manifest to the local/cloud archive vault
                 if (typeof window.archiveTrack === 'function') {
                     window.archiveTrack({
                         title: window.currentTitle,
@@ -1459,7 +1455,6 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 console.error("Art generation proxy failed, applying dark geometric fallback:", err);
                 loaderEl.classList.add('hidden');
                 
-                // Fallback to a sleek dark industrial gradient if token calls run dry
                 const darkMetalFallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=500&auto=format&fit=crop";
                 window.currentCoverArt = darkMetalFallback;
                 coverEl.src = darkMetalFallback;
