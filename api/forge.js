@@ -3,7 +3,6 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-    // Only accept POST requests from your frontend canvas
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
@@ -14,19 +13,22 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
         }
 
-        // 1. Automatically read the explicit model passed by your frontend payload
+        // DIAGNOSTIC LOG 1: See exactly what your frontend is passing over
+        console.log("=== Incoming Request Body ===", JSON.stringify(req.body));
+
         const requestedModel = req.body.model || "gemini-1.5-flash";
         
-        // 2. Select the correct gateway suffix based on the model target
+        // Automatically switch to the correct Developer API method if an image model is called
         let apiAction = ":generateContent";
         if (requestedModel.includes("imagen")) {
-            apiAction = ":predict";
+            apiAction = ":generateImages"; 
         }
 
-        // 3. Assemble the destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
-        // Forward the payload data to Google exactly as structured using native global fetch
+        // DIAGNOSTIC LOG 2: See the exact URL pathway being sent to Google
+        console.log("=== Constructed Google URL ===", googleUrl.replace(apiKey, "HIDDEN_KEY"));
+
         const googleResponse = await fetch(googleUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -34,8 +36,6 @@ export default async function handler(req, res) {
         });
 
         const data = await googleResponse.json();
-        
-        // Return the exact status code and data back to your frontend canvas
         return res.status(googleResponse.status).json(data);
 
     } catch (error) {
