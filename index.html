@@ -1279,12 +1279,13 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
 
             try {
                 const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
-While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested (from brutal death metal to synthwave, rock, dark ambient, jazz fusion, and beyond).
+While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested.
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
-Adapt your style tags, lyrics structure, and vocabulary to the chosen genre. For example, if synthwave is requested, generate retro-futuristic synthwave-style lyrics and appropriate style tags; if rock is requested, use rock structures.
+CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined).
 
-CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined) so the resulting audio file fits safely under serverless payload limits.
+For the "coverArtSvg" property, design a stunning, high-contrast standalone square <svg> layout vector graphic from scratch that functions as the album cover art.
+Aesthetic guidelines: Use premium dark-industrial, cyberpunk, gothic, or biomechanical visual art themes. Incorporate intense gradients (like deep charcoals, crimson reds, dark golds, toxic greens, or rusted irons), geometric metal frames, sharp mechanical ornaments, or abstract vector symbols matching the track's mood. Do not use plain white or boring backgrounds. Do not include literal text letters inside the artwork canvas graphics. Ensure it opens with a clean <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> wrapper.
 
 Respond strictly in raw JSON matching this schema:
 {
@@ -1292,7 +1293,8 @@ Respond strictly in raw JSON matching this schema:
   "styleTags": "optimized, comma, separated, tags, under, 200, chars",
   "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n...",
   "spokenIntroText": "A grand cinematic prologue statement matching the style.",
-  "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!"
+  "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!",
+  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Gradients, filters, paths, and intricate industrial vector shapes matching the design specs...</svg>"
 }`;
 
                 const userPrompt = `Generate a music track blueprint package based on:
@@ -1380,8 +1382,8 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
 
-                // ACTIVE TRIGGER: Both sub-modules are now fully awakened back-to-back
-                await generateAlbumCover(songData.title, songData.styleTags, theme, band);
+                // Pass the freshly minted vector data straight into your art canvas processor
+                generateAlbumCover(songData.coverArtSvg, songData.title);
                 await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
 
             } catch (error) {
@@ -1391,6 +1393,65 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('intro-board').classList.remove('hidden');
             }
         };
+
+        // Processes the custom vector code payload into a clean visual asset directly inside the browser
+        function generateAlbumCover(svgString, songTitle) {
+            const coverEl = document.getElementById('cover-art');
+            const loaderEl = document.getElementById('cover-loader');
+            const fallbackEl = document.getElementById('cover-fallback');
+
+            coverEl.classList.add('hidden');
+            loaderEl.classList.remove('hidden');
+            fallbackEl.classList.add('hidden');
+
+            try {
+                // Secure a solid default industrial blueprint layout if vector content runs dry
+                let processedSvg = svgString || `<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#09090b"/><circle cx="250" cy="250" r="180" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="10 5"/><path d="M150 250 L350 250 M250 150 L250 350" stroke="#ef4444" stroke-width="2" opacity="0.3"/></svg>`;
+
+                // If the response wraps raw formatting characters, clean the string layout instantly
+                if (processedSvg.includes('```xml')) {
+                    processedSvg = processedSvg.split('```xml')[1].split('```')[0].trim();
+                } else if (processedSvg.includes('```html')) {
+                    processedSvg = processedSvg.split('```html')[1].split('```')[0].trim();
+                }
+
+                // Transform the raw code tokens into a safe browser-native data URL structure
+                const fullImgUrl = `data:image/svg+xml;utf8,${encodeURIComponent(processedSvg)}`;
+                
+                window.currentCoverArt = fullImgUrl;
+                coverEl.src = fullImgUrl;
+                
+                coverEl.classList.remove('hidden');
+                loaderEl.classList.add('hidden');
+
+                const downloadBtn = document.getElementById('download-cover-btn');
+                if (downloadBtn) {
+                    downloadBtn.href = fullImgUrl;
+                    downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.svg`;
+                }
+
+                if (typeof window.archiveTrack === 'function') {
+                    window.archiveTrack({
+                        title: window.currentTitle,
+                        bandName: window.currentBand,
+                        styleTags: window.currentStyle,
+                        themeRequested: window.currentTheme,
+                        lyrics: window.currentLyrics,
+                        spokenIntroText: window.currentSpokenText,
+                        spokenIntroDialog: window.currentSpokenDialog,
+                        coverArt: window.currentCoverArt || ""
+                    });
+                }
+
+            } catch (err) {
+                console.error("Vector graphics mounting failed, applying standard visual asset:", err);
+                loaderEl.classList.add('hidden');
+                const darkMetalFallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=500&auto=format&fit=crop";
+                window.currentCoverArt = darkMetalFallback;
+                coverEl.src = darkMetalFallback;
+                coverEl.classList.remove('hidden');
+            }
+        }
 
        // Upgraded Album Cover Art Generation via Developer-Tier Imagen Engine
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
