@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metal Forge – Multi-Genre Suno Prompt Builder</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter & Cinzel Decorative -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -64,13 +61,10 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans selection:bg-metal-accent/30 selection:text-white relative overflow-x-hidden">
 
-    <!-- Background Sparks Canvas -->
     <canvas id="sparks-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
 
-    <!-- MAIN APP CONTAINER -->
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-8 flex flex-col min-h-screen">
         
-        <!-- HEADER section -->
         <header class="text-center mb-8 relative flex flex-col items-center">
             <div class="inline-block relative">
                 <div class="absolute -inset-1 bg-gradient-to-r from-metal-accent via-yellow-500 to-metal-accent rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
@@ -84,16 +78,14 @@
             <div class="flex flex-wrap justify-center gap-4 mt-3 text-xs text-zinc-500 uppercase tracking-wider">
                 <span><i class="fa-solid fa-guitar text-metal-accent mr-1"></i> Multi-Genre Alchemy</span>
                 <span>•</span>
-                <span><i class="fa-solid fa-fire text-orange-500 mr-1"></i> Fire artwork</span>
+                <span><i class="fa-solid fa-fire text-orange-500 mr-1"></i> Pure blue tracking</span>
                 <span>•</span>
                 <span id="cloud-status-badge" class="transition-colors duration-300"><i class="fa-solid fa-cloud animate-pulse text-yellow-500 mr-1"></i> Syncing Vault...</span>
             </div>
         </header>
 
-        <!-- WORKSPACE GRID -->
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-grow">
             
-            <!-- LEFT COLUMN: INPUT FORGE (5 Cols) -->
             <section class="lg:col-span-5 bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative glow-fire">
                               
                 <h2 class="text-lg font-bold text-zinc-200 mb-6 flex items-center justify-between uppercase tracking-wider">
@@ -103,7 +95,6 @@
                         </span>
                         Forge Your Sound
                     </span>
-                    <!-- Atmosphere Theme Selector Buttons -->
                     <div class="flex items-center gap-1.5 ml-2 bg-zinc-950/60 p-1.5 rounded-full border border-zinc-800/80">
                         <button onclick="changeForgeAtmosphere('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#ef4444]" title="Hellfire Red" id="btn-theme-red"></button>
                         <button onclick="changeForgeAtmosphere('#22c55e')" class="w-4 h-4 rounded-full bg-[#22c55e] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#22c55e]" title="Toxic Sludge Green" id="btn-theme-green"></button>
@@ -112,7 +103,6 @@
                 </h2>
 
                 <div class="space-y-6">
-                    <!-- Style input + Character Counter System -->
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
@@ -121,7 +111,6 @@
                             <span id="style-character-counter" class="text-xs font-mono text-zinc-500">0/200</span>
                         </div>
 
-                        <!-- 200-Character Gauge UI -->
                         <div class="w-full h-1.5 bg-zinc-950 border border-zinc-800 rounded-full overflow-hidden mb-2 relative">
                             <div id="character-gauge" class="h-full w-0 bg-green-500 transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
                         </div>
@@ -134,12 +123,10 @@
                             oninput="updateCharacterCounter(this.value)"
                         >
 
-                        <!-- Exceeded warning prompt overlay -->
                         <div id="character-warning" class="hidden mt-2 p-2 bg-red-950/40 border border-red-900/60 rounded-lg text-[10px] text-red-400 font-bold flex items-center gap-1.5 uppercase tracking-wide pulse-warning">
                             <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> SUNO / UDIO TRUNCATION RISK: Exceeded 200-character ceiling limit!
                         </div>
 
-                        <!-- STYLE MODIFIERS ACCORDION (GENRE EXPANSION) -->
                         <div class="mt-4 bg-zinc-950/40 border border-zinc-800/60 p-3 rounded-xl space-y-2">
                             <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
                                 <span><i class="fa-solid fa-square-plus text-metal-accent mr-1.5"></i> Style Modifiers Matrix</span>
@@ -147,7 +134,6 @@
                             </div>
 
                             <div class="space-y-2">
-                                <!-- Category 1: Core Metal Modifiers -->
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
                                     <button type="button" onclick="toggleAccordion('metal-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition bg-zinc-950/20">
                                         <span class="flex items-center gap-2">
@@ -167,7 +153,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Category 2: Rock & Alternative -->
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
                                     <button type="button" onclick="toggleAccordion('rock-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
                                         <span class="flex items-center gap-2">
@@ -187,7 +172,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Category 3: Atmospheric & Other Genres -->
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
                                     <button type="button" onclick="toggleAccordion('atmospheric-panel')" class="w-full flex justify-between items-center px-3 py-2 text-xs font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition">
                                         <span class="flex items-center gap-2">
@@ -210,7 +194,6 @@
                         </div>
                     </div>
 
-                    <!-- Theme/Lyrics Input -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
@@ -225,7 +208,6 @@
                             class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner resize-none"
                         ></textarea>
                         
-                        <!-- Expanded Collapsible Theme Presets -->
                         <div class="mt-3 space-y-2 bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/60">
                             <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between mb-1">
                                 <span><i class="fa-solid fa-wand-magic-sparkles text-metal-accent mr-1.5"></i> Theme Alchemy Presets</span>
@@ -233,7 +215,6 @@
                             </div>
 
                             <div class="space-y-1.5">
-                                <!-- Group 1: Visual & Cinematic -->
                                 <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
                                     <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
                                         <span class="flex items-center gap-1.5">
@@ -249,7 +230,6 @@
                                     </div>
                                 </details>
 
-                                <!-- Group 2: Lyrical Foundations -->
                                 <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
                                     <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
                                         <span class="flex items-center gap-1.5">
@@ -265,7 +245,6 @@
                                     </div>
                                 </details>
 
-                                <!-- Group 3: Alternative & Ambient Moods -->
                                 <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
                                     <summary class="list-none [&::-webkit-details-marker]:hidden flex justify-between items-center px-2.5 py-1.5 text-[10px] font-bold text-zinc-300 hover:text-white cursor-pointer select-none">
                                         <span class="flex items-center gap-1.5">
@@ -284,7 +263,6 @@
                         </div>
                     </div>
 
-                    <!-- VISCERAL VISION IMAGE-TO-METAL PROMPT -->
                     <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
                         <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between">
                             <span><i class="fa-solid fa-eye text-metal-accent mr-2"></i> Visceral Vision (Image-to-Metal)</span>
@@ -304,7 +282,6 @@
                             </button>
                         </div>
                         
-                        <!-- Thumbnail preview container -->
                         <div id="vision-thumb-container" class="hidden flex items-center gap-3 p-2 bg-zinc-950/80 border border-zinc-800/60 rounded-lg">
                             <img id="vision-thumbnail" src="" class="w-10 h-10 object-cover rounded border border-zinc-700">
                             <span class="text-[10px] text-zinc-400 truncate flex-grow" id="vision-filename">Inspiration loaded</span>
@@ -315,7 +292,6 @@
                         </div>
                     </div>
 
-                    <!-- Song Title Input -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
@@ -331,29 +307,11 @@
                         >
                     </div>
 
-                    <!-- Band Name Input -->
-                   <div>
-    <div class="flex justify-between items-center mb-2">
-        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">
-            Band Name
-        </label>
-        <span class="text-[10px] text-zinc-500 italic">Optional</span>
-    </div>
-    <input 
-        type="text" 
-        id="band-input" 
-        placeholder="e.g., Obsidian Overlord"
-        class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
-    >
-</div>
-
-                    <!-- Suno Prompt Optimization Settings -->
                     <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
                         <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center">
                             <i class="fa-solid fa-sliders text-metal-accent mr-2"></i> Prompt Blueprint Config
                         </div>
                         
-                        <!-- Toggle for Vocal Style inside tag structure -->
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-zinc-400">Vocal Style</span>
                             <select id="vocal-config" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-zinc-200">
@@ -366,7 +324,6 @@
                             </select>
                         </div>
 
-                        <!-- Toggle for Song Structure complexity -->
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-zinc-400">Structural Depth</span>
                             <select id="structure-config" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-zinc-200">
@@ -377,7 +334,6 @@
                         </div>
                     </div>
 
-                    <!-- ACTION BUTTONS -->
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button 
                             id="generate-btn"
@@ -397,10 +353,8 @@
                 </div>
             </section>
 
-            <!-- RIGHT COLUMN: OUTPUT ENGINE & DEMO PLAYERS (7 Cols) -->
             <section class="lg:col-span-7 space-y-8">
                 
-                <!-- Loading State placeholder -->
                 <div id="forge-loader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-6 animate-pulse">
                     <div class="relative flex items-center justify-center">
                         <div class="w-16 h-16 border-4 border-metal-accent border-t-yellow-500 rounded-full animate-spin"></div>
@@ -412,10 +366,8 @@
                     </div>
                 </div>
 
-                <!-- Generated Output Panel -->
                 <div id="forge-output" class="space-y-8">
                     
-                    <!-- EXPLANATORY / INTRO BOARD -->
                     <div id="intro-board" class="bg-zinc-900/40 border border-zinc-800/40 rounded-2xl p-8 text-center space-y-4">
   <div class="w-16 h-16 bg-zinc-800/50 border border-zinc-700/30 rounded-full flex items-center justify-center mx-auto text-metal-accent text-2xl shadow-[0_0_15px_rgba(var(--forge-accent-rgb),0.15)] mb-3 transition-all duration-300">
   <i class="fa-solid fa-hammer"></i>
@@ -447,17 +399,14 @@
   </div>
 </div>
 
-                    <!-- TRACK INFO & PROMPT BOXES -->
                     <div id="track-results" class="hidden space-y-6">
                         
-                        <!-- TITLE & STYLE CARD -->
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
                             <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
                                 Track Specs
                             </div>
 
                             <div class="mt-2 space-y-4">
-                                <!-- Track Title Display -->
                                 <div>
                                     <div class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest mb-1">Song Title</div>
                                     <div class="flex items-center justify-between bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-3">
@@ -468,7 +417,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Suno Style Tags Display -->
                                 <div>
                                     <div class="flex justify-between items-center mb-1">
                                         <div class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Suno Style Prompt <span class="text-zinc-600">(Optimal: Under 120/200 characters)</span></div>
@@ -490,7 +438,6 @@
                             </div>
                         </div>
 
-                        <!-- LYRIC WORKBENCH -->
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
                             <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
                                 Lyric Blueprint
@@ -518,7 +465,6 @@
     <pre id="output-lyrics" class="whitespace-pre-wrap select-text selection:bg-metal-accent/30 font-mono text-xs md:text-sm"></pre>
 </div>
 
-                            <!-- AI LYRIC CO-PILOT CHAT -->
                             <div class="mt-4 pt-4 border-t border-zinc-800/80 space-y-3">
                                 <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between">
                                     <span><i class="fa-solid fa-comments text-orange-500 mr-1.5"></i> AI Lyric Co-Pilot (Refine &amp; Edit)</span>
@@ -545,10 +491,8 @@
                             </div>
                         </div>
 
-                        <!-- COVER ART & SPOKEN INTRO DEMO -->
-                       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                             
-                            <!-- ALBUM COVER ART GENERATOR -->
                             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col">
                                 <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center justify-between">
                                     <span><i class="fa-solid fa-compact-disc text-metal-accent mr-1.5"></i> Custom Cover Art</span>
@@ -557,23 +501,19 @@
                                     </button>
                                 </div>
                                 <div class="flex-grow flex items-center justify-center bg-zinc-950 border border-zinc-800/60 rounded-xl overflow-hidden aspect-square relative group">
-                                    <!-- Image element -->
                                     <img id="cover-art" src="" alt="Album Cover" class="hidden w-full h-full object-cover">
                                     
-                                    <!-- Cover loader placeholder -->
                                     <div id="cover-loader" class="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-zinc-950">
                                         <div class="w-8 h-8 border-2 border-metal-accent border-t-transparent rounded-full animate-spin"></div>
                                         <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Pouring molten artwork...</p>
                                     </div>
 
-                                    <!-- Cover Generation Failed or Not Started -->
                                     <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
                                         <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
                                         <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
                                         <button onclick="regenerateCoverArt()" class="mt-2 text-xs bg-metal-accent/20 hover:bg-metal-accent/40 text-metal-accent px-3 py-1 rounded-md transition">Try Again</button>
                                     </div>
                                     
-                                    <!-- Hover actions -->
                                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                         <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-metal-accent text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
                                             <i class="fa-solid fa-download text-lg"></i>
@@ -582,7 +522,6 @@
                                 </div>
                             </div>
 
-                            <!-- TTS INTRO NARRATOR -->
                             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
                                 <div>
                                     <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1.5 flex items-center justify-between">
@@ -595,19 +534,15 @@
                                 </div>
 
                                 <div class="bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-4 space-y-4">
-                                    <!-- Dialogue / Quote of the narration -->
                                     <div id="tts-quote-container" class="max-h-[120px] overflow-y-auto space-y-2">
                                         <p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">
                                             "Waiting for lyrics to materialize..."
                                         </p>
                                     </div>
 
-                                    <!-- AUDIO CONTROL SUITE -->
                                     <div class="flex items-center justify-between pt-2 border-t border-zinc-800/60">
-                                        <!-- Mini Visualizer (Canvas) -->
                                         <canvas id="visualizer" class="h-8 w-24 bg-zinc-900/40 rounded border border-zinc-800/40"></canvas>
                                         
-                                        <!-- Play/Pause Trigger -->
                                         <button 
                                             id="tts-play-btn" 
                                             onclick="toggleTTSAudio()"
@@ -625,7 +560,6 @@
 
                         </div>
 
-                        <!-- SUNO AI TIPS & METATAG REFERENCE -->
                         <div class="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6">
                             <h4 class="text-xs font-bold uppercase text-zinc-400 tracking-wider mb-3 flex items-center">
                                 <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> How to Maximize Tracks in Suno
@@ -650,7 +584,6 @@
             </section>
         </main>
 
-        <!-- FEATURE 4: SESSION HISTORY SECTION -->
         <section class="mt-8 bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-6 shadow-2xl relative">
             <h3 class="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-box-archive text-yellow-500"></i> Forge Archives (Session History)
@@ -664,27 +597,22 @@
                 No past music iterations cataloged inside this crucible yet. Click "Forge" to write history!
             </div>
 
-            <!-- Horizontal Scrollable History Grid -->
             <div id="history-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1 animate-fadeIn">
-                <!-- Dynamically populated card structure -->
-            </div>
+                </div>
         </section>
 
-        <!-- FOOTER SECTION -->
         <footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
             <p>© 2026 Metal Forge. Specially optimized for Suno AI and Udio prompting pipelines.</p>
         </footer>
 
     </div>
 
-    <!-- UI NOTIFICATION / TOAST BOX -->
     <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 scale-95 transition-all duration-300 pointer-events-none bg-zinc-900 border border-metal-accent text-zinc-100 px-5 py-3 rounded-xl flex items-center gap-3 shadow-[0_4px_20px_rgba(var(--forge-accent-rgb),0.4)]">
         <i class="fa-solid fa-fire text-metal-accent animate-pulse"></i>
         <span id="toast-msg" class="text-xs font-semibold tracking-wide uppercase">Prompt Loaded!</span>
     </div>
 
-    <!-- FIREBASE AND CORE APP MODULE JS -->
-<script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1054,6 +982,7 @@
             const title = titleInput || "A randomized dark metal title";
 
             try {
+                // Highly optimized, text-only operational schema parameters
                 const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
 While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested.
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
