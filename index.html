@@ -1258,7 +1258,7 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
             showToast("Workspace cleared! Forge has been reset.");
         };
 
-        window.forgeMetal = async function() {
+       window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
@@ -1278,12 +1278,11 @@ if (lyricsPre && !activeForgeLocks.lyrics) {
             window.currentBand = band;
 
             try {
-const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
+                const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
 While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested (from brutal death metal to synthwave, rock, dark ambient, jazz fusion, and beyond).
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
 Adapt your style tags, lyrics structure, and vocabulary to the chosen genre. For example, if synthwave is requested, generate retro-futuristic synthwave-style lyrics and appropriate style tags; if rock is requested, use rock structures.
-If a non-metal style is requested, adapt the lyrics, style tags, and spoken intro dialogue to reflect that style elegantly instead of forcing heavy metal characteristics (unless blended).
 
 CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined) so the resulting audio file fits safely under serverless payload limits.
 
@@ -1314,49 +1313,44 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 };
 
                 const response = await fetchWithRetry(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-});
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-const result = await response.json();
-const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-if (!jsonText) throw new Error("No payload returned from generation.");
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!jsonText) throw new Error("No payload returned from generation.");
 
-const songData = JSON.parse(jsonText);
+                const songData = JSON.parse(jsonText);
 
-// Populate specs globally & UI elements (With Lockdown Safety Checks)
-window.currentTitle = songData.title;
-window.currentTheme = theme;
-window.currentSpokenText = songData.spokenIntroText;
-window.currentSpokenDialog = songData.spokenIntroDialog;
+                window.currentTitle = songData.title;
+                window.currentTheme = theme;
+                window.currentSpokenText = songData.spokenIntroText;
+                window.currentSpokenDialog = songData.spokenIntroDialog;
 
-document.getElementById('output-title').innerText = songData.title;
+                document.getElementById('output-title').innerText = songData.title;
 
-// --- STYLE LOCK GATE ---
-if (!activeForgeLocks.style) {
-    window.currentStyle = songData.styleTags;
-    document.getElementById('output-style').innerText = songData.styleTags;
+                if (!activeForgeLocks.style) {
+                    window.currentStyle = songData.styleTags;
+                    document.getElementById('output-style').innerText = songData.styleTags;
 
-    // Adjust Style Box count displays (Only updates if style is unlocked!)
-    const styleLength = songData.styleTags.length;
-    document.getElementById('style-count').innerText = `${styleLength} / 200 chars`;
-    if (styleLength > 200) {
-        document.getElementById('style-count').classList.add('text-red-500');
-    } else {
-        document.getElementById('style-count').classList.remove('text-red-500');
-    }
-}
+                    const styleLength = songData.styleTags.length;
+                    document.getElementById('style-count').innerText = `${styleLength} / 200 chars`;
+                    if (styleLength > 200) {
+                        document.getElementById('style-count').classList.add('text-red-500');
+                    } else {
+                        document.getElementById('style-count').classList.remove('text-red-500');
+                    }
+                }
 
-// --- LYRICS LOCK GATE ---
-if (!activeForgeLocks.lyrics) {
-    window.currentLyrics = songData.lyrics;
-    document.getElementById('output-lyrics').innerText = songData.lyrics;
-}
+                if (!activeForgeLocks.lyrics) {
+                    window.currentLyrics = songData.lyrics;
+                    document.getElementById('output-lyrics').innerText = songData.lyrics;
+                }
 
-updateDynamicSpeakers(songData.spokenIntroDialog);
+                updateDynamicSpeakers(songData.spokenIntroDialog);
 
-                // Format quote dialogue lines in HTML view
                 const quoteContainer = document.getElementById('tts-quote-container');
                 if (songData.spokenIntroDialog) {
                     quoteContainer.innerHTML = '';
@@ -1386,54 +1380,90 @@ updateDynamicSpeakers(songData.spokenIntroDialog);
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
 
-                // Trigger Sub-generations
+                // ACTIVE TRIGGER: Both sub-modules are now fully awakened back-to-back
                 await generateAlbumCover(songData.title, songData.styleTags, theme, band);
-//await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
+                await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
 
             } catch (error) {
                 console.error("Error forging metal track package:", error);
-                showToast("Forge failure! The forge ran out of steam. Try again.");
+                showToast("Forge failure! Check server configuration.");
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('intro-board').classList.remove('hidden');
             }
         };
 
-     // Album Cover Art Generation (INSTANT STATIC PREVIEW BYPASS)
+        // Upgraded Art Generation Engine mapping directly into your API Gateway
         async function generateAlbumCover(songTitle, songStyle, songTheme, bandName = "") {
             const coverEl = document.getElementById('cover-art');
             const loaderEl = document.getElementById('cover-loader');
             const fallbackEl = document.getElementById('cover-fallback');
 
-            // Instantly swap visibility tags with zero network delays
-            coverEl.classList.remove('hidden');
-            loaderEl.classList.add('hidden');
+            coverEl.classList.add('hidden');
+            loaderEl.classList.remove('hidden');
             fallbackEl.classList.add('hidden');
 
-            // Premium dark placeholder asset
-            const mockImgUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"; 
-            
-            window.currentCoverArt = mockImgUrl;
-            coverEl.src = mockImgUrl;
+            try {
+                // Assemble an explicit artistic prompt for Imagen 3
+                const artPrompt = `An epic high-contrast heavy metal album art layout for a track titled "${songTitle}", styled in genres of ${songStyle}. Theme features: ${songTheme}. Cyberpunk gothic-industrial dark biomechanical aesthetic, rusted iron structures, intricate dark fantasy details, 1:1 aspect ratio square composition, no text.`;
 
-            // Configure download link anchors safely
-            const downloadBtn = document.getElementById('download-cover-btn');
-            if (downloadBtn) {
-                downloadBtn.href = mockImgUrl;
-                downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
-            }
+                const payload = {
+                    model: "imagen-3.0-generate-002",
+                    prompt: artPrompt,
+                    numberOfImages: 1,
+                    outputMimeType: "image/jpeg",
+                    aspectRatio: "1:1"
+                };
 
-            // Smoothly archive metadata to history vault
-            if (typeof window.archiveTrack === 'function') {
-                window.archiveTrack({
-                    title: window.currentTitle,
-                    bandName: window.currentBand,
-                    styleTags: window.currentStyle,
-                    themeRequested: window.currentTheme,
-                    lyrics: window.currentLyrics,
-                    spokenIntroText: window.currentSpokenText,
-                    spokenIntroDialog: window.currentSpokenDialog,
-                    coverArt: window.currentCoverArt || ""
+                const response = await fetchWithRetry('/api/forge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
+
+                const data = await response.json();
+                const base64ImageBytes = data.generatedImages?.[0]?.image?.imageBytes;
+
+                if (!base64ImageBytes) {
+                    throw new Error("No image tokens returned from proxy asset stream.");
+                }
+
+                const fullImgUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
+                
+                window.currentCoverArt = fullImgUrl;
+                coverEl.src = fullImgUrl;
+                
+                coverEl.classList.remove('hidden');
+                loaderEl.classList.add('hidden');
+
+                const downloadBtn = document.getElementById('download-cover-btn');
+                if (downloadBtn) {
+                    downloadBtn.href = fullImgUrl;
+                    downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.jpg`;
+                }
+
+                // Push finalized structural manifest to the local/cloud archive vault
+                if (typeof window.archiveTrack === 'function') {
+                    window.archiveTrack({
+                        title: window.currentTitle,
+                        bandName: window.currentBand,
+                        styleTags: window.currentStyle,
+                        themeRequested: window.currentTheme,
+                        lyrics: window.currentLyrics,
+                        spokenIntroText: window.currentSpokenText,
+                        spokenIntroDialog: window.currentSpokenDialog,
+                        coverArt: window.currentCoverArt || ""
+                    });
+                }
+
+            } catch (err) {
+                console.error("Art generation proxy failed, applying dark geometric fallback:", err);
+                loaderEl.classList.add('hidden');
+                
+                // Fallback to a sleek dark industrial gradient if token calls run dry
+                const darkMetalFallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=500&auto=format&fit=crop";
+                window.currentCoverArt = darkMetalFallback;
+                coverEl.src = darkMetalFallback;
+                coverEl.classList.remove('hidden');
             }
         }
                 
