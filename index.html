@@ -1405,7 +1405,6 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             try {
                 const artPrompt = `An epic high-contrast heavy metal album art layout for a track titled "${songTitle}", styled in genres of ${songStyle}. Theme features: ${songTheme}. Cyberpunk gothic-industrial dark biomechanical aesthetic, rusted iron structures, intricate dark fantasy details, 1:1 aspect ratio square composition, no text.`;
 
-                // Configured payload matching Google's strict Imagen schema architecture
                 const payload = {
                     model: "imagen-3.0-generate-002",
                     prompt: artPrompt,
@@ -1422,7 +1421,12 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
 
                 const data = await response.json();
                 
-                // Extract image base64 bytes directly from the specialized generatedImages array
+                // Print explicit descriptions straight to console if Google logs a content error
+                if (data.error) {
+                    console.error("Google Image Engine error response context:", data.error);
+                    throw new Error(`Google API Error: ${data.error.message || "Validation rejection"}`);
+                }
+
                 const base64ImageBytes = data.generatedImages?.[0]?.image?.imageBytes;
 
                 if (!base64ImageBytes) {
