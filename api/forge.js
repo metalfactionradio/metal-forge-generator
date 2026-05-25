@@ -13,20 +13,23 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
         }
 
-        // 1. Capture the model target from the incoming frontend canvas payload
+        // 1. Safely extract the model parameter for the endpoint path mapping
         let requestedModel = req.body.model || "gemini-2.5-flash";
-        
         if (requestedModel === "gemini-1.5-flash") {
             requestedModel = "gemini-2.5-flash";
         }
 
-        // 2. DYNAMIC ROUTING BRIDGE: Shift endpoints based on asset type
+        // 2. CRITICAL CLEANUP: Clone the body and purge the strict 'model' property
+        // so Google's validation gate doesn't reject it as an unexpected field.
+        const cleanBody = { ...req.body };
+        delete cleanBody.model;
+
+        // 3. Intelligently route actions based on target architectures
         let apiAction = ":generateContent";
         if (requestedModel.includes("imagen")) {
             apiAction = ":generateImages";
         }
 
-        // 3. Assemble the exact destination path
         const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}${apiAction}?key=${apiKey}`;
 
         console.log("=== Constructed Google URL ===", googleUrl.replace(apiKey, "HIDDEN_KEY"));
@@ -34,7 +37,7 @@ export default async function handler(req, res) {
         const googleResponse = await fetch(googleUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.body)
+            body: JSON.stringify(cleanBody) // Sends only clean, endpoint-compliant criteria
         });
 
         const responseText = await googleResponse.text();
