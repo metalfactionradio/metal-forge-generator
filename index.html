@@ -788,8 +788,8 @@
             let currentText = styleInput.value.trim();
             const phraseLower = phrase.toLowerCase();
             
-            if (btn.classList.contains('bg-metal-accent/30')) {
-                btn.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
+            if (btn.classList.contains('bg-metal-accent\\/30') || btn.classList.contains('bg-metal-accent/30')) {
+                btn.classList.remove('bg-metal-accent/30', 'bg-metal-accent\\/30', 'text-metal-accent', 'border-metal-accent/50');
                 btn.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
                 
                 const pattern = new RegExp(`(^|,\\s*)${phraseLower}(,\\s*|$)`, 'i');
@@ -984,7 +984,7 @@
         }
 
         window.archiveTrack = async function(trackData) {
-            if (trackData.coverArt) {
+            if (trackData.coverArt && trackData.coverArt.startsWith('data:image')) {
                 try {
                     trackData.coverArt = await shrinkImageBase64(trackData.coverArt);
                 } catch (err) {
@@ -1057,7 +1057,7 @@
 
                 card.innerHTML = `
                     <div class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center relative">
-                        ${item.coverArt ? `<img src="${item.coverArt}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-guitar text-zinc-600 text-lg"></i>`}
+                        ${item.coverArt && item.coverArt.startsWith('data:image') ? `<img src="${item.coverArt}" class="w-full h-full object-cover">` : `<div class="w-full h-full bg-zinc-950 flex items-center justify-center text-[10px] text-orange-500 font-mono font-bold">PROMPT</div>`}
                     </div>
                     <div class="flex-grow min-w-0">
                         <h4 class="font-metal font-bold text-xs text-yellow-500 truncate mb-0.5">${item.title || 'Untitled Track'}</h4>
@@ -1120,24 +1120,10 @@
                     }
                 });
             } else {
-                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${songData.spokenIntroText}"</p>`;
+                quoteContainer.innerHTML = `<p id="tts-quote" class="text-[11px] text-zinc-400 italic text-center leading-relaxed">"${item.spokenIntroText}"</p>`;
             }
 
-            const coverEl = document.getElementById('cover-art');
-            const loaderEl = document.getElementById('cover-loader');
-            const fallbackEl = document.getElementById('cover-fallback');
-            if (item.coverArt) {
-                coverEl.src = item.coverArt;
-                coverEl.classList.remove('hidden');
-                loaderEl.classList.add('hidden');
-                fallbackEl.classList.add('hidden');
-                document.getElementById('download-cover-btn').href = item.coverArt;
-            } else {
-                coverEl.classList.add('hidden');
-                loaderEl.classList.add('hidden');
-                fallbackEl.classList.remove('hidden');
-            }
-
+            generateAlbumCover(item.coverArt, item.title);
             generateNarratorTTS(item.spokenIntroText, item.spokenIntroDialog);
             showToast(`Loaded Specs for: ${item.title}`);
         };
@@ -1190,6 +1176,28 @@
             document.getElementById('cover-loader').classList.add('hidden');
             document.getElementById('cover-fallback').classList.add('hidden');
             
+            // Re-render empty placeholder frame
+            const artBlock = document.getElementById('cover-art').parentElement;
+            if(artBlock) {
+                artBlock.className = "flex-grow flex items-center justify-center bg-zinc-950 border border-zinc-800/60 rounded-xl overflow-hidden aspect-square relative group";
+                artBlock.innerHTML = `
+                    <img id="cover-art" src="" alt="Album Cover" class="hidden w-full h-full object-cover">
+                    <div id="cover-loader" class="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-zinc-950 hidden">
+                        <div class="w-8 h-8 border-2 border-metal-accent border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Pouring molten artwork...</p>
+                    </div>
+                    <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                        <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <a id="download-cover-btn" href="#" class="p-3 bg-metal-accent text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105 hidden" title="Download Cover">
+                            <i class="fa-solid fa-download text-lg"></i>
+                        </a>
+                    </div>
+                `;
+            }
+
             window.currentTitle = "";
             window.currentBand = "";
             window.currentStyle = "";
@@ -1203,16 +1211,16 @@
             document.getElementById('track-results').classList.add('hidden');
             document.getElementById('forge-loader').classList.add('hidden');
             
-            const activeChips = document.querySelectorAll('.bg-metal-accent\\/30');
+            const activeChips = document.querySelectorAll('.bg-metal-accent\\/30, .bg-metal-accent/30');
             activeChips.forEach(chip => {
-                chip.classList.remove('bg-metal-accent/30', 'text-metal-accent', 'border-metal-accent/50');
+                chip.classList.remove('bg-metal-accent/30', 'bg-metal-accent\\/30', 'text-metal-accent', 'border-metal-accent/50');
                 chip.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800/60');
             });
             
             showToast("Workspace cleared! Forge has been reset.");
         };
 
-      window.forgeMetal = async function() {
+        window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
@@ -1232,42 +1240,18 @@
             window.currentBand = band;
 
             try {
-                // Calibrated prompt passing inputs straight into the graphic design layout matrices
-             const systemPrompt = `You are an elite master music producer, lyricist, and an avant-garde digital vector graphic illustrator specializing in extreme, hyper-detailed dark alternative and heavy metal album art layouts.
+                const systemPrompt = `You are an elite master music producer, lyricist, and expert visual creative director specializing in heavy metal and dark alternative release art strategy.
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
 CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total.
 
-=========================================================
-THE CRUCIBLE BLUEPRINT: HYPER-DETAILED INDUSTRIAL SVG ART
-=========================================================
-For the "coverArtSvg" property, design a complex, layered, professional-grade square <svg> layout graphic from scratch. It must look like a dark, intricate digital masterpiece, completely abandoning basic corporate geometry.
-
-CRITICAL ARCHITECTURAL LAYER SPECIFICATIONS:
-You MUST construct the SVG utilizing this exact 5-layer stacking architecture:
-
-1. LAYER 1: THE TEXTURED CRUCIBLE (Background)
-   - Do NOT use a boring flat background fill. 
-   - You MUST include a <defs> section containing an advanced grunge/noise filter stack. Use <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise"/>, blended with a <feColorMatrix> or <feDiffuseLighting> to turn the background into a highly detailed, grimy texture resembling rusted sheet iron, distressed concrete, or raw industrial decay.
-
-2. LAYER 2: THE SONIC ENGINE (Atmospheric Overlays)
-   - Utilize complex <linearGradient> and <radialGradient> arrays featuring at least 4 to 5 harsh, moody color stops (e.g., oil-slick greens, burnt ochres, oxidized coppers, deep charcoals, dried blood crimsons).
-   - Overlay large, semi-transparent circular arrays or angular frames with custom 'mix-blend-mode: overlay' or 'multiply' inline styling properties to create heavy vignette borders and ominous light casting.
-
-3. LAYER 3: THE SECTORBLUE MAP (Interlocking Geometric Complex)
-   - BANNED: A simple standalone diamond, a floating square, or a lone plain triangle.
-   - MANDATORY: Build an intricate, dense network of industrial elements. Layer a massive array of nested technical lines, repeating isometric wireframe grids using <pattern>, razor-sharp mechanical teeth, spikes, or esoteric sigil matrices using detailed, multi-coordinate <path d="..." /> statements. Make the center feel mechanically complex and dangerous.
-
-4. LAYER 4: ADVANCED FX FILTERS (Glows & Shadows)
-   - Define a <filter id="hellfire-glow"> using <feGaussianBlur stdDeviation="6" result="blur"/> and <feMerge> to apply an intense, radioactive neon halo or plasma-fused edge look to your primary vector tracks and text paths.
-   - Use drop-shadow filters extensively to separate your mechanical layers and build realistic visual scale.
-
-5. LAYER 5: BRUTAL INDUSTRIAL TYPOGRAPHY
-   - Center or balance the typography cleanly within the 500x500 frame.
-   - Band Name: "${band}". Format this with an ultra-letter-spaced, clean, high-contrast tracking look (<text text-anchor="middle" letter-spacing="6" font-size="14" ...>).
-   - Track Title: "${title}". Make this massive, dominant, and aggressive. Use thick, heavy typography paths. You MUST apply your custom glow or drop-shadow filter directly to this text node, or include a high-contrast backing accent plate so it violently rips through the dense industrial background graphics.
-
-Ensure the final string opens cleanly with an explicit <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> code line.
+For the "coverArtPrompt" property, craft a world-class, professional-grade text prompt to be fed directly into diffusion systems like Midjourney v6 or Imagen to render full album art.
+The prompt must be stunning and describe a dark, textured, visceral scene matching the song's musical weights. 
+Break it into details like:
+- Core composition elements (e.g., weathered metallic skulls, intricate cybernetic wiring matrices, jagged obsidian armor plates, dark ambient horizons, occult biomechanical pillars).
+- Texture parameters (e.g., heavy rust and corrosion, distressed iron sheet, ancient stone decay, high contrast chiaroscuro framing, industrial soot overlay).
+- Lighting instructions (e.g., dramatic backlighting, glowing radioactive green or plasma-fused red channels, harsh light silhouettes).
+- Explicitly add the style weights at the end: "1:1 ratio square composition, album cover art, intricate detail, professional graphic styling, hyper-realistic illustrative depth --v 6.0".
 
 Respond strictly in raw JSON matching this schema:
 {
@@ -1276,7 +1260,7 @@ Respond strictly in raw JSON matching this schema:
   "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n...",
   "spokenIntroText": "A grand cinematic prologue statement matching the style.",
   "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!",
-  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Advanced texturing defs, custom lighting filters, highly dense interlocking path groupings, typography shadows, and rich atmospheric layering matching the design criteria...</svg>"
+  "coverArtPrompt": "A highly detailed illustrative prompt for a dedicated image generator based on theme details..."
 }`;
 
                 const userPrompt = `Generate a music track blueprint package based on:
@@ -1364,7 +1348,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
 
-                generateAlbumCover(songData.coverArtSvg, songData.title);
+                generateAlbumCover(songData.coverArtPrompt, songData.title);
                 await generateNarratorTTS(songData.spokenIntroText, songData.spokenIntroDialog);
 
             } catch (error) {
@@ -1375,59 +1359,59 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         };
 
-        // Custom Vector SVG Art Mounting Canvas 
-        function generateAlbumCover(svgString, songTitle) {
-            const coverEl = document.getElementById('cover-art');
-            const loaderEl = document.getElementById('cover-loader');
-            const fallbackEl = document.getElementById('cover-fallback');
+        // Upgraded Graphic Prompt Vault Interface
+        function generateAlbumCover(promptString, songTitle) {
+            const artBlock = document.getElementById('cover-art').parentElement;
+            if (!artBlock) return;
 
-            coverEl.classList.add('hidden');
-            loaderEl.classList.remove('hidden');
-            fallbackEl.classList.add('hidden');
+            window.currentCoverArt = promptString || "";
 
-            try {
-                let processedSvg = svgString || `<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#09090b"/><circle cx="250" cy="250" r="180" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="10 5"/><path d="M150 250 L350 250 M250 150 L250 350" stroke="#ef4444" stroke-width="2" opacity="0.3"/></svg>`;
+            // Transforms the simple image card frame into a custom tactical text terminal panel
+            artBlock.className = "flex-grow flex flex-col justify-between bg-zinc-950 border border-zinc-800/80 rounded-xl overflow-hidden aspect-square p-4 relative font-mono text-[11px] leading-relaxed select-text shadow-inner";
+            
+            // Render a premium dark metallic overlay vault with full interactive clip actions
+            artBlock.innerHTML = `
+                <div class="flex-grow overflow-y-auto space-y-3 pr-1 text-zinc-300 custom-scrollbar selection:bg-orange-500/20">
+                    <div class="text-[10px] uppercase font-bold text-orange-500/80 tracking-widest border-b border-zinc-800/60 pb-1 flex items-center justify-between">
+                        <span>💡 MIDJOURNEY / IMAGEN MATRIX ACTIVATED</span>
+                        <span class="text-[9px] text-zinc-500">1:1 Ceilings</span>
+                    </div>
+                    
+                    <div class="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg text-zinc-400 text-[10px] leading-relaxed">
+                        <span class="text-zinc-300 font-bold uppercase tracking-wider text-[9px] block mb-0.5">DESIGN TYPOGRAPHY OVERLAY SYSTEM:</span>
+                        For optimal design balance, use an image editor to overlay your custom track text specifications onto the generated pixel background canvas:
+                        <ul class="list-disc list-inside mt-1 space-y-0.5 text-zinc-500">
+                            <li><strong class="text-zinc-400">Band Layout:</strong> "${window.currentBand || 'NOT PROVIDED'}"</li>
+                            <li><strong class="text-zinc-400">Title Layout:</strong> "${songTitle || 'NOT PROVIDED'}"</li>
+                        </ul>
+                    </div>
 
-                if (processedSvg.includes('```xml')) {
-                    processedSvg = processedSvg.split('```xml')[1].split('```')[0].trim();
-                } else if (processedSvg.includes('```html')) {
-                    processedSvg = processedSvg.split('```html')[1].split('```')[0].trim();
-                }
+                    <div class="space-y-1">
+                        <span class="text-zinc-500 uppercase tracking-widest text-[9px] block font-bold">Generated Visual Prompt Blueprint:</span>
+                        <p id="art-prompt-text" class="text-zinc-200 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/40 select-text selection:bg-orange-500/30 font-mono text-[11px] leading-normal italic">
+                            ${window.currentCoverArt || 'Waiting for metadata parameters...'}
+                        </p>
+                    </div>
+                </div>
 
-                const fullImgUrl = `data:image/svg+xml;utf8,${encodeURIComponent(processedSvg)}`;
-                
-                window.currentCoverArt = fullImgUrl;
-                coverEl.src = fullImgUrl;
-                
-                coverEl.classList.remove('hidden');
-                loaderEl.classList.add('hidden');
+                <div class="pt-3 border-t border-zinc-800/60 flex items-center justify-end">
+                    <button onclick="window.copyToClipboard('art-prompt-text', this)" class="w-full py-2.5 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-orange-500/50 text-zinc-300 hover:text-orange-500 rounded-lg transition-all font-bold flex items-center justify-center gap-2 uppercase tracking-wider text-[10px] cursor-pointer">
+                        <i class="fa-regular fa-copy"></i> Copy Graphic Prompt
+                    </button>
+                </div>
+            `;
 
-                const downloadBtn = document.getElementById('download-cover-btn');
-                if (downloadBtn) {
-                    downloadBtn.href = fullImgUrl;
-                    downloadBtn.download = `${songTitle.replace(/\s+/g, '-').toLowerCase()}-album-cover.svg`;
-                }
-
-                if (typeof window.archiveTrack === 'function') {
-                    window.archiveTrack({
-                        title: window.currentTitle,
-                        bandName: window.currentBand,
-                        styleTags: window.currentStyle,
-                        themeRequested: window.currentTheme,
-                        lyrics: window.currentLyrics,
-                        spokenIntroText: window.currentSpokenText,
-                        spokenIntroDialog: window.currentSpokenDialog,
-                        coverArt: window.currentCoverArt || ""
-                    });
-                }
-
-            } catch (err) {
-                console.error("Vector graphics mounting failed, applying standard visual asset:", err);
-                loaderEl.classList.add('hidden');
-                const darkMetalFallback = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=500&auto=format&fit=crop";
-                window.currentCoverArt = darkMetalFallback;
-                coverEl.src = darkMetalFallback;
-                coverEl.classList.remove('hidden');
+            if (typeof window.archiveTrack === 'function') {
+                window.archiveTrack({
+                    title: window.currentTitle,
+                    bandName: window.currentBand,
+                    styleTags: window.currentStyle,
+                    themeRequested: window.currentTheme,
+                    lyrics: window.currentLyrics,
+                    spokenIntroText: window.currentSpokenText,
+                    spokenIntroDialog: window.currentSpokenDialog,
+                    coverArt: window.currentCoverArt || ""
+                });
             }
         }
                 
@@ -1436,8 +1420,8 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             const playBtn = document.getElementById('tts-play-btn');
             const ttsLoader = document.getElementById('tts-loader');
             
-            playBtn.disabled = true;
-            ttsLoader.classList.remove('hidden');
+            if (playBtn) playBtn.disabled = true;
+            if (ttsLoader) ttsLoader.classList.remove('hidden');
             
             if (window.audioObj) {
                 window.audioObj.pause();
@@ -1525,20 +1509,23 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                     window.audioObj = new Audio(window.audioUrl);
 
                     window.audioObj.onplay = () => {
-                        document.getElementById('tts-play-icon').className = "fa-solid fa-pause text-sm";
+                        const icon = document.getElementById('tts-play-icon');
+                        if (icon) icon.className = "fa-solid fa-pause text-sm";
                         startVisualizer();
                     };
                     window.audioObj.onended = () => {
-                        document.getElementById('tts-play-icon').className = "fa-solid fa-play ml-0.5 text-sm";
+                        const icon = document.getElementById('tts-play-icon');
+                        if (icon) icon.className = "fa-solid fa-play ml-0.5 text-sm";
                         stopVisualizer();
                     };
                     window.audioObj.onpause = () => {
-                        document.getElementById('tts-play-icon').className = "fa-solid fa-play ml-0.5 text-sm";
+                        const icon = document.getElementById('tts-play-icon');
+                        if (icon) icon.className = "fa-solid fa-play ml-0.5 text-sm";
                         stopVisualizer();
                     };
 
-                    playBtn.disabled = false;
-                    ttsLoader.classList.add('hidden');
+                    if (playBtn) playBtn.disabled = false;
+                    if (ttsLoader) ttsLoader.classList.add('hidden');
                     showToast("Intro Dialogue Primed!");
                 } else {
                     throw new Error("Invalid TTS audio returned.");
@@ -1546,8 +1533,9 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
 
             } catch (err) {
                 console.error("Error preparing TTS Intro:", err);
-                ttsLoader.classList.add('hidden');
-                document.getElementById('tts-quote-container').innerHTML = `<p class="text-red-500 font-bold text-center">Failed to ignite narration ritual.</p>`;
+                if (ttsLoader) ttsLoader.classList.add('hidden');
+                const container = document.getElementById('tts-quote-container');
+                if (container) container.innerHTML = `<p class="text-red-500 font-bold text-center">Failed to ignite narration ritual.</p>`;
             }
         }
 
@@ -1666,7 +1654,7 @@ Format your output strictly as a JSON object:
             }
 
             const copilotLoader = document.getElementById('copilot-loader');
-            copilotLoader.classList.remove('hidden');
+            if (copilotLoader) copilotLoader.classList.remove('hidden');
 
             try {
                 const systemPrompt = `You are an expert master lyric builder. You will take existing lyrics and refine them based on the user's specific instructions.
@@ -1714,7 +1702,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                 console.error("Error refining lyrics:", err);
                 showToast("Co-pilot ran out of steam!");
             } finally {
-                copilotLoader.classList.add('hidden');
+                if (copilotLoader) copilotLoader.classList.add('hidden');
             }
         };
 
@@ -1748,7 +1736,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             view.setUint32(40, pcm16.length * 2, true);
 
             for (let i = 0; i < pcm16.length; i++) {
-                view.setInt16(44 + i * 2, pcm16[i], true);
+                view.setUint16(44 + i * 2, pcm16[i], true); // Secure safe un-signed index maps
             }
 
             return new Blob([view], { type: 'audio/wav' });
@@ -1861,7 +1849,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                 window.showToast("Forge a track configuration first before re-rolling artwork!");
                 return;
             }
-            window.showToast("Refining industrial vector elements...");
+            window.showToast("Refining visual design prompt properties...");
             window.forgeMetal();
         };
 
