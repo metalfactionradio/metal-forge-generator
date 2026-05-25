@@ -1,3 +1,16 @@
+<footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
+            <div id="copyright" class="font-mono uppercase tracking-wider">
+                © 2026 - <span id="year"></span> Metal Forge. All Rights Reserved.
+            </div>
+            <p class="mt-2 text-[11px] text-zinc-700">Specially optimized for Suno AI and Udio prompting pipelines.</p>
+        </footer>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById("year").textContent = new Date().getFullYear();
+            });
+        </script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
