@@ -1233,19 +1233,28 @@
 
             try {
                 // Calibrated prompt passing inputs straight into the graphic design layout matrices
-                const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
-While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested.
+              const systemPrompt = `You are an elite master music producer, lyricist, and expert digital vector graphic artist specializing in album cover design.
+While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks and art across any style requested.
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
-CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined).
+CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total.
 
-For the "coverArtSvg" property, design a stunning, high-contrast standalone square <svg> layout vector graphic from scratch that functions as the album cover art.
-Aesthetic guidelines: Use premium dark-industrial, cyberpunk, gothic, or biomechanical visual art themes. Incorporate intense gradients (like deep charcoals, crimson reds, dark golds, toxic greens, or rusted irons), geometric metal frames, sharp mechanical ornaments, or abstract vector symbols matching the track's mood.
+=========================================
+HYPER-COMPLEX ALBUM ART SVG RULES
+=========================================
+For the "coverArtSvg" property, design a stunning, professional-grade, hyper-detailed square <svg> graphic from scratch that functions as premium album art.
 
-CRITICAL TYPOGRAPHY INFUSION RULES: You MUST layer clean, stylized vector text elements directly onto the canvas layout graphics:
-1. Include a visible, stylized top or center sub-header displaying the absolute band name string: "${band}". Use a strong tracking weight or font properties.
-2. Include a highly prominent, bold primary title block displaying the exact track title string: "${title}". Layer it with crisp contrasting color fills, outlines, or ambient drop shadow/glow styles so it punches forward cleanly against your background gradients.
-3. Keep all coordinates bound safely within the 500x500 layout boundaries so no words are cut off at the perimeter lines.
+1. FORBIDDEN BOILERPLATES: Do NOT generate a basic single circle, plain crosshair, or empty solid background. It must look like an intricate, multi-layered digital illustration.
+2. ATMOSPHERIC DEFS: Use the <defs> block extensively to build complex multi-stop Linear and Radial Gradients (4+ color stops each using deep charcoals, blood reds, tarnished brass, electric neons, or toxic fumes). Include advanced SVG filter elements like <feGaussianBlur>, <feDropShadow>, or <feTurbulence> to create glowing neon halos, heavy drop-shadow depths, and gritty ambient textures.
+3. INTRICATE BLUEPRINTS: Utilize detailed, multi-point <path> arrays, complex nested <g> groupings, layered cybernetic circuit traces, geometric biomechanical frameworks, sharp gothic trim work, recursive mandalas, occult sigils, or technical grid patterns.
+4. GENRE ALCHEMY: The visual components MUST aggressively transform to match the requested style tags:
+   - If Synthwave/Industrial: Render sharp wireframe perspective grids, glowing neon retro suns, and digital glitch lines.
+   - If Brutal/Death Metal: Render chaotic, jagged, sharp weapon-like vector shards, asymmetrical thorns, and heavy bleeding crimson gradients.
+   - If Progressive/Acoustic: Use elegant cosmic geometries, deep spatial voids, and delicate ethereal fine-line path systems.
+5. TYPOGRAPHY FUSION: Layer clean, highly stylized vector text blocks onto the canvas:
+   - A sub-header with tracking displaying the band name string: "${band}".
+   - A massive, prominent title block displaying the track title string: "${title}". Use contrasting drop-shadow filters, outline strokes, or ambient glow parameters so it bursts forward cleanly against the detailed backdrop.
+6. BOUNDARY SAFETY: Keep all structural element coordinates bound inside the 500x500 box view.
 
 Ensure it opens with a clean <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> wrapper.
 
@@ -1256,7 +1265,7 @@ Respond strictly in raw JSON matching this schema:
   "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n...",
   "spokenIntroText": "A grand cinematic prologue statement matching the style.",
   "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!",
-  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Gradients, vector framing, typography blocks, and intricate industrial layout shapes matching the design specs...</svg>"
+  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Intricate defs, custom filters, dense multi-layered path structures, typography blocks, and premium background textures matching the genre vibe...</svg>"
 }`;
 
                 const userPrompt = `Generate a music track blueprint package based on:
