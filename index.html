@@ -1212,7 +1212,7 @@
             showToast("Workspace cleared! Forge has been reset.");
         };
 
-        window.forgeMetal = async function() {
+      window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
@@ -1227,11 +1227,12 @@
             const style = styleInput || "Classic Heavy Metal & Thrash Metal Influence";
             const theme = themeInput || "Epic battle of warriors, lightning and fire";
             const title = titleInput || "A randomized dark metal title";
-            const band = bandInput || "";
+            const band = bandInput || "UNNAMED PROJECT";
 
             window.currentBand = band;
 
             try {
+                // Calibrated prompt passing inputs straight into the graphic design layout matrices
                 const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
 While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested.
 Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
@@ -1239,7 +1240,14 @@ Your goal is to build an epic track package matching the requested style/genres:
 CRITICAL FOR AUDIO SIZE LIMITS: Keep both "spokenIntroText" and "spokenIntroDialog" extremely brief and concise. The dialogue must be only 2 to 3 short lines total (under 15 seconds of total speech combined).
 
 For the "coverArtSvg" property, design a stunning, high-contrast standalone square <svg> layout vector graphic from scratch that functions as the album cover art.
-Aesthetic guidelines: Use premium dark-industrial, cyberpunk, gothic, or biomechanical visual art themes. Incorporate intense gradients (like deep charcoals, crimson reds, dark golds, toxic greens, or rusted irons), geometric metal frames, sharp mechanical ornaments, or abstract vector symbols matching the track's mood. Do not use plain white or boring backgrounds. Do not include literal text letters inside the artwork canvas graphics. Ensure it opens with a clean <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> wrapper.
+Aesthetic guidelines: Use premium dark-industrial, cyberpunk, gothic, or biomechanical visual art themes. Incorporate intense gradients (like deep charcoals, crimson reds, dark golds, toxic greens, or rusted irons), geometric metal frames, sharp mechanical ornaments, or abstract vector symbols matching the track's mood.
+
+CRITICAL TYPOGRAPHY INFUSION RULES: You MUST layer clean, stylized vector text elements directly onto the canvas layout graphics:
+1. Include a visible, stylized top or center sub-header displaying the absolute band name string: "${band}". Use a strong tracking weight or font properties.
+2. Include a highly prominent, bold primary title block displaying the exact track title string: "${title}". Layer it with crisp contrasting color fills, outlines, or ambient drop shadow/glow styles so it punches forward cleanly against your background gradients.
+3. Keep all coordinates bound safely within the 500x500 layout boundaries so no words are cut off at the perimeter lines.
+
+Ensure it opens with a clean <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"> wrapper.
 
 Respond strictly in raw JSON matching this schema:
 {
@@ -1248,7 +1256,7 @@ Respond strictly in raw JSON matching this schema:
   "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n...",
   "spokenIntroText": "A grand cinematic prologue statement matching the style.",
   "spokenIntroDialog": "Overlord: Line of dialogue here!\\nSeer: Line of dialogue here!",
-  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Gradients, filters, paths, and intricate industrial vector shapes matching the design specs...</svg>"
+  "coverArtSvg": "<svg viewBox=\\"0 0 500 500\\" xmlns=\\"http://www.w3.org/2000/svg\\">...Gradients, vector framing, typography blocks, and intricate industrial layout shapes matching the design specs...</svg>"
 }`;
 
                 const userPrompt = `Generate a music track blueprint package based on:
