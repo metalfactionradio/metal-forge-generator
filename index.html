@@ -941,14 +941,17 @@ document.getElementById('track-results').classList.add('hidden');
 // Replace lines 944-947 with this:
 document.getElementById('forge-loader').classList.remove('hidden');
 
-// --- UPDATED SCROLL LOGIC ---
-setTimeout(() => {
-    const outputContainer = document.getElementById('forge-output');
-    if (outputContainer) {
-        outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}, 300); // 300ms delay ensures the loader is visible before scrolling
-// ----------------------------
+// --- MOBILE-ONLY SMART SCROLL ---
+const isMobile = window.innerWidth <= 768; // 768px is a standard tablet/phone breakpoint
+if (isMobile) {
+    setTimeout(() => {
+        const outputContainer = document.getElementById('forge-output');
+        if (outputContainer) {
+            outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 300);
+}
+// --------------------------------
 
             document.getElementById('output-title').innerText = item.title;
             document.getElementById('output-style').innerText = item.styleTags;
