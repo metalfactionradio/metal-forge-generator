@@ -3,39 +3,50 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
+    }
 
     try {
-        const apiKey = process.env.GEMINI_API_KEY;
-        const { model, prompt, platform } = req.body; // Added 'platform'
+        const apiKey = process.env.GEMINI_API_KEY; 
+        if (!apiKey) {
+            return res.status(500).json({ error: 'Server configuration error: Missing API Key.' });
+        }
 
-        // Define platform-specific prompt modifiers
-        const platformInstructions = {
-            suno: "You are a Suno AI expert. Format the output with clear structural tags like [Verse], [Chorus], [Bridge], and [Outro]. Use descriptive musical genre tags.",
-            udio: "You are an Udio AI expert. Focus on technical production details, sonic texture, and high-fidelity mastering descriptors.",
-            stable: "You are a Sound Design AI expert. Focus on temporal progression, atmospheric build-up, and granular sound qualities."
-        };
+        let requestedModel = req.body.model || "gemini-2.5-flash";
+        if (requestedModel === "gemini-1.5-flash") {
+            requestedModel = "gemini-2.5-flash";
+        }
 
-        // Prepare the system-injected prompt
-        const instruction = platformInstructions[platform] || "Provide a professional, creative prompt.";
-        const finalPrompt = `${instruction}\n\nUser Request: ${prompt}`;
+        const cleanBody = { ...req.body };
+        delete cleanBody.model;
 
-        // Construct the payload for Gemini
-        const payload = {
-            contents: [{ role: "user", parts: [{ text: finalPrompt }] }]
-        };
+        // Unified pass-through endpoint for verified text and audio token architectures
+        const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent?key=${apiKey}`;
 
-        const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-        const response = await fetch(googleUrl, {
+        const googleResponse = await fetch(googleUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(cleanBody)
         });
 
-        const data = await response.json();
-        return res.status(response.status).json(data);
+        const responseText = await googleResponse.text();
+        let responseData;
+        
+        try {
+            responseData = JSON.parse(responseText);
+        } catch (e) {
+            console.error("Google API non-JSON output encountered:", responseText);
+            return res.status(googleResponse.status).json({ 
+                error: "Google API raw response data error", 
+                details: responseText 
+            });
+        }
+        
+        return res.status(googleResponse.status).json(responseData);
+
     } catch (error) {
-        return res.status(500).json({ error: 'Forge Processing Error' });
+        console.error("Serverless Proxy Error:", error);
+        return res.status(500).json({ error: 'Failed to process orchestration request.' });
     }
 }
