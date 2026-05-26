@@ -812,13 +812,20 @@
             }
         }
 
-        function activateLocalMemoryMode(reason) {
-            isCloudActive = false;
-            document.getElementById('cloud-status-badge').innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-metal-accent mr-1"></i> SONIC BLUEPRINTS';
-            const loadingEl = document.getElementById('history-loading');
-            if (loadingEl) loadingEl.classList.add('hidden');
-            renderHistoryUI(localMemoryHistory);
-        }
+       function activateLocalMemoryMode(reason) {
+    isCloudActive = false;
+    
+    // Add this safety check
+    const badge = document.getElementById('cloud-status-badge');
+    if (badge) {
+        badge.innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-metal-accent"></i>';
+    }
+    
+    const loadingEl = document.getElementById('history-loading');
+    if (loadingEl) loadingEl.classList.add('hidden');
+    
+    renderHistoryUI(localMemoryHistory);
+}
 
         function startRealtimeHistoryListener() {
             if (!isCloudActive || !currentUserId) return;
