@@ -938,14 +938,17 @@
             // ... inside your forgeMetal function
 document.getElementById('intro-board').classList.add('hidden');
 document.getElementById('track-results').classList.add('hidden');
+// Replace lines 944-947 with this:
 document.getElementById('forge-loader').classList.remove('hidden');
 
-// --- ADD THIS SCROLL LOGIC HERE ---
-const outputContainer = document.getElementById('forge-output');
-if (outputContainer) {
-    outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-// ----------------------------------
+// --- UPDATED SCROLL LOGIC ---
+setTimeout(() => {
+    const outputContainer = document.getElementById('forge-output');
+    if (outputContainer) {
+        outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}, 300); // 300ms delay ensures the loader is visible before scrolling
+// ----------------------------
 
             document.getElementById('output-title').innerText = item.title;
             document.getElementById('output-style').innerText = item.styleTags;
