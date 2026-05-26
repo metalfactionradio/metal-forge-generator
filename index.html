@@ -1334,39 +1334,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             initSparks();
             initializeVault();
 
-            const savedTheme = localStorage.getItem('forge-theme') || '#ef4444';
-            window.changeForgeAtmosphere(savedTheme);
-        });
-
-        // Theme Switcher Mappings
-        const themeRgbMap = {
-            '#ef4444': '239, 68, 68',
-            '#22c55e': '34, 197, 94',
-            '#3b82f6': '59, 130, 246'
-        };
-
-        window.changeForgeAtmosphere = function(colorHex) {
-            const rgb = themeRgbMap[colorHex] || '239, 68, 68';
-            document.documentElement.style.setProperty('--forge-accent', colorHex);
-            document.documentElement.style.setProperty('--forge-accent-rgb', rgb);
-            window.currentAccentHex = colorHex;
-            localStorage.setItem('forge-theme', colorHex);
-
-            const colors = ['#ef4444', '#22c55e', '#3b82f6'];
-            const buttonIds = ['btn-theme-red', 'btn-theme-green', 'btn-theme-blue'];
-            colors.forEach((c, idx) => {
-                const btn = document.getElementById(buttonIds[idx]);
-                if (btn) {
-                    if (c === colorHex) {
-                        btn.classList.add('ring-2', 'ring-white', 'scale-110');
-                        btn.classList.remove('scale-100');
-                    } else {
-                        btn.classList.remove('ring-2', 'ring-white', 'scale-110');
-                        btn.classList.add('scale-100');
-                    }
-                }
-            });
-        };
+           
     </script>
 </body>
 </html>
