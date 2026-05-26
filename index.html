@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>METAL FORGE // MULTI-MODEL PROMPTING SUITE</title>
+    <title>Metal Forge – Multi-Genre Suno Prompt Builder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -64,22 +64,24 @@
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-8 flex flex-col min-h-screen">
         
-       <header class="text-center mb-8 relative flex flex-col items-center">
-    <div class="inline-block relative">
-        <div class="absolute -inset-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500 rounded-lg blur opacity-20"></div>
-        <h1 class="font-metal text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-            METAL FORGE
-        </h1>
-    </div>
-    <p class="text-xs text-zinc-500 font-mono uppercase tracking-[0.2em] mt-3">
-        MULTI-MODEL PROMPT SUITE
-    </p>
-   <div class="flex justify-center gap-4 text-xs text-zinc-400 font-mono uppercase tracking-wider mb-10">
-    <span class="flex items-center gap-1.5"><i class="fas fa-microchip text-red-500"></i> Multi-Model Engine</span>
-    <span class="flex items-center gap-1.5"><i class="fas fa-bolt text-orange-500"></i> Industrial Prompting</span>
-    <span class="flex items-center gap-1.5"><i class="fas fa-lock text-zinc-500"></i> Locked Blueprinting</span>
-</div>
-</header>
+        <header class="text-center mb-8 relative flex flex-col items-center">
+            <div class="inline-block relative">
+                <div class="absolute -inset-1 bg-gradient-to-r from-metal-accent via-yellow-500 to-metal-accent rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <h1 class="font-metal text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-metal-accent via-orange-500 to-yellow-500 tracking-wider font-extrabold uppercase py-2">
+                    Metal Forge
+                </h1>
+            </div>
+            <p class="text-zinc-400 mt-2 text-sm md:text-base tracking-widest uppercase">
+                Suno AI heavy metal &amp; multi-genre prompting suite
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mt-3 text-xs text-zinc-500 uppercase tracking-wider">
+                <span><i class="fa-solid fa-guitar text-metal-accent mr-1"></i> Multi-Genre Alchemy</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-fire text-orange-500 mr-1"></i> Pure blue tracking</span>
+                <span>•</span>
+                <span id="cloud-status-badge" class="transition-colors duration-300"><i class="fa-solid fa-cloud animate-pulse text-yellow-500 mr-1"></i> Syncing Vault...</span>
+            </div>
+        </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-grow">
             
@@ -92,7 +94,12 @@
                         </span>
                         Forge Your Sound
                     </span>
-                                  </h2>
+                    <div class="flex items-center gap-1.5 ml-2 bg-zinc-950/60 p-1.5 rounded-full border border-zinc-800/80">
+                        <button onclick="changeForgeAtmosphere('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#ef4444]" title="Hellfire Red" id="btn-theme-red"></button>
+                        <button onclick="changeForgeAtmosphere('#22c55e')" class="w-4 h-4 rounded-full bg-[#22c55e] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#22c55e]" title="Toxic Sludge Green" id="btn-theme-green"></button>
+                        <button onclick="changeForgeAtmosphere('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#3b82f6]" title="Frozen Fjord Blue" id="btn-theme-blue"></button>
+                    </div>
+                </h2>
 
                 <div class="space-y-6">
                     <div>
@@ -327,14 +334,6 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-3">
-                      <div class="mt-4 mb-4">
-    <label class="text-xs text-zinc-500 uppercase font-mono">Target Engine</label>
-    <select id="platformDropdown" class="w-full bg-zinc-800 text-zinc-200 border border-zinc-700 p-2 rounded mt-1">
-        <option value="suno">Suno AI</option>
-        <option value="udio">Udio AI</option>
-        <option value="stable">Stable Audio</option>
-    </select>
-</div>
                         <button 
                             id="generate-btn"
                             onclick="forgeMetal()" 
@@ -976,46 +975,54 @@
             showToast("Workspace cleared! Forge has been reset.");
         };
 
-      window.forgeMetal = async function() {
-    // 1. Capture your existing inputs
-    const style = document.getElementById('style-input').value.trim() || "Classic Heavy Metal";
-    const theme = document.getElementById('theme-input').value.trim() || "Epic battle";
-    
-    // 2. Capture the new platform dropdown value
-    const platform = document.getElementById('platformDropdown').value;
+        window.forgeMetal = async function() {
+            const styleInput = document.getElementById('style-input').value.trim();
+            const themeInput = document.getElementById('theme-input').value.trim();
+            const titleInput = document.getElementById('title-input').value.trim();
+            const vocalSelect = document.getElementById('vocal-config').value;
+            const structureSelect = document.getElementById('structure-config').value;
 
-    // 3. Define dynamic system instructions
-    const instructions = {
-        suno: "You are a Suno AI expert. Format the output with clear structural tags like [Verse], [Chorus], and [Outro]. Use descriptive musical genre tags.",
-        udio: "You are an Udio AI expert. Focus on technical production details, sonic texture, and high-fidelity mastering descriptors.",
-        stable: "You are a Sound Design AI expert. Focus on temporal progression, atmospheric build-up, and granular sound qualities."
-    };
+            document.getElementById('intro-board').classList.add('hidden');
+            document.getElementById('track-results').classList.add('hidden');
+            document.getElementById('forge-loader').classList.remove('hidden');
 
-    const systemPrompt = `You are an elite master music producer. ${instructions[platform] || instructions.suno} 
-    Your goal is to build an epic track package matching the requested style: "${style}" and theme: "${theme}". 
-    Respond strictly in raw JSON matching this schema: 
-    { "title": "...", "styleTags": "...", "lyrics": "..." }`;
+            const style = styleInput || "Classic Heavy Metal & Thrash Metal Influence";
+            const theme = themeInput || "Epic battle of warriors, lightning and fire";
+            const title = titleInput || "A randomized dark metal title";
 
-    // 4. Proceed with your existing fetch logic, ensuring you pass the platform
-    // or the systemPrompt to your backend as needed.
-    // ...
-};
+            try {
+                // Highly optimized, text-only operational schema parameters
+                const systemPrompt = `You are an elite master music producer, lyricist, and Suno AI prompting expert. 
+While your soul burns with the spirit of heavy metal, you are a master of ALL musical genres and can forge tracks across any style requested.
+Your goal is to build an epic track package matching the requested style/genres: "${style}" and vocal configs: "${vocalSelect}".
 
-               // Ensure your payload object is built correctly before the fetch
-const userPrompt = `Style/Genre: ${style}\nTheme: ${theme}`;
-const payload = {
-    model: "gemini-2.5-flash",
-    contents: [
-        { role: "user", parts: [{ text: systemPrompt + "\n\nUser Request: " + userPrompt }] }
-    ]
-};
+Adapt your style tags, lyrics structure, and vocabulary to the chosen genre. For example, if synthwave is requested, generate retro-futuristic synthwave-style lyrics and appropriate style tags; if rock is requested, use rock structures.
 
-// Then call the fetch
-const response = await fetchWithRetry(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-});
+Respond strictly in raw JSON matching this schema:
+{
+  "title": "Generated Song Title",
+  "styleTags": "optimized, comma, separated, tags, under, 200, chars",
+  "lyrics": "[Intro]\\n(Appropriate genre-based instrumentals)\\n\\n[Verse 1]\\n..."
+}`;
+
+                const userPrompt = `Generate a music track blueprint package based on:
+Style/Genre/Bands: ${style}
+Theme/Lyrics: ${theme}
+Song Title requested: ${titleInput || "Random Metal Title"}`;
+
+                const apiUrl = '/api/forge';
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: { responseMimeType: "application/json" },
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
                 const result = await response.json();
                 const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -1332,7 +1339,39 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             initSparks();
             initializeVault();
 
-           
+            const savedTheme = localStorage.getItem('forge-theme') || '#ef4444';
+            window.changeForgeAtmosphere(savedTheme);
+        });
+
+        // Theme Switcher Mappings
+        const themeRgbMap = {
+            '#ef4444': '239, 68, 68',
+            '#22c55e': '34, 197, 94',
+            '#3b82f6': '59, 130, 246'
+        };
+
+        window.changeForgeAtmosphere = function(colorHex) {
+            const rgb = themeRgbMap[colorHex] || '239, 68, 68';
+            document.documentElement.style.setProperty('--forge-accent', colorHex);
+            document.documentElement.style.setProperty('--forge-accent-rgb', rgb);
+            window.currentAccentHex = colorHex;
+            localStorage.setItem('forge-theme', colorHex);
+
+            const colors = ['#ef4444', '#22c55e', '#3b82f6'];
+            const buttonIds = ['btn-theme-red', 'btn-theme-green', 'btn-theme-blue'];
+            colors.forEach((c, idx) => {
+                const btn = document.getElementById(buttonIds[idx]);
+                if (btn) {
+                    if (c === colorHex) {
+                        btn.classList.add('ring-2', 'ring-white', 'scale-110');
+                        btn.classList.remove('scale-100');
+                    } else {
+                        btn.classList.remove('ring-2', 'ring-white', 'scale-110');
+                        btn.classList.add('scale-100');
+                    }
+                }
+            });
+        };
     </script>
 </body>
 </html>
