@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Metal Forge</string>
+    <string name="title_activity_main">Metal Forge</string>
+    <string name="package_name">com.syntheticfaction.metalforge</string>
+    <string name="custom_url_scheme">com.syntheticfaction.metalforge</string>
+</resources>
