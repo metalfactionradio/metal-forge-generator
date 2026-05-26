@@ -935,8 +935,17 @@
             document.getElementById('theme-input').value = item.themeRequested || "";
             updateCharacterCounter(item.styleTags || "");
 
-            document.getElementById('intro-board').classList.add('hidden');
-            document.getElementById('track-results').classList.remove('hidden');
+            // ... inside your forgeMetal function
+document.getElementById('intro-board').classList.add('hidden');
+document.getElementById('track-results').classList.add('hidden');
+document.getElementById('forge-loader').classList.remove('hidden');
+
+// --- ADD THIS SCROLL LOGIC HERE ---
+const outputContainer = document.getElementById('forge-output');
+if (outputContainer) {
+    outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// ----------------------------------
 
             document.getElementById('output-title').innerText = item.title;
             document.getElementById('output-style').innerText = item.styleTags;
