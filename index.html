@@ -935,23 +935,28 @@
             document.getElementById('theme-input').value = item.themeRequested || "";
             updateCharacterCounter(item.styleTags || "");
 
-            // ... inside your forgeMetal function
-document.getElementById('intro-board').classList.add('hidden');
-document.getElementById('track-results').classList.add('hidden');
-// Replace lines 944-947 with this:
-document.getElementById('forge-loader').classList.remove('hidden');
+            
+            document.getElementById('intro-board').classList.add('hidden');
+            document.getElementById('track-results').classList.add('hidden');
+            document.getElementById('forge-loader').classList.remove('hidden');
 
-// --- MOBILE-ONLY SMART SCROLL ---
-const isMobile = window.innerWidth <= 768; // 768px is a standard tablet/phone breakpoint
+// --- ROBUST MOBILE AUTO-SCROLL ---
+const isMobile = window.innerWidth <= 768;
 if (isMobile) {
     setTimeout(() => {
-        const outputContainer = document.getElementById('forge-output');
-        if (outputContainer) {
-            outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const outputEl = document.getElementById('forge-output');
+        if (outputEl) {
+            // Get the element's position relative to the top of the document
+            const elementPosition = outputEl.getBoundingClientRect().top + window.pageYOffset;
+            // Scroll to that position
+            window.scrollTo({
+                top: elementPosition - 20, // 20px padding from the top
+                behavior: 'smooth'
+            });
         }
-    }, 300);
+    }, 400); // Increased to 400ms to ensure render is complete
 }
-// --------------------------------
+// ----------------------------------
 
             document.getElementById('output-title').innerText = item.title;
             document.getElementById('output-style').innerText = item.styleTags;
