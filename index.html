@@ -1034,7 +1034,6 @@ Style/Genre/Bands: ${style}
 Theme/Lyrics: ${theme}
 Song Title requested: ${titleInput || "Random Metal Title"}`;
 
-                const apiUrl = '/api/forge';
 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
@@ -1166,7 +1165,7 @@ Format your output strictly as a JSON object:
                     generationConfig: { responseMimeType: "application/json" }
                 };
 
-                const apiUrl = '/api/forge';
+                
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
@@ -1216,7 +1215,7 @@ Maintain the exact format tags like [Intro], [Verse], [Chorus], [Guitar Solo/Ins
 Return only the newly edited full song lyrics. Do not add conversational intro/outro text, just the raw lyrics code.`;
 
                 const userPrompt = `Existing Lyrics:\n${currentLyrics}\n\nInstruction: ${instruction}`;
-                const apiUrl = '/api/forge';
+                
 
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
