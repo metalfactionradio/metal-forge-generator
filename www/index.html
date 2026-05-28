@@ -1003,6 +1003,8 @@ if (isMobile) {
         };
 
         window.forgeMetal = async function() {
+            const apiUrl = 'https://metal-forge-generator.vercel.app/api/forge';
+            console.log("Using API: " + apiUrl);
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
