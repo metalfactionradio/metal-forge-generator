@@ -30,6 +30,34 @@
         }
     </script>
     <style>
+        /* Tooltip styles */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+.tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #27272a; /* matches your zinc-800 */
+    color: #e4e4e7; /* matches your zinc-200 */
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 50;
+    bottom: 125%; 
+    left: 50%;
+    margin-left: -100px;
+    font-size: 10px;
+    border: 1px solid #ef4444; /* metal-accent */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -98,19 +126,21 @@
                         <button onclick="changeForgeAtmosphere('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#3b82f6]" title="Frozen Fjord Blue" id="btn-theme-blue"></button>
                     </div>
                 </h2>
-
-                <div class="space-y-6">
-                    <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
-                                Style / Genre / Band Influence
-                            </label>
-                            <span id="style-character-counter" class="text-xs font-mono text-zinc-500">0/200</span>
-                        </div>
-
-                        <div class="w-full h-1.5 bg-zinc-950 border border-zinc-800 rounded-full overflow-hidden mb-2 relative">
-                            <div id="character-gauge" class="h-full w-0 bg-green-500 transition-all duration-300 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                        </div>
+<div class="mb-6">
+    <div class="flex justify-between items-center mb-1">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
+                Style / Genre / Band Influence
+            </label>
+            <div class="relative tooltip-container flex-shrink-0">
+                <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+                <span class="tooltip-text" style="width: 250px; bottom: 120%; left: 0;">
+                    Define your musical blueprint here. Include genre, specific artist influences, or key sonic elements to guide the AI generation.
+                </span>
+            </div>
+        </div>
+        <span id="style-character-counter" class="text-xs font-mono text-zinc-500 flex-shrink-0 ml-4">0/200</span>
+    </div>
 
                         <input 
                             type="text" 
@@ -120,15 +150,27 @@
                             oninput="updateCharacterCounter(this.value)"
                         >
 
+                        <div class="mt-1.5 h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800/60">
+                            <div id="character-gauge" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
                         <div id="character-warning" class="hidden mt-2 p-2 bg-red-950/40 border border-red-900/60 rounded-lg text-[10px] text-red-400 font-bold flex items-center gap-1.5 uppercase tracking-wide pulse-warning">
                             <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> SUNO / UDIO TRUNCATION RISK: Exceeded 200-character ceiling limit!
                         </div>
 
-                        <div class="mt-4 bg-zinc-950/40 border border-zinc-800/60 p-3 rounded-xl space-y-2">
-                            <div class="text-[10px] font-bold text-zinc-300 uppercase tracking-widest flex items-center justify-between mb-1">
-                                <span><i class="fa-solid fa-square-plus text-metal-accent mr-1.5"></i> Style Modifiers Matrix</span>
-                                <span class="text-[9px] text-zinc-500">Tap to toggle style chips</span>
-                            </div>
+                  <div class="mt-4 bg-zinc-950/40 border border-zinc-800/60 p-3 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+    <div class="flex items-center">
+        <i class="fa-solid fa-square-plus text-metal-accent mr-1.5"></i> Style Modifiers Matrix
+        <div class="relative tooltip-container ml-2">
+            <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+            <span class="tooltip-text" style="width: 200px; bottom: 120%; left: 0;">
+                Select multiple sonic chips to build your unique sound blueprint. Combine these to create complex, multi-layered prompts.
+            </span>
+        </div>
+    </div>
+    <span class="text-[9px] text-zinc-500">Tap to toggle style chips</span>
+</div>
 
                             <div class="space-y-2">
                                 <div class="border border-zinc-800/80 rounded-lg overflow-hidden bg-zinc-900/40">
@@ -188,16 +230,22 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div>
+                            </div>
+                                           <div>
                         <div class="flex justify-between items-center mb-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
-                                Lyrical Theme &amp; Motifs
-                            </label>
-                            <span class="text-[10px] text-zinc-500 italic">Optional</span>
-                        </div>
+    <div class="flex items-center gap-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
+            Lyrical Theme & Motifs
+        </label>
+        <div class="relative tooltip-container">
+            <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+            <span class="tooltip-text" style="width: 250px; bottom: 120%; left: 0;">
+                The conceptual core of your track. Describe the story, emotional landscape, or specific imagery to focus the AI's lyrical generation.
+            </span>
+        </div>
+    </div>
+    <span class="text-[10px] text-zinc-500 italic">Optional</span>
+</div>
                         <textarea 
                             id="theme-input" 
                             rows="3"
@@ -207,9 +255,18 @@
                         
                         <div class="mt-3 space-y-2 bg-zinc-950/40 p-3 rounded-xl border border-zinc-800/60">
                             <div class="text-[10px] font-bold text-zinc-300 uppercase tracking-widest flex items-center justify-between mb-1">
-                                <span><i class="fa-solid fa-wand-magic-sparkles text-metal-accent mr-1.5"></i> Theme Alchemy Presets</span>
-                                <span class="text-[9px] text-zinc-500">Tap to append themes</span>
-                            </div>
+    <span class="flex items-center">
+        <i class="fa-solid fa-wand-magic-sparkles text-metal-accent mr-1.5"></i> Theme Alchemy Presets
+        <div class="relative tooltip-container ml-2">
+            <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+            <span class="tooltip-text" style="width: 250px; bottom: 120%; left: 0;">
+                Tap a preset to instantly append evocative themes and imagery to your lyrical blueprint. Perfect for breaking writer's block.
+            </span>
+        </div>
+    </span>
+    <span class="text-[9px] text-zinc-500">Tap to append themes</span>
+</div>
+                            
 
                             <div class="space-y-1.5">
                                 <details class="group border border-zinc-800/80 rounded-lg bg-zinc-900/30 overflow-hidden">
@@ -261,10 +318,17 @@
                     </div>
 
                     <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
-                        <div class="text-[11px] font-bold text-zinc-300 uppercase tracking-widest flex items-center justify-between">
-                            <span><i class="fa-solid fa-eye text-metal-accent mr-2"></i> Visceral Vision (Image-to-Metal)</span>
-                            <span class="text-[9px] bg-metal-accent/20 text-metal-accent px-1.5 py-0.5 rounded">Multimodal</span>
-                        </div>
+                       <div class="text-[11px] font-bold text-zinc-300 uppercase tracking-widest flex items-center relative">
+    <i class="fa-solid fa-eye text-metal-accent mr-2"></i> 
+    Visceral Vision (Image-to-Metal)
+    
+    <div class="tooltip-container ml-2">
+        <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+        <span class="tooltip-text" style="width: 250px; bottom: 120%; left: 0;">
+            Upload an image to automatically extract musical styles, themes, and song titles based on the visual vibe.
+        </span>
+    </div>
+</div>
                         <p class="text-[10px] text-zinc-500 leading-normal">
                             Upload visual inspiration to extract style modifiers, matching titles, and dramatic themes automatically.
                         </p>
@@ -290,24 +354,37 @@
                     </div>
 
                     <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
-                                Song Title
-                            </label>
-                            <span class="text-[10px] text-zinc-500 italic">Optional</span>
-                        </div>
-                        <input 
-                            type="text" 
-                            id="title-input" 
-                            placeholder="e.g., Reign of Obsidian Flame"
-                            class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
-                        >
-                    </div>
+    <div class="flex justify-between items-center mb-2">
+        <!-- New wrapper for label and tooltip -->
+        <div class="flex items-center gap-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-300">
+                Song Title
+            </label>
+            <!-- Tooltip Icon -->
+            <div class="tooltip-container">
+                <i class="fa-solid fa-circle-info text-zinc-500"></i>
+                <span class="tooltip-text">Enter the name of your track. This will be used in the metadata generation.</span>
+            </div>
+        </div>
+        <span class="text-[10px] text-zinc-500 italic">Optional</span>
+    </div>
+    <input 
+        type="text" 
+        id="title-input" 
+        placeholder="e.g., Reign of Obsidian Flame"
+        class="w-full bg-zinc-950/80 border border-zinc-800 focus:border-metal-accent rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none transition duration-200 shadow-inner"
+    >
+</div>
 
-                    <div class="p-4 bg-zinc-950/50 border border-zinc-800/80 rounded-xl space-y-3">
-                        <div class="text-[11px] font-bold text-zinc-300 uppercase tracking-widest flex items-center">
-                            <i class="fa-solid fa-sliders text-metal-accent mr-2"></i> Prompt Blueprint Config
-                        </div>
+                   <div class="text-[11px] font-bold text-zinc-300 uppercase tracking-widest flex items-center relative">
+    <i class="fa-solid fa-sliders text-metal-accent mr-2"></i> Prompt Blueprint Config
+    <div class="relative tooltip-container ml-2">
+        <i class="fa-solid fa-circle-info text-zinc-500 cursor-pointer"></i>
+        <span class="tooltip-text" style="width: 250px; bottom: 120%; left: 0;">
+            Fine-tune the output structure. Choose your vocal delivery style and song progression density to ensure the AI follows your desired arrangement.
+        </span>
+    </div>
+</div>
                         
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-zinc-300">Vocal Style</span>
@@ -347,19 +424,16 @@
                             <i class="fa-solid fa-arrows-rotate"></i> RESET FORGE
                         </button>
                     </div>
-                </div>
-            </section>
-
-            <section class="lg:col-span-7 space-y-8">
-                
-                <div id="forge-loader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-6 animate-pulse">
+                    </section>
+                           <section class="lg:col-span-7 space-y-8">
+                              <div id="forge-loader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-6 animate-pulse">
                     <div class="relative flex items-center justify-center">
                         <div class="w-16 h-16 border-4 border-metal-accent border-t-yellow-500 rounded-full animate-spin"></div>
                         <i class="fa-solid fa-fire text-orange-500 absolute text-xl"></i>
                     </div>
                     <div class="space-y-2">
                         <p class="font-metal text-xl text-orange-500 uppercase tracking-widest">Forge at Maximum Temp</p>
-                        <p class="text-xs text-zinc-500">Formulating custom audio prompts, generating lyrics, painting cover art, and priming the TTS intro...</p>
+                        <p class="text-xs text-zinc-500">Formulating custom audio prompts and generating lyrics...</p>
                     </div>
                 </div>
 
@@ -590,7 +664,7 @@
                 No past music iterations cataloged inside this crucible yet. Click "Forge" to write history!
             </div>
 
-            <div id="history-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1 animate-fadeIn">
+            <div id="history-grid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[300px] overflow-y-auto pr-1 animate-fadeIn">
                 </div>
         </section>
 
@@ -900,6 +974,7 @@
 
             emptyState.classList.add('hidden');
             grid.classList.remove('hidden');
+            grid.classList.add('grid');
             grid.innerHTML = "";
 
             historyArray.forEach(item => {
@@ -942,22 +1017,18 @@
             document.getElementById('track-results').classList.add('hidden');
             document.getElementById('forge-loader').classList.remove('hidden');
 
-// --- ROBUST MOBILE AUTO-SCROLL ---
-const isMobile = window.innerWidth <= 768;
-if (isMobile) {
-    setTimeout(() => {
-        const outputEl = document.getElementById('forge-output');
-        if (outputEl) {
-            // Get the element's position relative to the top of the document
-            const elementPosition = outputEl.getBoundingClientRect().top + window.pageYOffset;
-            // Scroll to that position
-            window.scrollTo({
-                top: elementPosition - 20, // 20px padding from the top
-                behavior: 'smooth'
-            });
-        }
-    }, 400); // Increased to 400ms to ensure render is complete
-}
+// --- ROBUST AUTO-SCROLL ---
+        setTimeout(() => {
+            if (window.innerWidth < 1024) {
+                const outputEl = document.getElementById('forge-output');
+                if (outputEl) {
+                    outputEl.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }
+        }, 500);
 // ----------------------------------
 
             document.getElementById('output-title').innerText = item.title;
@@ -1079,6 +1150,15 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
 
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('track-results').classList.remove('hidden');
+
+                setTimeout(() => {
+                    if (window.innerWidth < 1024) {
+                        const outputEl = document.getElementById('forge-output');
+                        if (outputEl) {
+                            outputEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                }, 100);
 
                 window.archiveTrack({
                     title: window.currentTitle,
