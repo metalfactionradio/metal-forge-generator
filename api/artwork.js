@@ -21,12 +21,12 @@ Style: Professional album cover art, cinematic lighting, highly detailed,
 no text, no words, no letters, square format, dramatic composition, 
 visually striking, suitable for music streaming platforms.`;
 
-    // Image generation requires v1alpha API endpoint
-    const googleUrl = `https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+    // v1beta + gemini-3.1-flash-image-preview, TEXT must be first in responseModalities
+    const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [{ parts: [{ text: imagePrompt }] }],
-      generationConfig: { responseModalities: ["IMAGE", "TEXT"] }
+      generationConfig: { responseModalities: ["TEXT", "IMAGE"] }
     };
 
     const googleResponse = await fetch(googleUrl, {
