@@ -944,10 +944,64 @@
                 </div>
         </section>
 
- <footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
+ <!-- FAQ Modal -->
+<div id="faq-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById('faq-modal').classList.add('hidden')"></div>
+    <div class="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border shadow-2xl" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <div class="sticky top-0 flex items-center justify-between px-6 py-4 border-b" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+            <h2 class="font-metal text-lg uppercase tracking-widest" style="color: var(--forge-accent);">FAQ / Help</h2>
+            <button onclick="document.getElementById('faq-modal').classList.add('hidden')" class="text-zinc-500 hover:text-white transition text-xl">&times;</button>
+        </div>
+        <div class="px-6 py-5 space-y-5 text-sm" style="color: var(--text-secondary);">
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">What is a Style Prompt?</h3>
+                <p>The Style Prompt is a comma-separated list of genre tags, sonic descriptors, and influences that gets pasted directly into the Suno or Udio style field. It tells the AI what your track should sound like. Keep it under 120 characters for best results — Suno truncates anything over 200.</p>
+            </div>
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">Why is my prompt showing a character warning?</h3>
+                <p>Suno and Udio both have character limits on style inputs. Metal Forge warns you when you approach 200 characters because anything beyond that risks being silently truncated by the AI engine, which can affect your output quality. Try removing lower-priority tags to bring it under 120–150 characters.</p>
+            </div>
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">What does locking a section do?</h3>
+                <p>Clicking the 🔒 lock icon on the Style Prompt or Lyric Blueprint freezes that section. When you hit Forge the Track again, locked sections are preserved exactly as-is while everything else regenerates. This lets you keep great lyrics and get a new style — or vice versa.</p>
+            </div>
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">Can I use Metal Forge for genres other than metal?</h3>
+                <p>Absolutely — Metal Forge supports any genre. Use the Vocal Style dropdown to select from Hip-Hop, Pop, R&B, Electronic, Folk, Jazz, Country and more. The Style Matrix and Theme Alchemy presets also cover Hip-Hop & Urban, Pop & R&B, Electronic & Dance, and Uplifting & Anthemic panels alongside the metal options.</p>
+            </div>
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">What is the Album Artwork?</h3>
+                <p>After every forge, Metal Forge automatically generates a unique AI album cover using your track title, style tags, and theme as the visual prompt. Hit the Download Artwork button to save it as a PNG — it's yours to use however you like.</p>
+            </div>
+
+            <div class="border-b pb-4" style="border-color: var(--border-color);">
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">How do I use the output in Suno or Udio?</h3>
+                <p>1. Copy the <strong>Style Prompt</strong> and paste it into Suno's Style field or Udio's style input.<br>
+                2. Switch to <strong>Custom Mode</strong> in Suno (or Lyrics mode in Udio).<br>
+                3. Paste the <strong>Lyric Blueprint</strong> into the lyrics field — the section tags like [Verse], [Chorus] are already formatted correctly.<br>
+                4. Hit generate and let the AI do the rest.</p>
+            </div>
+
+            <div>
+                <h3 class="font-bold uppercase tracking-wide mb-1" style="color: var(--text-primary);">What are the UI themes?</h3>
+                <p>The four colored dots in the top-right of the forge panel switch between themes — 🔴 Forge (dark metal), ⚪ Studio (light professional), 🔵 Neon (cyberpunk), and 🟢 Matrix (hacker green). Your preference is saved automatically.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
     <div id="copyright" class="font-mono uppercase tracking-wider">
         &copy; <span id="year"></span> Synthetic Faction. All Rights Reserved.
         <a href="/privacy.html" class="text-zinc-400 hover:text-red-500 transition">Privacy Policy</a>
+        <span class="mx-2">·</span>
+        <button onclick="document.getElementById('faq-modal').classList.remove('hidden')" class="text-zinc-400 hover:text-red-500 transition uppercase">FAQ / Help</button>
     </div>
     <p class="mt-2 text-[11px] text-zinc-700 uppercase tracking-widest">
         METAL FORGE // UNIVERSAL AI MUSIC PROMPT SUITE
