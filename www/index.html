@@ -8,10 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        const apiUrl = 'https://metal-forge-generator.vercel.app/api/forge';
-    </script>
-     <script
-     tailwind.config = {
+        tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
@@ -622,6 +619,7 @@
     </div>
 
     <script type="module">
+        const apiUrl = 'https://metal-forge-generator.vercel.app/api/forge';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1003,8 +1001,6 @@ if (isMobile) {
         };
 
         window.forgeMetal = async function() {
-            const apiUrl = 'https://metal-forge-generator.vercel.app/api/forge';
-            console.log("Using API: " + apiUrl);
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
             const titleInput = document.getElementById('title-input').value.trim();
@@ -1039,19 +1035,18 @@ Style/Genre/Bands: ${style}
 Theme/Lyrics: ${theme}
 Song Title requested: ${titleInput || "Random Metal Title"}`;
 
-                
+
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
                     generationConfig: { responseMimeType: "application/json" },
                     systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
 
-                
-const response = await fetchWithRetry(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-});
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
                 const result = await response.json();
                 const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -1171,7 +1166,7 @@ Format your output strictly as a JSON object:
                     generationConfig: { responseMimeType: "application/json" }
                 };
 
-              
+                
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
