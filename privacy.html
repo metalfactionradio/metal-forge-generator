@@ -12,37 +12,55 @@
     <div class="max-w-3xl mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-10 shadow-2xl">
         <div class="border-b border-zinc-800 pb-6 mb-8">
             <h1 class="text-2xl md:text-3xl font-bold text-zinc-100 uppercase tracking-wider mb-2">Privacy Policy</h1>
-            <p class="text-xs text-zinc-500 font-mono uppercase tracking-widest">Effective Date: May 25, 2026</p>
+            <p class="text-xs text-zinc-500 font-mono uppercase tracking-widest">Effective Date: June 1, 2026</p>
         </div>
 
         <main class="space-y-8 text-sm leading-relaxed">
             <section class="space-y-3">
-                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">1. System Data Overview</h2>
-                <p>Metal Forge operates as a high-velocity utility for prompt generation and session management. This policy outlines how your data is handled.</p>
+                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">1. Overview</h2>
+                <p>Metal Forge is a multi-genre AI music prompt generation suite available on web and Android. This policy outlines how your data is collected, used, and protected when you use our application.</p>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">2. Information Processing</h2>
+                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">2. Information We Process</h2>
                 <ul class="list-disc list-inside space-y-2 pl-2 text-zinc-400">
-                    <li><strong>User Inputs:</strong> Data entered into style/theme fields is processed securely for inference.</li>
-                    <li><strong>Session Artifacts:</strong> Generated outputs are stored via secure cloud protocols linked to your session.</li>
+                    <li><strong class="text-zinc-300">User Inputs:</strong> Text entered into style, theme, and song title fields is transmitted securely to our backend for AI prompt processing. This data is not stored permanently.</li>
+                    <li><strong class="text-zinc-300">Generated Outputs:</strong> Lyrics, style tags, and album artwork are generated on-demand and delivered to your session. Generated images are not retained on our servers after delivery.</li>
+                    <li><strong class="text-zinc-300">Session Preferences:</strong> UI theme selection is stored locally in your browser via localStorage. No personal information is included.</li>
+                    <li><strong class="text-zinc-300">Uploaded Images:</strong> Images submitted via the Visceral Vision feature are processed transiently for style extraction and are not stored or used for training.</li>
                 </ul>
             </section>
 
             <section class="space-y-3">
                 <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">3. Security</h2>
-                <p>We leverage Vercel Edge Gateways and encrypted protocols to ensure your interaction with generative AI models remains isolated and protected.</p>
+                <p>All communications between the Metal Forge application and our backend are encrypted via HTTPS. API keys and credentials are secured as server-side environment variables and are never exposed to the client. We leverage Vercel Edge infrastructure for all serverless processing.</p>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">4. Data Deletion & Contact</h2>
-                <p>You retain full control over your session. To delete your data, you may clear your browser cache/app storage or simply uninstall the application, which severs your unique session token and orphans all associated cloud-cached data.</p>
-                <p>For privacy inquiries, contact the Synthetic Faction operations team at: <strong>metalfactionradio@gmail.com</strong></p>
+                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">4. Data Deletion & Control</h2>
+                <p>Metal Forge does not maintain a persistent user database at this time. You retain full control over your session data. To remove locally stored preferences, clear your browser cache or app storage. Uninstalling the Android application removes all locally stored session data.</p>
+                <p>For privacy inquiries or data requests, contact the Synthetic Faction team at: <strong class="text-zinc-200">metalfactionradio@gmail.com</strong></p>
             </section>
 
             <section class="space-y-3">
                 <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">5. Third-Party Services</h2>
-                <p>Metal Forge utilizes standard cloud infrastructure to power AI-generation pipelines, including Vercel for hosting, Google Firebase for session persistence, and Google Gemini API for prompt processing.</p>
+                <p>Metal Forge integrates the following third-party services to deliver its core functionality:</p>
+                <ul class="list-disc list-inside space-y-2 pl-2 text-zinc-400">
+                    <li><strong class="text-zinc-300">Vercel:</strong> Hosting and serverless edge function infrastructure.</li>
+                    <li><strong class="text-zinc-300">Google Gemini API:</strong> Powers AI text generation (lyrics, style prompts) and AI album artwork image generation.</li>
+                    <li><strong class="text-zinc-300">Google Firebase:</strong> Planned for future authentication and cross-platform session management.</li>
+                </ul>
+                <p class="text-zinc-500 text-xs mt-2">Each third-party service operates under its own privacy policy. We encourage you to review Google's privacy policy at <a href="https://policies.google.com/privacy" class="text-red-500 hover:text-red-400">policies.google.com/privacy</a>.</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">6. Children's Privacy</h2>
+                <p>Metal Forge is not directed at children under the age of 13. We do not knowingly collect personal information from children. If you believe a child has provided personal information through our application, please contact us immediately.</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-base font-semibold text-zinc-100 uppercase tracking-wide">7. Changes to This Policy</h2>
+                <p>We may update this privacy policy as the application evolves — particularly as authentication and subscription features are introduced. Changes will be reflected with an updated effective date.</p>
             </section>
         </main>
 
