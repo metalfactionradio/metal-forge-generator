@@ -21,8 +21,8 @@ Style: Professional album cover art, cinematic lighting, highly detailed,
 no text, no words, no letters, square format, dramatic composition, 
 visually striking, suitable for music streaming platforms.`;
 
-    // Use gemini-2.0-flash-exp for free tier image generation
-    const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+    // Image generation requires v1alpha API endpoint
+    const googleUrl = `https://generativelanguage.googleapis.com/v1alpha/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [{ parts: [{ text: imagePrompt }] }],
