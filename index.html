@@ -760,6 +760,29 @@
                             </div>
                         </div>
 
+                        <!-- Album Artwork Panel -->
+                        <div id="artwork-panel" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
+                                Album Artwork
+                            </div>
+                            <div class="mt-2 flex flex-col items-center gap-4">
+                                <div id="artwork-loader" class="w-full flex flex-col items-center justify-center py-8 gap-3">
+                                    <div class="w-10 h-10 border-4 border-metal-accent border-t-yellow-500 rounded-full animate-spin"></div>
+                                    <p class="text-[10px] text-zinc-500 font-mono animate-pulse uppercase tracking-widest">Generating artwork...</p>
+                                </div>
+                                <div id="artwork-container" class="hidden w-full flex flex-col items-center gap-3">
+                                    <img id="artwork-image" src="" alt="Album Artwork" class="w-full max-w-xs rounded-xl border border-zinc-700 shadow-[0_0_30px_rgba(var(--forge-accent-rgb),0.2)]">
+                                    <button onclick="downloadArtwork()" class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-metal-accent text-zinc-300 hover:text-white text-xs font-bold rounded-lg transition-all duration-200">
+                                        <i class="fa-solid fa-download text-metal-accent"></i> Download Artwork
+                                    </button>
+                                </div>
+                                <div id="artwork-error" class="hidden w-full text-center py-6">
+                                    <i class="fa-solid fa-image-slash text-zinc-600 text-2xl mb-2"></i>
+                                    <p class="text-[10px] text-zinc-500 font-mono">Artwork generation unavailable. <button onclick="generateArtwork()" class="text-metal-accent hover:underline">Retry</button></p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative">
                             <div class="absolute -top-3 left-6 px-3 py-1 bg-metal-accent text-zinc-950 font-metal text-xs font-black tracking-widest rounded uppercase transition-all duration-300">
                                 Lyric Blueprint
@@ -1415,6 +1438,9 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                     }
                 }, 100);
 
+                // Generate album artwork automatically
+                window.generateArtwork();
+
                 window.archiveTrack({
                     title: window.currentTitle,
                     styleTags: window.currentStyle,
@@ -1428,6 +1454,58 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
                 document.getElementById('forge-loader').classList.add('hidden');
                 document.getElementById('intro-board').classList.remove('hidden');
             }
+        };
+
+        // --- ALBUM ARTWORK GENERATION ---
+        const artworkApiUrl = 'https://metal-forge-generator.vercel.app/api/artwork';
+
+        window.generateArtwork = async function() {
+            const loader = document.getElementById('artwork-loader');
+            const container = document.getElementById('artwork-container');
+            const errorEl = document.getElementById('artwork-error');
+
+            loader.classList.remove('hidden');
+            container.classList.add('hidden');
+            errorEl.classList.add('hidden');
+
+            try {
+                const response = await fetch(artworkApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: window.currentTitle || 'Untitled Track',
+                        styleTags: window.currentStyle || '',
+                        theme: window.currentTheme || ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.imageData) {
+                    throw new Error(data.error || 'No image returned');
+                }
+
+                const imgSrc = `data:${data.mimeType};base64,${data.imageData}`;
+                document.getElementById('artwork-image').src = imgSrc;
+                window.currentArtworkSrc = imgSrc;
+
+                loader.classList.add('hidden');
+                container.classList.remove('hidden');
+
+            } catch (err) {
+                console.error('Artwork generation error:', err);
+                loader.classList.add('hidden');
+                errorEl.classList.remove('hidden');
+            }
+        };
+
+        window.downloadArtwork = function() {
+            const src = window.currentArtworkSrc;
+            if (!src) return;
+            const a = document.createElement('a');
+            a.href = src;
+            a.download = `${(window.currentTitle || 'artwork').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_artwork.png`;
+            a.click();
         };
 
         // Multimodal Vision Processing
