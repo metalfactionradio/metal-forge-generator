@@ -797,14 +797,14 @@
 
                             <div class="bg-zinc-950/80 border border-zinc-800/80 rounded-xl p-5 max-h-[350px] overflow-y-auto font-mono text-sm leading-relaxed text-zinc-300 relative">
     
-    <div class="absolute top-3 right-3 flex items-center gap-1 z-10 bg-zinc-900/80 backdrop-blur-sm p-1 rounded-lg border border-zinc-800/40 shadow-md" style="background-color: var(--bg-card); border-color: var(--border-color);">
-        <button onclick="toggleForgeLock('lyrics')" id="lock-btn-lyrics" class="p-1.5 text-zinc-500 hover:text-metal-accent transition-colors duration-200" title="Lock Lyrics">
+    <div class="absolute top-3 right-3 flex items-center gap-1 z-10 p-1 rounded-lg border shadow-md" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+        <button onclick="toggleForgeLock('lyrics')" id="lock-btn-lyrics" class="p-1.5 hover:text-metal-accent transition-colors duration-200" style="color: var(--text-muted);" title="Lock Lyrics">
             <i class="fa-solid fa-lock-open" id="lock-icon-lyrics"></i>
         </button>
-        <button onclick="clearSection('lyrics')" id="clear-btn-lyrics" class="p-1.5 text-zinc-500 hover:text-red-400 transition-colors duration-200" title="Clear Lyrics">
+        <button onclick="clearSection('lyrics')" id="clear-btn-lyrics" class="p-1.5 hover:text-red-400 transition-colors duration-200" style="color: var(--text-muted);" title="Clear Lyrics">
             <i class="fa-solid fa-xmark"></i>
         </button>
-        <button onclick="copyToClipboard('output-lyrics', this)" class="p-1.5 text-zinc-300 hover:text-zinc-200 hover:bg-zinc-800/50 rounded-md transition-colors duration-200" title="Copy Lyrics">
+        <button onclick="copyToClipboard('output-lyrics', this)" class="p-1.5 hover:bg-zinc-800/50 rounded-md transition-colors duration-200" style="color: var(--text-secondary);" title="Copy Lyrics">
             <i class="fa-regular fa-copy"></i>
         </button>
     </div>
