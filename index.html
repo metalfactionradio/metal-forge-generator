@@ -30,60 +30,180 @@
         }
     </script>
     <style>
+        /* ============================================
+           THEME SYSTEM - CSS VARIABLES
+           ============================================ */
+
+        /* FORGE - Dark Metal (Default) */
+        :root, [data-theme="forge"] {
+            --forge-accent: #ef4444;
+            --forge-accent-rgb: 239, 68, 68;
+            --bg-primary: #09090b;
+            --bg-secondary: #18181b;
+            --bg-card: #27272a;
+            --bg-input: rgba(9,9,11,0.8);
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: #3f3f46;
+            --scrollbar-track: #09090b;
+            --header-gradient: linear-gradient(to right, #ef4444, #f97316);
+            --card-glow: rgba(239, 68, 68, 0.4);
+        }
+
+        /* STUDIO - Light Professional */
+        [data-theme="studio"] {
+            --forge-accent: #e11d48;
+            --forge-accent-rgb: 225, 29, 72;
+            --bg-primary: #f4f4f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: rgba(244,244,245,0.9);
+            --text-primary: #18181b;
+            --text-secondary: #52525b;
+            --text-muted: #a1a1aa;
+            --border-color: #d4d4d8;
+            --scrollbar-track: #e4e4e7;
+            --header-gradient: linear-gradient(to right, #e11d48, #f97316);
+            --card-glow: rgba(225, 29, 72, 0.15);
+        }
+
+        /* NEON - Cyberpunk */
+        [data-theme="neon"] {
+            --forge-accent: #06b6d4;
+            --forge-accent-rgb: 6, 182, 212;
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: rgba(2,6,23,0.8);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #1e40af;
+            --scrollbar-track: #020617;
+            --header-gradient: linear-gradient(to right, #06b6d4, #818cf8);
+            --card-glow: rgba(6, 182, 212, 0.4);
+        }
+
+        /* MATRIX - Hacker Green */
+        [data-theme="matrix"] {
+            --forge-accent: #22c55e;
+            --forge-accent-rgb: 34, 197, 94;
+            --bg-primary: #020c02;
+            --bg-secondary: #041404;
+            --bg-card: #071a07;
+            --bg-input: rgba(2,12,2,0.8);
+            --text-primary: #bbf7d0;
+            --text-secondary: #86efac;
+            --text-muted: #4ade80;
+            --border-color: #166534;
+            --scrollbar-track: #020c02;
+            --header-gradient: linear-gradient(to right, #22c55e, #4ade80);
+            --card-glow: rgba(34, 197, 94, 0.4);
+        }
+
+        /* Apply theme variables to base elements */
+        body {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Cards and panels */
+        .theme-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+        .theme-card-inner {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+        }
+        .theme-input {
+            background-color: var(--bg-input) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        .theme-text-secondary { color: var(--text-secondary) !important; }
+        .theme-text-muted { color: var(--text-muted) !important; }
+        .theme-border { border-color: var(--border-color) !important; }
+
         /* Tooltip styles */
-.tooltip-container {
-    position: relative;
-    display: inline-block;
-    cursor: help;
-}
-.tooltip-text {
-    visibility: hidden;
-    width: 200px;
-    background-color: #27272a; /* matches your zinc-800 */
-    color: #e4e4e7; /* matches your zinc-200 */
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px;
-    position: absolute;
-    z-index: 50;
-    bottom: 125%; 
-    left: 50%;
-    margin-left: -100px;
-    font-size: 10px;
-    border: 1px solid #ef4444; /* metal-accent */
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.tooltip-container:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: help;
         }
-        ::-webkit-scrollbar-track {
-            background: #09090b;
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -100px;
+            font-size: 10px;
+            border: 1px solid var(--forge-accent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--forge-accent, #ef4444);
-            border-radius: 3px;
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
-        /* Heavy Metal glow animations */
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--forge-accent); border-radius: 3px; }
+
         @keyframes fire-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(var(--forge-accent-rgb, 239, 68, 68), 0.4); }
-            50% { box-shadow: 0 0 30px rgba(var(--forge-accent-rgb, 239, 68, 68), 0.8), 0 0 10px rgba(245, 158, 11, 0.5); }
+            0%, 100% { box-shadow: 0 0 15px rgba(var(--forge-accent-rgb), 0.4); }
+            50% { box-shadow: 0 0 30px rgba(var(--forge-accent-rgb), 0.8), 0 0 10px rgba(245, 158, 11, 0.5); }
         }
-        .glow-fire {
-            animation: fire-glow 4s infinite alternate;
-        }
+        .glow-fire { animation: fire-glow 4s infinite alternate; }
+
         @keyframes warning-pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
         }
-        .pulse-warning {
-            animation: warning-pulse 1s infinite alternate;
-        }
+        .pulse-warning { animation: warning-pulse 1s infinite alternate; }
+
+        /* Studio theme overrides for zinc Tailwind classes */
+        [data-theme="studio"] .bg-zinc-950,
+        [data-theme="studio"] .bg-zinc-950\/80 { background-color: var(--bg-primary) !important; }
+        [data-theme="studio"] .bg-zinc-900,
+        [data-theme="studio"] .bg-zinc-900\/40 { background-color: var(--bg-secondary) !important; }
+        [data-theme="studio"] .bg-zinc-800,
+        [data-theme="studio"] .bg-zinc-800\/80 { background-color: #e4e4e7 !important; }
+        [data-theme="studio"] .text-zinc-200 { color: #18181b !important; }
+        [data-theme="studio"] .text-zinc-300 { color: #27272a !important; }
+        [data-theme="studio"] .text-zinc-500 { color: #71717a !important; }
+        [data-theme="studio"] .border-zinc-800,
+        [data-theme="studio"] .border-zinc-800\/80 { border-color: #d4d4d8 !important; }
+        [data-theme="studio"] .text-zinc-600 { color: #a1a1aa !important; }
+
+        /* Neon theme overrides */
+        [data-theme="neon"] .bg-zinc-950 { background-color: var(--bg-primary) !important; }
+        [data-theme="neon"] .bg-zinc-900 { background-color: var(--bg-secondary) !important; }
+        [data-theme="neon"] .bg-zinc-800 { background-color: var(--bg-card) !important; }
+        [data-theme="neon"] .border-zinc-800 { border-color: var(--border-color) !important; }
+        [data-theme="neon"] .text-zinc-200 { color: var(--text-primary) !important; }
+        [data-theme="neon"] .text-zinc-300 { color: var(--text-secondary) !important; }
+        [data-theme="neon"] .text-zinc-500 { color: var(--text-muted) !important; }
+
+        /* Matrix theme overrides */
+        [data-theme="matrix"] .bg-zinc-950 { background-color: var(--bg-primary) !important; }
+        [data-theme="matrix"] .bg-zinc-900 { background-color: var(--bg-secondary) !important; }
+        [data-theme="matrix"] .bg-zinc-800 { background-color: var(--bg-card) !important; }
+        [data-theme="matrix"] .border-zinc-800 { border-color: var(--border-color) !important; }
+        [data-theme="matrix"] .text-zinc-200 { color: var(--text-primary) !important; }
+        [data-theme="matrix"] .text-zinc-300 { color: var(--text-secondary) !important; }
+        [data-theme="matrix"] .text-zinc-500 { color: var(--text-muted) !important; }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 min-h-screen font-sans selection:bg-metal-accent/30 selection:text-white relative overflow-x-hidden">
@@ -121,9 +241,10 @@
                         Forge Your Sound
                     </span>
                     <div class="flex items-center gap-1.5 ml-2 bg-zinc-950/60 p-1.5 rounded-full border border-zinc-800/80">
-                        <button onclick="changeForgeAtmosphere('#ef4444')" class="w-4 h-4 rounded-full bg-[#ef4444] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#ef4444]" title="Hellfire Red" id="btn-theme-red"></button>
-                        <button onclick="changeForgeAtmosphere('#22c55e')" class="w-4 h-4 rounded-full bg-[#22c55e] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#22c55e]" title="Toxic Sludge Green" id="btn-theme-green"></button>
-                        <button onclick="changeForgeAtmosphere('#3b82f6')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#3b82f6]" title="Frozen Fjord Blue" id="btn-theme-blue"></button>
+                        <button onclick="changeForgeAtmosphere('forge')" id="btn-theme-forge" title="Forge — Dark Metal" class="w-4 h-4 rounded-full bg-[#ef4444] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#ef4444]"></button>
+                        <button onclick="changeForgeAtmosphere('studio')" id="btn-theme-studio" title="Studio — Light Professional" class="w-4 h-4 rounded-full bg-[#e4e4e7] border border-zinc-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_rgba(228,228,231,0.6)]"></button>
+                        <button onclick="changeForgeAtmosphere('neon')" id="btn-theme-neon" title="Neon — Cyberpunk" class="w-4 h-4 rounded-full bg-[#06b6d4] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#06b6d4]"></button>
+                        <button onclick="changeForgeAtmosphere('matrix')" id="btn-theme-matrix" title="Matrix — Hacker" class="w-4 h-4 rounded-full bg-[#22c55e] border border-transparent hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-[0_0_8px_#22c55e]"></button>
                     </div>
                 </h2>
 <div class="mb-6">
@@ -1531,38 +1652,47 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             initSparks();
             initializeVault();
 
-            const savedTheme = localStorage.getItem('forge-theme') || '#ef4444';
+            const savedTheme = localStorage.getItem('forge-theme') || 'forge';
             window.changeForgeAtmosphere(savedTheme);
         });
 
-        // Theme Switcher Mappings
-        const themeRgbMap = {
-            '#ef4444': '239, 68, 68',
-            '#22c55e': '34, 197, 94',
-            '#3b82f6': '59, 130, 246'
+        // Theme Switcher
+        const themeMap = {
+            forge:  { accent: '#ef4444', rgb: '239, 68, 68',  ring: 'ring-white' },
+            studio: { accent: '#e11d48', rgb: '225, 29, 72',  ring: 'ring-zinc-400' },
+            neon:   { accent: '#06b6d4', rgb: '6, 182, 212',  ring: 'ring-cyan-300' },
+            matrix: { accent: '#22c55e', rgb: '34, 197, 94',  ring: 'ring-green-300' },
         };
 
-        window.changeForgeAtmosphere = function(colorHex) {
-            const rgb = themeRgbMap[colorHex] || '239, 68, 68';
-            document.documentElement.style.setProperty('--forge-accent', colorHex);
-            document.documentElement.style.setProperty('--forge-accent-rgb', rgb);
-            window.currentAccentHex = colorHex;
-            localStorage.setItem('forge-theme', colorHex);
+        window.changeForgeAtmosphere = function(themeName) {
+            const theme = themeMap[themeName] || themeMap.forge;
 
-            const colors = ['#ef4444', '#22c55e', '#3b82f6'];
-            const buttonIds = ['btn-theme-red', 'btn-theme-green', 'btn-theme-blue'];
-            colors.forEach((c, idx) => {
-                const btn = document.getElementById(buttonIds[idx]);
+            // Apply data-theme to root for CSS variable switching
+            document.documentElement.setAttribute('data-theme', themeName);
+
+            // Update CSS accent variables
+            document.documentElement.style.setProperty('--forge-accent', theme.accent);
+            document.documentElement.style.setProperty('--forge-accent-rgb', theme.rgb);
+            window.currentAccentHex = theme.accent;
+            localStorage.setItem('forge-theme', themeName);
+
+            // Update spark colors
+            window.currentThemeName = themeName;
+
+            // Update active ring on buttons
+            const buttonIds = ['btn-theme-forge', 'btn-theme-studio', 'btn-theme-neon', 'btn-theme-matrix'];
+            buttonIds.forEach(id => {
+                const btn = document.getElementById(id);
                 if (btn) {
-                    if (c === colorHex) {
-                        btn.classList.add('ring-2', 'ring-white', 'scale-110');
-                        btn.classList.remove('scale-100');
-                    } else {
-                        btn.classList.remove('ring-2', 'ring-white', 'scale-110');
-                        btn.classList.add('scale-100');
-                    }
+                    btn.classList.remove('ring-2', 'ring-white', 'ring-zinc-400', 'ring-cyan-300', 'ring-green-300', 'scale-110');
+                    btn.classList.add('scale-100');
                 }
             });
+            const activeBtn = document.getElementById('btn-theme-' + themeName);
+            if (activeBtn) {
+                activeBtn.classList.add('ring-2', theme.ring, 'scale-110');
+                activeBtn.classList.remove('scale-100');
+            }
         };
     </script>
 </body>
