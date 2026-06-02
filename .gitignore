@@ -141,3 +141,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+# Project-specific exclusions
+BACKUP/
+Key Store/
+
+# Android signing keystores (NEVER commit — security risk)
+*.keystore
+*.jks
+**/keystore.properties
+
+# IDE config
+.idea/
+android/.idea/
