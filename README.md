@@ -1,6 +1,9 @@
 # 𐕣 METAL FORGE 𐕣
 
+*A [Synthetic Faction](https://syntheticfaction.com) production.*
+
 > **Status:** Active • Production Live via Vercel + Google Play (Closed Beta)
+> **Live:** [forge.syntheticfaction.com](https://forge.syntheticfaction.com)
 > **Target Audio Engines:** Universal Multi-Model Support (Suno, Udio, Stable Audio)
 
 Welcome to **Metal Forge** — a feature-rich, multi-genre AI music prompt suite designed to forge hyper-optimized style modifiers, lyrical themes, structural parameters, and AI-generated album artwork for any AI music engine.
@@ -55,6 +58,14 @@ Welcome to **Metal Forge** — a feature-rich, multi-genre AI music prompt suite
 | ⚪ Studio | Clean light/white professional |
 | 🔵 Neon | Deep navy cyberpunk, cyan accent |
 | 🟢 Matrix | Near-black hacker green |
+
+---
+
+## 🏭 About Synthetic Faction
+
+Metal Forge is the flagship product of **[Synthetic Faction](https://syntheticfaction.com)** — an AI-powered creative studio for independent bands and labels. Alongside Metal Forge, the studio offers Electronic Press Kits, AI-generated artwork and promotional assets, and prompt engineering services for AI music platforms.
+
+*Forging Digital Grit.*
 
 ---
 
