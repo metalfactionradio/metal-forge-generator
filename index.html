@@ -839,7 +839,7 @@
                             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col">
                                 <div class="text-xs font-bold text-zinc-300 uppercase tracking-widest mb-3 flex items-center justify-between">
                                     <span><i class="fa-solid fa-compact-disc text-metal-accent mr-1.5"></i> Custom Cover Art</span>
-                                    <button onclick="regenerateCoverArt()" class="text-[10px] text-orange-500 hover:text-orange-400 uppercase flex items-center gap-1">
+                                    <button onclick="window.generateArtwork()" class="text-[10px] text-orange-500 hover:text-orange-400 uppercase flex items-center gap-1">
                                         <i class="fa-solid fa-arrows-rotate"></i> Re-Roll Art
                                     </button>
                                 </div>
@@ -854,49 +854,13 @@
                                     <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
                                         <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
                                         <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
-                                        <button onclick="regenerateCoverArt()" class="mt-2 text-xs bg-metal-accent/20 hover:bg-metal-accent/40 text-metal-accent px-3 py-1 rounded-md transition">Try Again</button>
+                                        <button onclick="window.generateArtwork()" class="mt-2 text-xs bg-metal-accent/20 hover:bg-metal-accent/40 text-metal-accent px-3 py-1 rounded-md transition">Try Again</button>
                                     </div>
                                     
                                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                         <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-metal-accent text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
                                             <i class="fa-solid fa-download text-lg"></i>
                                         </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
-                                <div>
-                                    <div class="text-xs font-bold text-zinc-300 uppercase tracking-widest mb-1.5 flex items-center justify-between">
-                                        <span><i class="fa-solid fa-volume-high text-yellow-500 mr-1.5"></i> Spoken Dialogue Preview</span>
-                                        <span class="text-[9px] bg-metal-accent/20 text-metal-accent border border-metal-accent/30 px-1.5 py-0.5 rounded transition-colors duration-300">Dual-Speaker</span>
-                                    </div>
-                                    <p class="text-[11px] text-zinc-500 leading-normal mb-4">
-                                        Listen to a theatrical dual-speaker dialogue prologue generated via Gemini Multi-Speaker TTS <span id="dynamic-speakers" class="text-metal-accent font-semibold"></span>
-                                    </p>
-                                </div>
-
-                                <div class="bg-zinc-950/80 border border-zinc-800/60 rounded-xl p-4 space-y-4">
-                                    <div id="tts-quote-container" class="max-h-[120px] overflow-y-auto space-y-2">
-                                        <p id="tts-quote" class="text-[11px] text-zinc-300 italic text-center leading-relaxed">
-                                            "Waiting for lyrics to materialize..."
-                                        </p>
-                                    </div>
-
-                                    <div class="flex items-center justify-between pt-2 border-t border-zinc-800/60">
-                                        <canvas id="visualizer" class="h-8 w-24 bg-zinc-900/40 rounded border border-zinc-800/40"></canvas>
-                                        
-                                        <button 
-                                            id="tts-play-btn" 
-                                            onclick="toggleTTSAudio()"
-                                            disabled
-                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-metal-accent hover:opacity-90 text-zinc-950 hover:scale-105 transition duration-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                                        >
-                                            <i id="tts-play-icon" class="fa-solid fa-play ml-0.5 text-sm"></i>
-                                        </button>
-                                    </div>
-                                    <div id="tts-loader" class="hidden text-center text-[10px] text-yellow-500/80 animate-pulse font-mono font-bold">
-                                        <i class="fa-solid fa-skull animate-spin mr-1"></i> Grunting epic voice intro...
                                     </div>
                                 </div>
                             </div>
@@ -998,7 +962,7 @@
 
 <footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
     <div id="copyright" class="font-mono uppercase tracking-wider">
-        &copy; <span id="year"></span> Synthetic Faction. All Rights Reserved.
+        &copy; <span id="year"></span> <a href="https://syntheticfaction.com" target="_blank" rel="noopener" class="text-zinc-400 hover:text-red-500 transition">Synthetic Faction</a>. All Rights Reserved.
         <a href="/privacy.html" class="text-zinc-400 hover:text-red-500 transition">Privacy Policy</a>
         <span class="mx-2">·</span>
         <button onclick="document.getElementById('faq-modal').classList.remove('hidden')" class="text-zinc-400 hover:text-red-500 transition uppercase">FAQ / Help</button>
@@ -1369,38 +1333,6 @@
         };
 
         // --- EXPORTED FORGING ACTIONS ---
-        window.resetForge = function() {
-            if (!activeForgeLocks.style) {
-                document.getElementById('style-input').value = "";
-                updateCharacterCounter("");
-                document.getElementById('output-style').innerText = '-';
-                window.currentStyle = "";
-            }
-            if (!activeForgeLocks.lyrics) {
-                document.getElementById('theme-input').value = "";
-                document.getElementById('output-lyrics').innerText = '';
-                window.currentTheme = "";
-                window.currentLyrics = "";
-            }
-            document.getElementById('title-input').value = "";
-            document.getElementById('output-title').innerText = '-';
-            window.currentTitle = "";
-
-            if (typeof window.removeVisionImage === 'function') window.removeVisionImage();
-
-            document.getElementById('intro-board').classList.remove('hidden');
-            document.getElementById('track-results').classList.add('hidden');
-            document.getElementById('forge-loader').classList.add('hidden');
-
-            const activeChips = document.querySelectorAll('.bg-metal-accent\/30, .bg-metal-accent/30');
-            activeChips.forEach(chip => {
-                chip.classList.remove('bg-metal-accent/30', 'bg-metal-accent\/30', 'text-metal-accent', 'border-metal-accent/50');
-                chip.classList.add('bg-zinc-900', 'text-zinc-300', 'border-zinc-800/60');
-            });
-
-            showToast("Workspace cleared — locked sections preserved.");
-        };
-
         window.forgeMetal = async function() {
             const styleInput = document.getElementById('style-input').value.trim();
             const themeInput = document.getElementById('theme-input').value.trim();
@@ -1900,11 +1832,5 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             }
         };
     </script>
-    <!-- Synthetic Faction studio credit -->
-<div class="text-center py-6 border-t border-zinc-800/50 mt-8">
-  <p class="text-xs text-zinc-500 tracking-widest uppercase font-mono">
-    A <a href="https://syntheticfaction.com" target="_blank" rel="noopener" class="text-zinc-300 hover:text-emerald-400 transition-colors">Synthetic Faction</a> Product
-  </p>
-</div>
 </body>
 </html>
