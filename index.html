@@ -834,39 +834,6 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-                            
-                            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col">
-                                <div class="text-xs font-bold text-zinc-300 uppercase tracking-widest mb-3 flex items-center justify-between">
-                                    <span><i class="fa-solid fa-compact-disc text-metal-accent mr-1.5"></i> Custom Cover Art</span>
-                                    <button onclick="window.generateArtwork()" class="text-[10px] text-orange-500 hover:text-orange-400 uppercase flex items-center gap-1">
-                                        <i class="fa-solid fa-arrows-rotate"></i> Re-Roll Art
-                                    </button>
-                                </div>
-                                <div class="flex-grow flex items-center justify-center bg-zinc-950 border border-zinc-800/60 rounded-xl overflow-hidden aspect-square relative group">
-                                    <img id="cover-art" src="" alt="Album Cover" class="hidden w-full h-full object-cover">
-                                    
-                                    <div id="cover-loader" class="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-zinc-950">
-                                        <div class="w-8 h-8 border-2 border-metal-accent border-t-transparent rounded-full animate-spin"></div>
-                                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Pouring molten artwork...</p>
-                                    </div>
-
-                                    <div id="cover-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                                        <i class="fa-solid fa-circle-exclamation text-zinc-600 text-2xl mb-1"></i>
-                                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Failed to forge canvas.</p>
-                                        <button onclick="window.generateArtwork()" class="mt-2 text-xs bg-metal-accent/20 hover:bg-metal-accent/40 text-metal-accent px-3 py-1 rounded-md transition">Try Again</button>
-                                    </div>
-                                    
-                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                                        <a id="download-cover-btn" href="#" download="album-cover.png" class="p-3 bg-metal-accent text-zinc-950 hover:text-white rounded-full transition transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-105" title="Download Cover">
-                                            <i class="fa-solid fa-download text-lg"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
                         <div class="bg-zinc-900 border border-zinc-800/60 rounded-2xl p-6">
                             <h4 class="text-xs font-bold uppercase text-zinc-300 tracking-wider mb-3 flex items-center">
                                 <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> How to Maximize Tracks in Suno
