@@ -1450,13 +1450,35 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
             }
         };
 
-        window.downloadArtwork = function() {
+        window.downloadArtwork = async function() {
             const src = window.currentArtworkSrc;
             if (!src) return;
-            const a = document.createElement('a');
-            a.href = src;
-            a.download = `${(window.currentTitle || 'artwork').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_artwork.png`;
-            a.click();
+            const filename = `${(window.currentTitle || 'artwork').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_artwork.png`;
+            try {
+                // Convert image to blob via canvas
+                const img = document.getElementById('artwork-image');
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                const file = new File([blob], filename, { type: 'image/png' });
+                // Try native share sheet first (works great on Android)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: filename });
+                } else {
+                    // Fallback for desktop browsers
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }
+            } catch (err) {
+                // Last resort — open image in new tab so user can long-press save
+                window.open(src, '_blank');
+            }
         };
 
         // Multimodal Vision Processing
