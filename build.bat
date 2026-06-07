@@ -1,0 +1,6 @@
+@echo off
+echo Copying index.html to www...
+copy index.html www\index.html
+echo Syncing Capacitor...
+npx cap sync android
+echo Done!

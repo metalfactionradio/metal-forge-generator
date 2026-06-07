@@ -7,6 +7,7 @@
     <script src="./index_files/saved_resource"></script>
     <link href="./index_files/css2" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -925,7 +926,8 @@
     </div>
 
     <script type="module">
-        const apiUrl = '/api/forge';
+        const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
+        const apiUrl = isNative ? 'https://forge.syntheticfaction.com/api/forge' : '/api/forge';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1379,7 +1381,7 @@ Song Title requested: ${titleInput || "Random Metal Title"}`;
         };
 
         // --- ALBUM ARTWORK GENERATION ---
-        const artworkApiUrl = '/api/artwork';
+        const artworkApiUrl = isNative ? 'https://forge.syntheticfaction.com/api/artwork' : '/api/artwork';
 
         window.generateArtwork = async function() {
             const loader = document.getElementById('artwork-loader');
@@ -1746,18 +1748,23 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
 
         // Vault Initialization Lifecycles
         window.addEventListener('DOMContentLoaded', async () => {
-            initSparks();
-            initializeVault();
-            await initializeRevenueCat();
+    initSparks();
+    initializeVault();
+    
+    setTimeout(async () => {
+        console.log('RC timeout fired, checking plugins...');
+        console.log('CapacitorPurchases available:', !!Capacitor.Plugins);
+        await initializeRevenueCat();
+        const entitled = await checkEntitlement();
+        console.log('Entitled:', entitled);
+        if (!entitled) {
+            showPaywall();
+        }
+    }, 3000);
 
-            const entitled = await checkEntitlement();
-            if (!entitled) {
-                showPaywall();
-            }
-
-            const savedTheme = localStorage.getItem('forge-theme') || 'forge';
-            window.changeForgeAtmosphere(savedTheme);
-        });
+    const savedTheme = localStorage.getItem('forge-theme') || 'forge';
+    window.changeForgeAtmosphere(savedTheme);
+});
 
         // Theme Switcher
         const themeMap = {
@@ -1807,7 +1814,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                     console.log('RevenueCat: not on native platform, skipping');
                     return;
                 }
-                const { Purchases } = window.CapacitorPurchases;
+                const { Purchases } = Capacitor.Plugins;
                 await Purchases.configure({
                     apiKey: 'test_DOsShEzSjGqWjPnpkNfsrXBciJd'
                 });
@@ -1822,7 +1829,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                 if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
                     return true; // Allow full access in browser/dev mode
                 }
-                const { Purchases } = window.CapacitorPurchases;
+                const { Purchases } = Capacitor.Plugins;
                 const customerInfo = await Purchases.getCustomerInfo();
                 const isEntitled = customerInfo.customerInfo.entitlements.active['Metal Forge Pro'] !== undefined;
                 return isEntitled;
@@ -1832,23 +1839,42 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             }
         }
 
-        async function purchasePackage(packageToPurchase) {
-            try {
-                const { Purchases } = window.CapacitorPurchases;
-                const { customerInfo } = await Purchases.purchasePackage({ aPackage: packageToPurchase });
-                if (customerInfo.entitlements.active['Metal Forge Pro'] !== undefined) {
-                    hidePaywall();
-                }
-            } catch (e) {
-                if (e.code !== 'PURCHASE_CANCELLED') {
-                    console.error('Purchase error:', e);
-                }
+        async function purchasePackage(pkg) {
+    try {
+        const { Purchases } = Capacitor.Plugins;
+        await Purchases.purchasePackage({ aPackage: pkg });
+        // Success - hide paywall
+        document.getElementById('paywall-overlay').style.display = 'none';
+    } catch (e) {
+        console.error('Purchase error code:', e.code);
+        console.error('Purchase error:', JSON.stringify(e));
+        
+        // Check if actually entitled despite error (sandbox behavior)
+        try {
+            const { Purchases } = Capacitor.Plugins;
+            const { customerInfo } = await Purchases.getCustomerInfo();
+            if (customerInfo.entitlements.active['Metal Forge Pro']) {
+                document.getElementById('paywall-overlay').style.display = 'none';
+                return;
             }
-        }
+        } catch (e2) {}
+        
+        if (e.code === 'PURCHASE_CANCELLED') return;
+        
+        // Actual failure
+        const container = document.getElementById('paywall-packages');
+        container.innerHTML = `
+            <div style="text-align:center; padding: 1rem;">
+                <p style="color:#ef4444; font-weight:700; margin-bottom:0.5rem;">⚠️ Payment Failed</p>
+                <p style="color:#a1a1aa; font-size:0.85rem; margin-bottom:1rem;">Your trial has ended. Please try again or use a different payment method to continue using Metal Forge.</p>
+                <button onclick="window.loadPaywallPackages()" style="color:#ef4444; background:none; border:1px solid #ef4444; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer;">Try Again</button>
+            </div>
+        `;
+    }
 
         async function restorePurchases() {
             try {
-                const { Purchases } = window.CapacitorPurchases;
+                const { Purchases } = Capacitor.Plugins;
                 const { customerInfo } = await Purchases.restorePurchases();
                 if (customerInfo.entitlements.active['Metal Forge Pro'] !== undefined) {
                     hidePaywall();
@@ -1901,17 +1927,22 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             if (paywall) paywall.remove();
         }
 
-        async function loadPaywallPackages() {
+        async function loadPaywallPackages(retries = 3) {
+            window.loadPaywallPackages = loadPaywallPackages;
             try {
                 if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
-                const { Purchases } = window.CapacitorPurchases;
+                const { Purchases } = Capacitor.Plugins;
                 const offerings = await Purchases.getOfferings();
-                const current = offerings.offerings.current;
-                if (!current) return;
+                const current = offerings.current;
+                if (!current) {
+                    if (retries > 0) {
+                        setTimeout(() => loadPaywallPackages(0), 2000);
+                    }
+                    return;
+                }
 
                 const container = document.getElementById('paywall-packages');
                 container.innerHTML = '';
-
                 current.availablePackages.forEach(pkg => {
                     const isAnnual = pkg.packageType === 'ANNUAL';
                     const btn = document.createElement('button');
@@ -1924,10 +1955,10 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                         font-family: 'Inter', sans-serif;
                     `;
                     btn.innerHTML = `
-                        <div style="font-weight: 700; font-size: 1rem;">${isAnnual ? '🔥 Annual — Best Value' : 'Monthly'}</div>
-                        <div style="color: #a1a1aa; font-size: 0.85rem;">${pkg.product.priceString}${isAnnual ? '/year' : '/month'} · 5-day free trial</div>
-                        ${isAnnual ? '<div style="color:#ef4444; font-size:0.75rem; margin-top:0.25rem;">Save ~33% vs monthly</div>' : ''}
-                    `;
+    <div style="font-weight: 700; font-size: 1rem;">${isAnnual ? '🔥 Start Free Trial — Annual' : 'Start Free Trial — Monthly'}</div>
+    <div style="color: #a1a1aa; font-size: 0.85rem;">Then ${pkg.product.priceString}${isAnnual ? '/year' : '/month'} after 5 days</div>
+    ${isAnnual ? '<div style="color:#ef4444; font-size:0.75rem; margin-top:0.25rem;">Save ~33% vs monthly</div>' : ''}
+`;
                     btn.onclick = () => purchasePackage(pkg);
                     container.appendChild(btn);
                 });

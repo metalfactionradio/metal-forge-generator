@@ -1,7 +1,7 @@
 {
   "appId": "com.syntheticfaction.metalforge",
   "appName": "Metal Forge",
-  "webDir": "www",
+  "webDir": "."
   "android": {
     "allowMixedContent": true
   }
