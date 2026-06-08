@@ -4,10 +4,9 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metal Forge – MULTI-MODEL PROMPTING SUITE</title>
-    <script src="./index_files/saved_resource"></script>
-    <link href="./index_files/css2" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -559,7 +558,7 @@
                         </div>
                         
                         <div id="vision-thumb-container" class="hidden flex items-center gap-3 p-2 bg-zinc-950/80 border border-zinc-800/60 rounded-lg">
-                            <img id="vision-thumbnail" src="file:///C:/Users/kingp/Downloads/index.html" class="w-10 h-10 object-cover rounded border border-zinc-700">
+                            <img id="vision-thumbnail" src="" class="w-10 h-10 object-cover rounded border border-zinc-700">
                             <span class="text-[10px] text-zinc-300 truncate flex-grow" id="vision-filename">Inspiration loaded</span>
                             <button onclick="removeVisionImage()" class="text-zinc-500 hover:text-metal-accent transition px-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
@@ -752,7 +751,7 @@
                                     <p class="text-[10px] text-zinc-500 font-mono animate-pulse uppercase tracking-widest">Generating artwork...</p>
                                 </div>
                                 <div id="artwork-container" class="hidden w-full flex flex-col items-center gap-3">
-                                    <img id="artwork-image" src="file:///C:/Users/kingp/Downloads/index.html" alt="Album Artwork" class="w-full max-w-xs rounded-xl border border-zinc-700 shadow-[0_0_30px_rgba(var(--forge-accent-rgb),0.2)]">
+                                    <img id="artwork-image" src="" alt="Album Artwork" class="w-full max-w-xs rounded-xl border border-zinc-700 shadow-[0_0_30px_rgba(var(--forge-accent-rgb),0.2)]">
                                     <button onclick="downloadArtwork()" class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-metal-accent text-zinc-300 hover:text-white text-xs font-bold rounded-lg transition-all duration-200">
                                         <i class="fa-solid fa-download text-metal-accent"></i> Download Artwork
                                     </button>
@@ -848,9 +847,9 @@
         </section>
 
  <!-- FAQ Modal -->
-<div id="faq-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+<div id="faq-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById(&#39;faq-modal&#39;).classList.add(&#39;hidden&#39;)"></div>
-    <div class="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border shadow-2xl" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+    <div class="relative w-full max-w-sm max-h-[80vh] overflow-y-auto overflow-x-hidden rounded-2xl border shadow-2xl" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
         <div class="sticky top-0 flex items-center justify-between px-6 py-4 border-b" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
             <h2 class="font-metal text-lg uppercase tracking-widest" style="color: var(--forge-accent);">FAQ / Help</h2>
             <button onclick="document.getElementById(&#39;faq-modal&#39;).classList.add(&#39;hidden&#39;)" class="text-zinc-500 hover:text-white transition text-xl">×</button>
@@ -902,7 +901,7 @@
 <footer class="mt-12 text-center text-xs text-zinc-600 border-t border-zinc-900 pt-6">
     <div id="copyright" class="font-mono uppercase tracking-wider">
         © <span id="year">2026</span> <a href="https://syntheticfaction.com/" target="_blank" rel="noopener" class="text-zinc-400 hover:text-red-500 transition">Synthetic Faction</a>. All Rights Reserved.
-        <a href="file:///C:/privacy.html" class="text-zinc-400 hover:text-red-500 transition">Privacy Policy</a>
+        <a href="https://forge.syntheticfaction.com/privacy.html" onclick="if(window.Capacitor&&window.Capacitor.isNativePlatform()){window.open('https://forge.syntheticfaction.com/privacy.html','_system');return false;}" class="text-zinc-400 hover:text-red-500 transition">Privacy Policy</a>
         <span class="mx-2">·</span>
         <button onclick="document.getElementById(&#39;faq-modal&#39;).classList.remove(&#39;hidden&#39;)" class="text-zinc-400 hover:text-red-500 transition uppercase">FAQ / Help</button>
     </div>
@@ -926,11 +925,11 @@
     </div>
 
     <script type="module">
-        const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
-        const apiUrl = isNative ? 'https://forge.syntheticfaction.com/api/forge' : '/api/forge';
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
+    const apiUrl = isNative ? 'https://forge.syntheticfaction.com/api/forge' : '/api/forge';
 
         // Firebase Configuration Setup
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-metal-forge-app';
@@ -1752,11 +1751,8 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
     initializeVault();
     
     setTimeout(async () => {
-        console.log('RC timeout fired, checking plugins...');
-        console.log('CapacitorPurchases available:', !!Capacitor.Plugins);
         await initializeRevenueCat();
         const entitled = await checkEntitlement();
-        console.log('Entitled:', entitled);
         if (!entitled) {
             showPaywall();
         }
@@ -1831,7 +1827,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
                 }
                 const { Purchases } = Capacitor.Plugins;
                 const customerInfo = await Purchases.getCustomerInfo();
-                const isEntitled = customerInfo.customerInfo.entitlements.active['Metal Forge Pro'] !== undefined;
+const isEntitled = customerInfo?.customerInfo?.entitlements?.active?.['Metal Forge Pro'] !== undefined;
                 return isEntitled;
             } catch (e) {
                 console.error('Entitlement check error:', e);
@@ -1844,7 +1840,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
         const { Purchases } = Capacitor.Plugins;
         await Purchases.purchasePackage({ aPackage: pkg });
         // Success - hide paywall
-        document.getElementById('paywall-overlay').style.display = 'none';
+        hidePaywall();
     } catch (e) {
         console.error('Purchase error code:', e.code);
         console.error('Purchase error:', JSON.stringify(e));
@@ -1854,7 +1850,7 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             const { Purchases } = Capacitor.Plugins;
             const { customerInfo } = await Purchases.getCustomerInfo();
             if (customerInfo.entitlements.active['Metal Forge Pro']) {
-                document.getElementById('paywall-overlay').style.display = 'none';
+                hidePaywall();
                 return;
             }
         } catch (e2) {}
@@ -1871,7 +1867,8 @@ Return only the newly edited full song lyrics. Do not add conversational intro/o
             </div>
         `;
     }
-
+}
+       
         async function restorePurchases() {
             try {
                 const { Purchases } = Capacitor.Plugins;
