@@ -2081,16 +2081,27 @@ const isEntitled = customerInfo?.customerInfo?.entitlements?.active?.['Metal For
                 font-family: 'Inter', sans-serif;
             `;
             paywall.innerHTML = `
-                <div style="max-width: 360px; width: 100%;">
+                <div style="max-width: 360px; width: 100%; position: relative;">
+
+    <button onclick="dismissPaywall()" style="
+        position: absolute; top: -0.5rem; right: -0.5rem;
+        background: #27272a; border: 1px solid #3f3f46;
+        color: #a1a1aa; font-size: 1.2rem; line-height: 1;
+        width: 2rem; height: 2rem; border-radius: 50%;
+        cursor: pointer; display: flex; align-items: center;
+        justify-content: center; font-family: 'Inter', sans-serif;
+    " aria-label="Close">&#x2715;</button>
                     <div style="font-size: 3rem; margin-bottom: 1rem;">⚒️</div>
                     <h1 style="font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; color: #ef4444; margin-bottom: 0.5rem;">METAL FORGE</h1>
                     <p style="color: #a1a1aa; margin-bottom: 0.25rem;">Multi-Model Prompting Suite</p>
                     <p style="color: #71717a; font-size: 0.85rem; margin-bottom: 2rem;">5-Day Free Trial · No Credit Card Required</p>
 
-                    <div id="paywall-packages" style="margin-bottom: 1.5rem;">
+                    <div id="paywall-packages" style="margin-bottom: 1rem;">
                         <p style="color: #a1a1aa;">Loading plans...</p>
                     </div>
-
+<div style="background: rgba(39,39,42,0.6); border: 1px solid #3f3f46; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 1rem; text-align: left; font-size: 0.72rem; color: #71717a; line-height: 1.5;">
+                        <strong style="color: #a1a1aa;">Free Trial Terms:</strong> Your 5-day free trial begins immediately. No charge during the trial. After 5 days, subscription renews at $5.99/month or $47.99/year unless cancelled in Google Play &rarr; Subscriptions before trial ends. Auto-renews unless cancelled 24 hours before period end.
+                    </div>
                     <button id="btn-restore" onclick="restorePurchases()" style="
                         background: none; border: none; color: #71717a;
                         font-size: 0.8rem; cursor: pointer; text-decoration: underline;
@@ -2101,7 +2112,26 @@ const isEntitled = customerInfo?.customerInfo?.entitlements?.active?.['Metal For
             document.body.appendChild(paywall);
             loadPaywallPackages();
         }
-
+function dismissPaywall() {
+            const paywall = document.getElementById('rc-paywall');
+            if (paywall) paywall.remove();
+            const app = document.getElementById('app-wrapper');
+            if (app) app.style.display = '';
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = 'Subscription required. Tap here to subscribe.';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+                toast.style.pointerEvents = 'auto';
+                toast.onclick = () => showPaywall();
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(10px)';
+                    toast.style.pointerEvents = 'none';
+                    toast.onclick = null;
+                }, 6000);
+            }
+        }
         function hidePaywall() {
     const paywall = document.getElementById('rc-paywall');
     if (paywall) paywall.remove();
